@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-enum opcode {MOV, ADD, MUL, SUB, LOAD, STORE, BRANCH_LT, BRANCH_NZ, BRANCH, HALT};
+enum opcode {MOV, ADD, ADDI, MUL, SUB, LOAD, STORE, BRANCH_LT, BRANCH_NZ, BRANCH, HALT};
 
 struct state {
 
@@ -24,6 +24,10 @@ int Execute(int opcode, int r, int a1, int a2, int *RF, int* MEM, int *PC, int t
 	switch(opcode) {
 		case ADD:
 			RF[r] = RF[a1] + RF[a2];
+            (*PC)++;
+            break;
+        case ADDI:
+            RF[r] = RF[a1] + a2;
             (*PC)++;
             break;
 		case MUL:
@@ -104,23 +108,22 @@ int main(int argc, char *argv[]) {
 
 	int RF[32];
 	int MEM[1024];
-    int *CIR = &RF[30];
-	int *PC = &RF[31];
 	int INSTR[512];
 
+    //Special purpose pointers
+    int *CIR = &RF[30];
+	int *PC = &RF[31];
+
     //RESET
-    *PC = 0;
+    for(int i = 0; i < 32; i++) RF[i] = 0;
+    for(int i = 0; i < 1024; i++) MEM[i] = 0;
+    for(int i = 0; i < 512; i++) INSTR[i] = 0;
     instr decoded;
 
-    // Load program to memory
-    
-    if(argc > 1) loadProgram(argv[1], INSTR);
-    std::cout << INSTR[0] << std::endl;
-    std::cout << INSTR[1] << std::endl;
-    std::cout << INSTR[2] << std::endl;
-    std::cout << INSTR[3] << std::endl;
-    
-	while(!finished) {
+    //Load program
+    if(argc > 1) loadProgram(argv[1], INSTR); 
+	
+    while(!finished) {
 		Fetch(CIR, *PC, INSTR); //From memory to CIR in RF
 
 		decoded = Decode(*CIR); //Inspect CIR and determine opcode, r, a1, a2, 
@@ -130,4 +133,11 @@ int main(int argc, char *argv[]) {
         instructions++;
 		cycles += 3;
 	}
+
+    //Output registers
+    for(int r = 0; r < 30; r++) {
+        std::cout << "r" << r << ": " << RF[r] << std::endl;
+    }
+    std::cout << "cir" << ": " << RF[30] << std::endl;
+    std::cout << "pc" << ": " << RF[31] << std::endl;
 }

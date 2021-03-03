@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 
-enum opcode {MOV, ADD, MUL, SUB, LOAD, STORE, BRANCH_LT, BRANCH_NZ, BRANCH, HALT};
+enum opcode {MOV, ADD, ADDI, MUL, SUB, LOAD, STORE, BRANCH_LT, BRANCH_NZ, BRANCH, HALT};
 
 
 std::vector<std::string> split(const std::string &line, char delimiter) {
@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
 
         if(tokens[0].compare("mov") == 0) instr[0] = MOV;
         else if(tokens[0].compare("add") == 0) instr[0] = ADD;
+        else if(tokens[0].compare("addi") == 0) instr[0] = ADDI;
         else if(tokens[0].compare("mul") == 0) instr[0] = MUL;
         else if(tokens[0].compare("sub") == 0) instr[0] = SUB;
         else if(tokens[0].compare("ldm") == 0) instr[0] = LOAD;
