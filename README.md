@@ -10,10 +10,11 @@ The processor supports the following instructions:
  Opcode |Operands  |  Description
 ---|---|---
  add | dest r1 r2 |Add the contents of ```r1``` and ```r2```, and store the result in ```dest``` | 
- addi| dest r1 #1| Add the contents of ``` r1 ``` and an instant ```#1```, and store the result in ```dest```. 
- mul | dest r1 r2 | Multiplythe contents of ``` r1 ``` and an instant ```#1```, and store the result in ```dest```. 
- sub | dest r1 r2 | Subtractthe contents of ``` r1 ``` and an instant ```#1```, and store the result in ```dest```. 
+ addi| dest r1 #1| Add the contents of ``` r1 ``` and an immediate ```#1```, and store the result in ```dest```. 
+ mul | dest r1 r2 | Multiplythe contents of ``` r1 ``` and an immediate ```#1```, and store the result in ```dest```. 
+ sub | dest r1 r2 | Subtractthe contents of ``` r1 ``` and an immediate ```#1```, and store the result in ```dest```. 
  ldm | dest a1 a2 | Load from memory address ```r1 + r2 ``` , and store in ```dest```.
+ ldc | dest #1 | Store the ```#1``` immediate in ```dest``` register.
 stm | r a1 a2 | Store the contents of ```r``` in the memory address ```r1 + r2```.
 blt | dest cmp1 cmp2 | Branch to ```dest``` if ```cmp1 < cmp2```.
 bnz | dest cmp1  | Branch to ```dest``` if ```cmp1 < 0```.

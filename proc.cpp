@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-enum opcode {MOV, ADD, ADDI, MUL, SUB, LOAD, STORE, BRANCH_LT, BRANCH_NZ, BRANCH, HALT};
+enum opcode {ADD, ADDI, MUL, SUB, LDM, LDC, STM, BLT, BNZ, B, HALT};
 
 struct state {
 
@@ -38,21 +38,24 @@ int Execute(int opcode, int r, int a1, int a2, int *RF, int* MEM, int *PC, int t
             RF[r] = RF[a1] - RF[a2];
             (*PC)++;
             break;
-		case LOAD:
+		case LDM:
 			RF[r] = MEM[ RF[a1] + RF[a2] ];
             (*PC)++;
             break;
-		case STORE:
+        case LDC:
+            RF[r] = RF[a1];
+            break;
+		case STM:
 			MEM[ RF[a1] + RF[a2] ] = RF[r];
             (*PC)++;
             break;
-		case BRANCH_LT:
+		case BLT:
 			if (RF[a1] < RF[a2]) *PC = target_addr;
             break;
-		case BRANCH_NZ:
+		case BNZ:
 			if (a1 != 0) *PC = target_addr;
             break;
-		case BRANCH:
+		case B:
 			*PC = target_addr;
             break;
 		case HALT:
@@ -82,7 +85,7 @@ instr Decode(int CIR) {
     i.r = (CIR & 0x00FF0000) >> 16;
     i.a1 = (CIR & 0x0000FF00) >> 8;
     i.a2 = (CIR & 0x000000FF);
-    if((i.opcode >= BRANCH_LT) && (i.opcode <= BRANCH)) i.target_addr = i.a1 + i.a2;
+    if((i.opcode >= BLT) && (i.opcode <= B)) i.target_addr = i.a1 + i.a2;
     return i;
 }
 
