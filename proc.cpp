@@ -106,7 +106,8 @@ int Execute(int opcode, int r, int a1, int a2, int *RF, int* MEM, int *PC, int t
             else (*PC)++;
             break;
 		case JNZ:
-			if (a1 != 0) (*PC) += r;
+            std::cout << a1 << "moo" << std::endl;
+			if (RF[a1] != 0) (*PC) += r;
             else (*PC)++;
             break;
 		case J:
