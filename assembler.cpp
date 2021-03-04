@@ -5,10 +5,11 @@
 #include <iomanip>
 
 enum opcode {
-            ADD, ADDC, MUL, SUB, DIV, 
+            ADD, ADDC, MUL, SUB, DIV,
             LSH, RSH, AND, OR, XOR,
-            LDM, LDC, STM, STMC, 
+            LDM, LDC, LDMC, STO, STM, STMC, 
             BLT, BNZ, B, 
+            J, JLT, JNZ,
             CMP, 
             HALT
             };
@@ -54,12 +55,17 @@ int main(int argc, char *argv[]) {
         else if(tokens[0].compare("or") == 0) instr[0] = OR;
         else if(tokens[0].compare("xor") == 0) instr[0] = XOR;
         else if(tokens[0].compare("ldm") == 0) instr[0] = LDM;
+        else if(tokens[0].compare("ldmc") == 0) instr[0] = LDMC;
         else if(tokens[0].compare("ldc") == 0) instr[0] = LDC;
         else if(tokens[0].compare("stm") == 0) instr[0] = STM;
+        else if(tokens[0].compare("sto") == 0) instr[0] = STO;
         else if(tokens[0].compare("stmc") == 0) instr[0] = STMC;
         else if(tokens[0].compare("blt") == 0) instr[0] = BLT;
         else if(tokens[0].compare("bnz") == 0) instr[0] = BNZ;
         else if(tokens[0].compare("b") == 0) instr[0] = B;
+        else if(tokens[0].compare("j") == 0) instr[0] = J;
+        else if(tokens[0].compare("jlt") == 0) instr[0] = JLT;
+        else if(tokens[0].compare("jnz") == 0) instr[0] = JNZ;
         else if(tokens[0].compare("cmp") == 0) instr[0] = CMP;
         else if(tokens[0].compare("halt") == 0) instr[0] = HALT;
         else continue;

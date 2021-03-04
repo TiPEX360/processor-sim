@@ -5,7 +5,15 @@
 #include <fstream>
 
 
-enum opcode {ADD, ADDC, MUL, SUB, LDM, LDC, STM, STMC, BLT, BNZ, B, CMP, HALT};
+enum opcode {
+            ADD, ADDC, MUL, SUB, DIV,
+            LSH, RSH, AND, OR, XOR,
+            LDM, LDC, LDMC, STO, STM, STMC, 
+            BLT, BNZ, B, 
+            J, JLT, JNZ,
+            CMP, 
+            HALT
+            };
 
 struct instr {
     char opcode;
@@ -34,6 +42,30 @@ int Execute(int opcode, int r, int a1, int a2, int *RF, int* MEM, int *PC, int t
             RF[r] = RF[a1] - RF[a2];
             (*PC)++;
             break;
+        case DIV:
+            RF[r] = RF[a1] / RF[a2];
+            (*PC)++;
+            break;
+		case LSH:
+            RF[r] = RF[a1] << RF[a2];
+            (*PC)++;
+            break;
+		case RSH:
+            RF[r] = RF[a1] >> RF[a2];
+            (*PC)++;
+            break;
+		case AND:
+            RF[r] = RF[a1] & RF[a2];
+            (*PC)++;
+            break;
+		case OR:
+            RF[r] = RF[a1] | RF[a2];
+            (*PC)++;
+            break;
+		case XOR:
+            RF[r] = RF[a1] ^ RF[a2];
+            (*PC)++;
+            break;
 		case LDM:
 			RF[r] = MEM[RF[a1] + RF[a2]];
             (*PC)++;
@@ -42,24 +74,43 @@ int Execute(int opcode, int r, int a1, int a2, int *RF, int* MEM, int *PC, int t
             RF[r] = a1;
             (*PC)++;
             break;
+        case LDMC:
+            RF[r] = MEM[RF[a1] + a2];
+            (*PC)++;
+            break;
 		case STM:
 			MEM[RF[a1] + RF[a2]] = RF[r];
             (*PC)++;
             break;
+        case STO:
+            MEM[a1 + a2] = r;
+            (*PC)++;
+            break;
         case STMC:
-			MEM[a1 + a2] = r;
+			MEM[RF[a1] + a2] = RF[r];
             (*PC)++;
             break;
 		case BLT:
-			if (RF[r] < RF[a1]) *PC = target_addr;
+			if (RF[a1] < RF[a2]) *PC = RF[r];
             else (*PC)++;
             break;
 		case BNZ:
-			if (r != 0) *PC = target_addr;
+			if (a1 != 0) *PC = *PC = RF[r];
             else (*PC)++;
             break;
 		case B:
-			*PC = target_addr;
+			*PC = RF[r];
+            break;
+		case JLT:
+			if (RF[a1] < RF[a2]) (*PC) += r;
+            else (*PC)++;
+            break;
+		case JNZ:
+			if (a1 != 0) (*PC) += r;
+            else (*PC)++;
+            break;
+		case J:
+			(*PC) += r;
             break;
         case CMP:
             RF[r] = std::max(-1, std::min(RF[a1] - RF[a2], 1));
@@ -120,7 +171,7 @@ int main(int argc, char *argv[]) {
 	int INSTR[512];
 
     //Special purpose pointers
-    int *target_addr = &RF[29];
+    int *lr = &RF[29];
     int *CIR = &RF[30];
 	int *PC = &RF[31];
 
@@ -134,12 +185,12 @@ int main(int argc, char *argv[]) {
     if(argc > 1) loadProgram(argv[1], INSTR); 
 	
     while(!finished) {
-        // std::cout << *PC << " " << *target_addr << std::endl;
+        std::cout << *PC << " " << RF[1] << std::endl;
 		Fetch(CIR, *PC, INSTR); //From memory to CIR in RF
 
 		decoded = Decode(*CIR); //Inspect CIR and determine opcode, r, a1, a2, 
 
-        Execute(decoded.opcode, decoded.r, decoded.a1, decoded.a2, RF, MEM, PC, *target_addr, &finished);
+        Execute(decoded.opcode, decoded.r, decoded.a1, decoded.a2, RF, MEM, PC, *lr, &finished);
 		
         instructions++;
 		cycles += 3;
@@ -158,5 +209,5 @@ int main(int argc, char *argv[]) {
             std::cout << "m" << i << ": " << MEM[i] << std::endl;
         }
     }
-    std::cout << "Cycles: " << cycles + 1 << std::endl;
+    std::cout << "Cycles: " << cycles << std::endl;
 }
