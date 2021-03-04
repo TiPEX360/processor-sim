@@ -4,7 +4,14 @@
 #include <iostream>
 #include <iomanip>
 
-enum opcode {ADD, ADDI, MUL, SUB, LDM, LDC, STM, BLT, BNZ, B, HALT};
+enum opcode {
+            ADD, ADDC, MUL, SUB, DIV, 
+            LSH, RSH, AND, OR, XOR,
+            LDM, LDC, STM, STMC, 
+            BLT, BNZ, B, 
+            CMP, 
+            HALT
+            };
 
 
 std::vector<std::string> split(const std::string &line, char delimiter) {
@@ -35,22 +42,37 @@ int main(int argc, char *argv[]) {
         char instr[4] = {0x00, 0x00, 0x00, 0x00};
 
         std::vector<std::string> tokens = split(line, ' ');
-
+        
         if(tokens[0].compare("add") == 0) instr[0] = ADD;
-        else if(tokens[0].compare("addi") == 0) instr[0] = ADDI;
+        else if(tokens[0].compare("addc") == 0) instr[0] = ADDC;
         else if(tokens[0].compare("mul") == 0) instr[0] = MUL;
         else if(tokens[0].compare("sub") == 0) instr[0] = SUB;
+        else if(tokens[0].compare("div") == 0) instr[0] = DIV;
+        else if(tokens[0].compare("lsh") == 0) instr[0] = LSH;
+        else if(tokens[0].compare("rsh") == 0) instr[0] = RSH;
+        else if(tokens[0].compare("and") == 0) instr[0] = AND;
+        else if(tokens[0].compare("or") == 0) instr[0] = OR;
+        else if(tokens[0].compare("xor") == 0) instr[0] = XOR;
         else if(tokens[0].compare("ldm") == 0) instr[0] = LDM;
-        else if(tokens[0].compare("ldm") == 0) instr[0] = LDC;
+        else if(tokens[0].compare("ldc") == 0) instr[0] = LDC;
         else if(tokens[0].compare("stm") == 0) instr[0] = STM;
+        else if(tokens[0].compare("stmc") == 0) instr[0] = STMC;
         else if(tokens[0].compare("blt") == 0) instr[0] = BLT;
         else if(tokens[0].compare("bnz") == 0) instr[0] = BNZ;
         else if(tokens[0].compare("b") == 0) instr[0] = B;
+        else if(tokens[0].compare("cmp") == 0) instr[0] = CMP;
         else if(tokens[0].compare("halt") == 0) instr[0] = HALT;
-        else if(tokens[0].compare("") == 0 ) continue;
-
-        for(int i = 1; i < tokens.size(); i++) {
-            instr[i] = atoi(tokens[i].c_str());
+        else continue;
+                
+        bool comment = false;
+        for(int i = 1; i < tokens.size() && !comment && tokens[i].size() > 0; i++) {
+            if(tokens[i][0] == '/') comment = true;
+            else {
+                if(tokens[i].compare("lr") == 0) instr[i] = (char)29;
+                else if(tokens[i].compare("cir") == 0) instr[i] = (char)30;
+                else if(tokens[i].compare("pc") == 0) instr[i] = (char)31;
+                else instr[i] = atoi(tokens[i].substr(1, tokens.size() - 2).c_str());
+            }
         }
 
         out.write((char *)instr, sizeof(char)*4);
