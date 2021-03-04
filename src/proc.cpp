@@ -106,7 +106,6 @@ int Execute(int opcode, int r, int a1, int a2, int *RF, int* MEM, int *PC, int t
             else (*PC)++;
             break;
 		case JNZ:
-            std::cout << a1 << "moo" << std::endl;
 			if (RF[a1] != 0) (*PC) += r;
             else (*PC)++;
             break;
@@ -186,7 +185,7 @@ int main(int argc, char *argv[]) {
     if(argc > 1) loadProgram(argv[1], INSTR); 
 	
     while(!finished) {
-        std::cout << *PC << " " << RF[1] << std::endl;
+        // std::cout << *PC << " " << RF[1] << std::endl;
 		Fetch(CIR, *PC, INSTR); //From memory to CIR in RF
 
 		decoded = Decode(*CIR); //Inspect CIR and determine opcode, r, a1, a2, 
