@@ -23,8 +23,8 @@ The processor supports the following instructions:
  ldmc | dest src #offset | Load from memory address stored in register ```src``` offset by immediate ```#offset```. Store in ```dest```.
  ldc | dest #1 | Store the ```#1``` immediate in ```dest``` register.
 stm | src dest1 dest2 | Store the contents of ```src``` in the memory address ```dest1 + dest2```.
-stmc | #src dest1 #dest2 | Like stm but ```#dest2``` is an immediate.
-sto | #dest #src1 #src2 | Like stm but all operands are immediates.
+stmc | src dest1 #offset | Like stm but ```#dest2``` is an immediate.
+sto | #dest #src1 #offset | Like stm but all operands are immediates.
 blt | dest cmp1 cmp2 | Branch to ```dest``` if ```cmp1 < cmp2```.
 bnz | dest cmp1  | Branch to ```dest``` if ```cmp1 != 0```.
 br | dest | Branch to ```dest```.
