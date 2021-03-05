@@ -25,7 +25,7 @@ stmc r3 r1 #0
 
 
 addc r1 r1 #1 //j++
-blt r11 r1 r4
+blt r11 r1 r4 //branch inner loop
 addc r0 r0 #1 //i++
-blt r10 r0 r4
+blt r10 r0 r4 //branch outer loop
 halt

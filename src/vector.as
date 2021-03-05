@@ -14,7 +14,7 @@ ldc r1 #0       //&a[0]
 ldc r2 #5       //&b[0]
 ldc r3 #10      //&c[0]
 
-addc lr pc #1   //lr<-pc+1 // could be issue here
+addc lr pc #1   //lr<-pc+1
 ldm r4 r1 r0    //r4 <- a[i]
 ldm r5 r2 r0    //r5 <- b[i]
 add r6 r4 r5    // r6 <- r4 + r5
