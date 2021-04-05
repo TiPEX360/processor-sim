@@ -19,5 +19,5 @@ enum addrMode {
 
 struct Instr {
     opcode opcode;
-    std::array<std::pair<char, addrMode>, 3> operands;
+    std::array<std::pair<unsigned char, addrMode>, 3> operands;
 };

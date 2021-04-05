@@ -11,7 +11,7 @@ int ExecutionUnit::execute(Instr instr) {
     int error = 0;
     //Retrieve o1 and o2
     for(int i = 1; i < 3; i++) {
-        if(instr.operands[i].second == REGISTER) instr.operands[i] = std::pair<char, addrMode>(RF[instr.operands[i].first], IMMEDIATE);
+        if(instr.operands[i].second == REGISTER) instr.operands[i] = std::pair<unsigned char, addrMode>(RF[instr.operands[i].first], IMMEDIATE);
     }
     int r = instr.operands[0].first;
     int o1 = instr.operands[1].first;
