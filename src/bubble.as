@@ -7,7 +7,7 @@ st #32 #5
 st #22 #6
 st #43 #7
 st #3 #8
-st #60 #9
+st #127 #9
 
 ldc r0 #0 //i
 ldc r4 #9 //size - 1

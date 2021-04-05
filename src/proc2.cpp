@@ -27,7 +27,7 @@ void loadProgram(const char *path, Instr *INSTR) {
         
         Instr instr;
         for(int i = 0; i < 3; i++) {
-            instr.operands[i] = std::pair<signed char, addrMode>(0, IMMEDIATE);
+            instr.operands[i] = std::pair<char, addrMode>(0, IMMEDIATE);
         }
 
         std::vector<std::string> tokens = split(line, ' ');
@@ -58,11 +58,11 @@ void loadProgram(const char *path, Instr *INSTR) {
         for(int i = 1; i < tokens.size() && !comment && tokens[i].size() > 0; i++) {
             if(tokens[i][0] == '/') comment = true;
             else {
-                std::string numberPart = tokens[i].substr(1, tokens.size() - 1);
-                if(tokens[i].compare("lr") == 0) instr.operands[i - 1] = std::pair<signed char, addrMode>(29, REGISTER);
-                else if(tokens[i].compare("pc") == 0) instr.operands[i - 1] = std::pair<signed char, addrMode>(30, REGISTER);
-                else if(tokens[i][0] == 'r') instr.operands[i - 1] = std::pair<signed char, addrMode>(atoi(numberPart.c_str()), REGISTER);
-                else if(tokens[i][0] == '#') instr.operands[i - 1] = std::pair<signed char, addrMode>(atoi(numberPart.c_str()), IMMEDIATE);
+                std::string numberPart = tokens[i].substr(1, tokens[i].size() - 1);
+                if(tokens[i].compare("lr") == 0) instr.operands[i - 1] = std::pair<char, addrMode>(29, REGISTER);
+                else if(tokens[i].compare("pc") == 0) instr.operands[i - 1] = std::pair<char, addrMode>(30, REGISTER);
+                else if(tokens[i][0] == 'r') instr.operands[i - 1] = std::pair<char, addrMode>(atoi(numberPart.c_str()), REGISTER);
+                else if(tokens[i][0] == '#') instr.operands[i - 1] = std::pair<char, addrMode>(atoi(numberPart.c_str()), IMMEDIATE);
             }
         }
 
