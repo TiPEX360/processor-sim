@@ -75,8 +75,7 @@ int main(int argc, char *argv[]) {
             if(tokens[i][0] == '/') comment = true;
             else {
                 if(tokens[i].compare("lr") == 0) instr[i] = (char)29;
-                else if(tokens[i].compare("cir") == 0) instr[i] = (char)30;
-                else if(tokens[i].compare("pc") == 0) instr[i] = (char)31;
+                else if(tokens[i].compare("pc") == 0) instr[i] = (char)30;
                 else instr[i] = atoi(tokens[i].substr(1, tokens.size() - 2).c_str());
             }
         }
