@@ -2,6 +2,7 @@
 #include <array>
 
 enum opcode {
+    NOP,
     ADD,  MUL, SUB, DIV,
     LSH, RSH, AND, OR, XOR,
     LD, LDC, ST, STC,

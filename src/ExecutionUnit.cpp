@@ -19,6 +19,9 @@ int ExecutionUnit::execute(Instr instr) {
 
 
     switch(instr.opcode) {
+        case NOP:
+            (*pc)++;
+            break;
         case ADD:
             RF[Rd] = Rn + Ri;
             (*pc)++;
@@ -60,7 +63,7 @@ int ExecutionUnit::execute(Instr instr) {
             (*pc)++;
             break;
         case LDC:
-            RF[Rd] = Rn + Ri;
+            RF[Rd] = Ri;
             (*pc)++;
             break;
         case ST:
@@ -72,11 +75,11 @@ int ExecutionUnit::execute(Instr instr) {
             (*pc)++;
             break;
         case BLT:
-            if (Rn < Ri) *pc = RF[Rd];
+            if (RF[Rn] < Ri) *pc = RF[Rd];
             else (*pc)++;
             break;
         case BNZ:
-            if (Rn != 0) *pc = RF[Rd];
+            if (Ri != 0) *pc = RF[Rd];
             else (*pc)++;
             break;
         case B:
@@ -90,7 +93,7 @@ int ExecutionUnit::execute(Instr instr) {
             else (*pc)++;
             break;
         case JNZ:
-            if(RF[Rn] != 0) (*pc) += Rd;
+            if(Ri != 0) (*pc) += Rd;
             else (*pc)++;
             break;
         case CMP:

@@ -65,16 +65,17 @@ void loadProgram(const char *path, Instr *INSTR) {
         else continue;
 
         //Assign operands
-
-        instr.Rd = atoi(tokens[1].substr(1, tokens[1].size() - 1).c_str());
-        if(tokens.size() == 3) {
-            if(tokens[2][0] == '#') instr.immediate = true;
-            instr.Ri = atoi(tokens[2].substr(1, tokens[2].size() - 1).c_str());
-        }
-        else if(tokens.size() == 4) {
-            instr.Rn = atoi(tokens[1].substr(1, tokens[2].size() - 1).c_str());
-            if(tokens[3][0] == '#') instr.immediate = true;
-            instr.Ri = atoi(tokens[3].substr(1, tokens[3].size() - 1).c_str());
+        if(tokens.size() > 1) {
+            instr.Rd = atoi(tokens[1].substr(1, tokens[1].size() - 1).c_str());
+            if(tokens.size() == 3) {
+                if(tokens[2][0] == '#') instr.immediate = true;
+                instr.Ri = atoi(tokens[2].substr(1, tokens[2].size() - 1).c_str());
+            }
+            else if(tokens.size() == 4) {
+                instr.Rn = atoi(tokens[1].substr(1, tokens[2].size() - 1).c_str());
+                if(tokens[3][0] == '#') instr.immediate = true;
+                instr.Ri = atoi(tokens[3].substr(1, tokens[3].size() - 1).c_str());
+            }
         }
 
 
