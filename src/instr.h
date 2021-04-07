@@ -4,7 +4,7 @@
 enum opcode {
     ADD,  MUL, SUB, DIV,
     LSH, RSH, AND, OR, XOR,
-    LD, LDC, ST, 
+    LD, LDC, ST, STC,
     BLT, BNZ, B, 
     J, JLT, JNZ,
     CMP, 
@@ -19,5 +19,8 @@ enum addrMode {
 
 struct Instr {
     opcode opcode;
-    std::array<std::pair<unsigned char, addrMode>, 3> operands;
+    unsigned char Rd;
+    unsigned char Rn;
+    signed int Ri : 10; 
+    bool immediate;
 };

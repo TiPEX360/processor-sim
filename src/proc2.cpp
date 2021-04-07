@@ -26,12 +26,21 @@ void loadProgram(const char *path, Instr *INSTR) {
     while(std::getline(in, line)) {
         
         Instr instr;
-        for(int i = 0; i < 3; i++) {
-            instr.operands[i] = std::pair<unsigned char, addrMode>(0, IMMEDIATE);
-        }
+        instr.Rd = 0;
+        instr.Rn = 0;
+        instr.Ri = 0;
+        instr.immediate = false;
 
         std::vector<std::string> tokens = split(line, ' ');
         
+        //Remove comments
+        for(int i = 0; i < tokens.size(); i++) {
+            if(tokens[i][0] == '/') {
+                tokens.assign(tokens.begin(), tokens.begin() + i);
+            }
+        }
+
+        //Assign opcode
         if(tokens[0].compare("add") == 0) instr.opcode = ADD;
         else if(tokens[0].compare("mul") == 0) instr.opcode = MUL;
         else if(tokens[0].compare("sub") == 0) instr.opcode = SUB;
@@ -44,6 +53,7 @@ void loadProgram(const char *path, Instr *INSTR) {
         else if(tokens[0].compare("ld") == 0) instr.opcode = LD;
         else if(tokens[0].compare("ldc") == 0) instr.opcode = LDC;
         else if(tokens[0].compare("st") == 0) instr.opcode = ST;
+        else if(tokens[0].compare("stc") == 0) instr.opcode = STC;
         else if(tokens[0].compare("blt") == 0) instr.opcode = BLT;
         else if(tokens[0].compare("bnz") == 0) instr.opcode = BNZ;
         else if(tokens[0].compare("b") == 0) instr.opcode = B;
@@ -54,17 +64,19 @@ void loadProgram(const char *path, Instr *INSTR) {
         else if(tokens[0].compare("halt") == 0) instr.opcode = HALT;
         else continue;
 
-        bool comment = false;
-        for(int i = 1; i < tokens.size() && !comment && tokens[i].size() > 0; i++) {
-            if(tokens[i][0] == '/') comment = true;
-            else {
-                std::string numberPart = tokens[i].substr(1, tokens[i].size() - 1);
-                if(tokens[i].compare("lr") == 0) instr.operands[i - 1] = std::pair<unsigned char, addrMode>(29, REGISTER);
-                else if(tokens[i].compare("pc") == 0) instr.operands[i - 1] = std::pair<unsigned char, addrMode>(30, REGISTER);
-                else if(tokens[i][0] == 'r') instr.operands[i - 1] = std::pair<unsigned char, addrMode>(atoi(numberPart.c_str()), REGISTER);
-                else if(tokens[i][0] == '#') instr.operands[i - 1] = std::pair<unsigned char, addrMode>(atoi(numberPart.c_str()), IMMEDIATE);
-            }
+        //Assign operands
+
+        instr.Rd = atoi(tokens[1].substr(1, tokens[1].size() - 1).c_str());
+        if(tokens.size() == 3) {
+            if(tokens[2][0] == '#') instr.immediate = true;
+            instr.Ri = atoi(tokens[2].substr(1, tokens[2].size() - 1).c_str());
         }
+        else if(tokens.size() == 4) {
+            instr.Rn = atoi(tokens[1].substr(1, tokens[2].size() - 1).c_str());
+            if(tokens[3][0] == '#') instr.immediate = true;
+            instr.Ri = atoi(tokens[3].substr(1, tokens[3].size() - 1).c_str());
+        }
+
 
         INSTR[instrIndex] = instr;
         instrIndex++;

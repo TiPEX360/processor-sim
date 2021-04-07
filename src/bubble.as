@@ -1,13 +1,12 @@
-st #9 #0
-st #5 #1
-st #3 #2
-st #8 #3
-st #9 #4
-st #32 #5
-st #22 #6
-st #43 #7
-st #3 #8
-st #255 #9
+stc #5 #1
+stc #3 #2
+stc #8 #3
+stc #9 #4
+stc #32 #5
+stc #22 #6
+stc #43 #7
+stc #3 #8
+stc #255 #9
 
 ldc r0 #0 //i
 ldc r4 #9 //size - 1

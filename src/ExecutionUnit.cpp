@@ -9,88 +9,92 @@ ExecutionUnit::ExecutionUnit(bool *halt, int *MEM, int *RF, int *pc) {
 
 int ExecutionUnit::execute(Instr instr) {
     int error = 0;
-    //Retrieve o1 and o2
-    for(int i = 1; i < 3; i++) {
-        if(instr.operands[i].second == REGISTER) instr.operands[i] = std::pair<unsigned char, addrMode>(RF[instr.operands[i].first], IMMEDIATE);
-    }
-    int r = instr.operands[0].first;
-    int o1 = instr.operands[1].first;
-    int o2 = instr.operands[2].first;
+
+    //Retrieve Rn and Ri
+    int Rd = instr.Rd;
+    int Rn = instr.Rn;
+    int Ri;
+    if(instr.immediate) Ri = instr.Ri;
+    else Ri = RF[instr.Ri];
+
 
     switch(instr.opcode) {
         case ADD:
-            RF[r] = o1 + o2;
+            RF[Rd] = Rn + Ri;
             (*pc)++;
             break;
         case MUL:
-            RF[r] = o1 * o2;
+            RF[Rn] = Rn * Ri;
             (*pc)++;
             break;
         case SUB:
-            RF[r] = o1 - o2;
+            RF[Rd] = Rn - Ri;
             (*pc)++;
             break;
         case DIV:
-            RF[r] = o1 / o2;
+            RF[Rd] = Rn / Ri;
             (*pc)++;
             break;
         case LSH:
-            RF[r] = o1 << o2;
+            RF[Rd] = Rn << Ri;
             (*pc)++;
             break;
         case RSH:
-            RF[r] = o1 >> o2;
+            RF[Rd] = Rn >> Ri;
             (*pc)++;
             break;
         case AND:
-            RF[r] = o1 & o2;
+            RF[Rd] = Rn & Ri;
             (*pc)++;
             break;
         case OR:
-            RF[r] = o1 | o2;
+            RF[Rd] = Rn | Ri;
             (*pc)++;
             break;
         case XOR:
-            RF[r] = o1 ^ o2;
+            RF[Rd] = Rn ^ Ri;
             (*pc)++;
             break;
         case LD:
-            RF[r] = MEM[o1 + o2];
+            RF[Rd] = MEM[Rn + Ri];
             (*pc)++;
             break;
         case LDC:
-            RF[r] = o1 + o2;
+            RF[Rd] = Rn + Ri;
             (*pc)++;
             break;
         case ST:
-            if(instr.operands[0].second == IMMEDIATE) MEM[o1 + o2] = r;
-            else MEM[o1 + o2] = RF[r];
+            MEM[Rn + Ri] = RF[Rd];
+            (*pc)++;
+            break;
+        case STC:
+            MEM[Rn + Ri] = Rd;
             (*pc)++;
             break;
         case BLT:
-            if (o1 < o2) *pc = RF[r];
+            if (Rn < Ri) *pc = RF[Rd];
             else (*pc)++;
             break;
         case BNZ:
-            if (o1 != 0) *pc = RF[r];
+            if (Rn != 0) *pc = RF[Rd];
             else (*pc)++;
             break;
         case B:
-            *pc = RF[r];
+            *pc = RF[Rd];
             break;
         case J:
-            (*pc) += r;
+            (*pc) += Rd;
             break;
         case JLT:
-            if(o1 < o2) (*pc) += r;
+            if(RF[Rn] < Ri) (*pc) += Rd;
             else (*pc)++;
             break;
         case JNZ:
-            if(o1 != 0) (*pc) += r;
+            if(RF[Rn] != 0) (*pc) += Rd;
             else (*pc)++;
             break;
         case CMP:
-            RF[r] = std::max(-1, std::min(o1 - o2, 1));
+            RF[Rd] = std::max(-1, std::min(RF[Rn] - Ri, 1));
             (*pc)++;
             break;
         case HALT:
