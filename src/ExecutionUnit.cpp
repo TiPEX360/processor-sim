@@ -23,43 +23,43 @@ int ExecutionUnit::execute(Instr instr) {
             (*pc)++;
             break;
         case ADD:
-            RF[Rd] = Rn + Ri;
+            RF[Rd] = RF[Rn] + Ri;
             (*pc)++;
             break;
         case MUL:
-            RF[Rn] = Rn * Ri;
+            RF[Rn] = RF[Rn] * Ri;
             (*pc)++;
             break;
         case SUB:
-            RF[Rd] = Rn - Ri;
+            RF[Rd] = RF[Rn] - Ri;
             (*pc)++;
             break;
         case DIV:
-            RF[Rd] = Rn / Ri;
+            RF[Rd] = RF[Rn] / Ri;
             (*pc)++;
             break;
         case LSH:
-            RF[Rd] = Rn << Ri;
+            RF[Rd] = RF[Rn] << Ri;
             (*pc)++;
             break;
         case RSH:
-            RF[Rd] = Rn >> Ri;
+            RF[Rd] = RF[Rn] >> Ri;
             (*pc)++;
             break;
         case AND:
-            RF[Rd] = Rn & Ri;
+            RF[Rd] = RF[Rn] & Ri;
             (*pc)++;
             break;
         case OR:
-            RF[Rd] = Rn | Ri;
+            RF[Rd] = RF[Rn] | Ri;
             (*pc)++;
             break;
         case XOR:
-            RF[Rd] = Rn ^ Ri;
+            RF[Rd] = RF[Rn] ^ Ri;
             (*pc)++;
             break;
         case LD:
-            RF[Rd] = MEM[Rn + Ri];
+            RF[Rd] = MEM[RF[Rn] + Ri];
             (*pc)++;
             break;
         case LDC:
@@ -67,11 +67,11 @@ int ExecutionUnit::execute(Instr instr) {
             (*pc)++;
             break;
         case ST:
-            MEM[Rn + Ri] = RF[Rd];
+            MEM[RF[Rn] + Ri] = RF[Rd];
             (*pc)++;
             break;
         case STC:
-            MEM[Rn + Ri] = Rd;
+            MEM[Ri] = Rd;
             (*pc)++;
             break;
         case BLT:

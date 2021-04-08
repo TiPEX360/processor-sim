@@ -6,7 +6,7 @@ stc #32 #5
 stc #22 #6
 stc #43 #7
 stc #3 #8
-stc #255 #9
+stc #25 #9
 
 ldc r0 #0 //i
 ldc r4 #9 //size - 1
