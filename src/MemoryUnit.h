@@ -1,5 +1,6 @@
+#pragma once
 #include "instr.h"
-#include "registers.h"
+#include "PipelineRegister.h"
 
 class MemoryUnit {
 private:

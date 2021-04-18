@@ -16,8 +16,10 @@ int FetchUnit::fetch() {
             *pc = exmem->ALUOut;
         } else {
             ifid->npc = *pc++;
-            *pc++;
+            (*pc)++;
         }
+
+        ifid->active = true;
     } 
     else {
         std::cout << "Error: PC out of Memory range: " << *pc << std::endl;

@@ -19,5 +19,8 @@ int DecodeUnit::decode() {
     if(i.immediate) idex->Ri = i.Ri;
     else idex->Ri = RF[i.Ri];
 
+    ifid->active = false;
+    idex->active = true;
+
     return 0;
 }

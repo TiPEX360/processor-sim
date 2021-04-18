@@ -7,7 +7,6 @@
 #include "ExecutionUnit.h"
 #include "MemoryUnit.h"
 #include "WriteBackUnit.h"
-#include "registers.h"
 
 std::vector<std::string> split(const std::string &line, char delimiter) {
 	std::string haystack = line;
@@ -129,10 +128,10 @@ int main(int argc, char *argv[]) {
     Instr *cir = new Instr; //RF[31]
 
     //Units
-    PipelineRegister ifid;
-    PipelineRegister idex;
-    PipelineRegister exmem;
-    PipelineRegister memwb;
+    PipelineRegister ifid = PipelineRegister();
+    PipelineRegister idex = PipelineRegister();
+    PipelineRegister exmem = PipelineRegister();
+    PipelineRegister memwb = PipelineRegister();
     FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
     DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
     ExecutionUnit executionUnit(&halt, &idex, &exmem);
@@ -150,12 +149,12 @@ int main(int argc, char *argv[]) {
     
     while(!halt) {
         // tick(cir);
-        writeBackUnit.wb();
-        memoryUnit.memory();
-        executionUnit.execute();
-        decodeUnit.decode();
+        if(memwb.active) writeBackUnit.wb();
+        if(exmem.active) memoryUnit.memory();
+        if(idex.active) executionUnit.execute();
+        if(ifid.active) decodeUnit.decode();
         fetchUnit.fetch();
-        cycles += 3;
+        cycles ++;
     }
 
     for(int i = 0; i < 1024; i++) {

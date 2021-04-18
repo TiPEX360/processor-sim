@@ -111,5 +111,10 @@ int ExecutionUnit::execute() {
     }
 
     exmem->ALUOut = out;
+
+    idex->active = false;
+    exmem->active = true;
+
+
     return 0;
 }

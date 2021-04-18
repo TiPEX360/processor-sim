@@ -1,7 +1,7 @@
 #pragma once
 #include "instr.h"
 #include <iostream>
-#include "registers.h"
+#include "PipelineRegister.h"
 
 class ExecutionUnit {
 private: 
