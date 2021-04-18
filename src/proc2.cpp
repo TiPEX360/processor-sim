@@ -121,6 +121,12 @@ int main(int argc, char *argv[]) {
     int32_t RF[31];
     int32_t MEM[1024];
     Instr INSTR[512];
+    for(int i = 0; i < 31; i++) {
+        RF[i] = 0;
+    }
+    for(int i = 0; i < 1024; i++) {
+        MEM[i] = 0;
+    }
 
     //Special purpose register pointers
     int *lr = &RF[29];
@@ -132,6 +138,7 @@ int main(int argc, char *argv[]) {
     PipelineRegister idex = PipelineRegister();
     PipelineRegister exmem = PipelineRegister();
     PipelineRegister memwb = PipelineRegister();
+    std::cout << pc << std::endl;
     FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
     DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
     ExecutionUnit executionUnit(&halt, &idex, &exmem);
@@ -146,14 +153,15 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < 1024; i++) {
         MEM[i] = 0;
     }
-    
+
     while(!halt) {
         // tick(cir);
         if(memwb.active) writeBackUnit.wb();
         if(exmem.active) memoryUnit.memory();
         if(idex.active) executionUnit.execute();
-        if(ifid.active) decodeUnit.decode();
-        fetchUnit.fetch();
+        if(ifid.active && !halt) decodeUnit.decode();
+        if(!halt) fetchUnit.fetch();
+        // if((*pc) != 0 ) std::cout << *pc << std::endl;
         cycles ++;
     }
 

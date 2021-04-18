@@ -8,6 +8,7 @@ ExecutionUnit::ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegiste
 
 int ExecutionUnit::execute() {
     (*exmem) = (*idex);
+    exmem->active = false;
 
     int error = 0;
     opcode opcode = idex->cir.opcode;
@@ -19,6 +20,7 @@ int ExecutionUnit::execute() {
 
 
     switch(opcode) {
+        case NOP:
             break;
         case ADD:
             out = Rn + Ri;

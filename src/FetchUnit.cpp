@@ -9,13 +9,16 @@ FetchUnit::FetchUnit(int *pc, Instr *INSTR, PipelineRegister *ifid, PipelineRegi
 
 int FetchUnit::fetch() {
     int error = 0;
-    if(*pc < 512) {
+    if((*pc) < 512) {
+
         ifid->cir = INSTR[*pc];
         if(exmem->cir.opcode >= BLT && exmem->cir.opcode <= JNZ && exmem->cond) {
             ifid->npc = exmem->ALUOut;
-            *pc = exmem->ALUOut;
+            std::cout << "branch" << *pc << std::endl;
+            (*pc) = exmem->ALUOut;
         } else {
-            ifid->npc = *pc++;
+            std::cout << "next" << *pc << std::endl;
+            ifid->npc = (*pc)++;
             (*pc)++;
         }
 

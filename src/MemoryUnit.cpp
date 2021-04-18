@@ -1,4 +1,5 @@
 #include "MemoryUnit.h"
+#include <iostream>
 
 MemoryUnit::MemoryUnit(int *MEM, PipelineRegister *exmem, PipelineRegister *memwb) {
     MemoryUnit::MEM = MEM;
@@ -9,11 +10,16 @@ MemoryUnit::MemoryUnit(int *MEM, PipelineRegister *exmem, PipelineRegister *memw
 int MemoryUnit::memory() {
     int tick = 0;
     *(memwb) = *(exmem);
+    memwb->active = false;
+
     opcode opcode = exmem->cir.opcode;
     //Load
-    if(opcode >= LD && opcode <= LDC) {
+    if(opcode == LD) {
         memwb->MEMLoadData = MEM[exmem->ALUOut];
         tick++;
+    }
+    else if(opcode == LDC) {
+        memwb->MEMLoadData = exmem->Ri;
     }
     //Store
     else if(opcode == ST) {
@@ -21,7 +27,8 @@ int MemoryUnit::memory() {
         tick++;
     }
     else if(opcode == STC) {
-        MEM[exmem->ALUOut] = exmem->Ri;
+        MEM[exmem->ALUOut] = exmem->Rd;
+        std::cout << exmem->Rd << "->" << exmem->ALUOut << std::endl;
         tick++;
     }
 
