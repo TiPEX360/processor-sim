@@ -5,6 +5,9 @@
 #include "FetchUnit.h"
 #include "DecodeUnit.h"
 #include "ExecutionUnit.h"
+#include "MemoryUnit.h"
+#include "WriteBackUnit.h"
+#include "registers.h"
 
 std::vector<std::string> split(const std::string &line, char delimiter) {
 	std::string haystack = line;
@@ -105,6 +108,12 @@ void loadProgram(const char *path, Instr *INSTR) {
     in.close();
 }
 
+void tick(Instr *cir) {
+//         executionUnit.execute(*cir);
+//         decodeUnit.decode();
+//         fetchUnit.fetch();
+}
+
 int main(int argc, char *argv[]) {
     bool halt = false;
     int cycles = 0;
@@ -118,10 +127,17 @@ int main(int argc, char *argv[]) {
     int *lr = &RF[29];
 	int *pc = &RF[30];
     Instr *cir = new Instr; //RF[31]
+
     //Units
-    FetchUnit fetchUnit(cir, pc, INSTR);
-    DecodeUnit decodeUnit(cir);
-    ExecutionUnit executionUnit(&halt, MEM, RF, pc);
+    PipelineRegister ifid;
+    PipelineRegister idex;
+    PipelineRegister exmem;
+    PipelineRegister memwb;
+    FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
+    DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
+    ExecutionUnit executionUnit(&halt, &idex, &exmem);
+    MemoryUnit memoryUnit(MEM, &exmem, &memwb);
+    WriteBackUnit writeBackUnit(RF, &memwb);
 
     if(argc < 2) {
         std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
@@ -133,14 +149,18 @@ int main(int argc, char *argv[]) {
     }
     
     while(!halt) {
-        fetchUnit.fetch();
+        // tick(cir);
+        writeBackUnit.wb();
+        memoryUnit.memory();
+        executionUnit.execute();
         decodeUnit.decode();
-        executionUnit.execute(*cir);
+        fetchUnit.fetch();
         cycles += 3;
     }
 
     for(int i = 0; i < 1024; i++) {
         if (MEM[i] != 0) std::cout << MEM[i] << std::endl;
     }
+    std::cout << "Cycles: " << cycles << std::endl;
     return 0;
 }

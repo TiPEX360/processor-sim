@@ -1,12 +1,15 @@
 #include "instr.h"
 #include <iostream>
+#include "registers.h"
 
 class FetchUnit {
 private:
-    Instr *cir;
     int *pc;
     Instr *INSTR;
+    PipelineRegister *ifid;
+    PipelineRegister *exmem;
+
 public:
-    FetchUnit(Instr *cir, int *pc, Instr *INSTR);
+    FetchUnit(int *pc, Instr *INSTR, PipelineRegister *ifid, PipelineRegister *exmem);
     int fetch();
 };

@@ -1,16 +1,16 @@
 #pragma once
 #include "instr.h"
 #include <iostream>
+#include "registers.h"
 
 class ExecutionUnit {
 private: 
-    int *MEM;
-    int *RF;
-    int *pc;
     bool *halt;
+    PipelineRegister *idex;
+    PipelineRegister *exmem;
 
 public:
-    ExecutionUnit(bool *halt, int *MEM, int *RF, int *pc);
+    ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegister *exmem);
 
-    int execute(Instr instr);
+    int execute();
 };

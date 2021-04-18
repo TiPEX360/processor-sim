@@ -1,113 +1,115 @@
 #include "ExecutionUnit.h"
 
-ExecutionUnit::ExecutionUnit(bool *halt, int *MEM, int *RF, int *pc) {
-    ExecutionUnit::MEM = MEM;
-    ExecutionUnit::RF = RF;
-    ExecutionUnit::pc = pc;
+ExecutionUnit::ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegister *exmem) {
     ExecutionUnit::halt = halt;
+    ExecutionUnit::idex = idex;
+    ExecutionUnit::exmem = exmem;
 }
 
-int ExecutionUnit::execute(Instr instr) {
+int ExecutionUnit::execute() {
+    (*exmem) = (*idex);
+
     int error = 0;
-
-    //Retrieve Rn and Ri
-    int Rd = instr.Rd;
-    int Rn = instr.Rn;
-    int Ri;
-    if(instr.immediate) Ri = instr.Ri;
-    else Ri = RF[instr.Ri];
+    opcode opcode = idex->cir.opcode;
+    int Rn = idex->Rn;
+    int Rd = idex->Rd;
+    int Ri = idex->Ri;
+    int out;
 
 
-    switch(instr.opcode) {
-        case NOP:
-            (*pc)++;
+
+    switch(opcode) {
             break;
         case ADD:
-            RF[Rd] = RF[Rn] + Ri;
-            (*pc)++;
+            out = Rn + Ri;
             break;
         case MUL:
-            RF[Rn] = RF[Rn] * Ri;
-            (*pc)++;
+            out = Rn * Ri;
             break;
         case SUB:
-            RF[Rd] = RF[Rn] - Ri;
-            (*pc)++;
+            out = Rn - Ri;
             break;
         case DIV:
-            RF[Rd] = RF[Rn] / Ri;
-            (*pc)++;
+            out = Rn / Ri;
             break;
         case LSH:
-            RF[Rd] = RF[Rn] << Ri;
-            (*pc)++;
+            out = Rn << Ri;
             break;
         case RSH:
-            RF[Rd] = RF[Rn] >> Ri;
-            (*pc)++;
+            out = Rn >> Ri;
             break;
         case AND:
-            RF[Rd] = RF[Rn] & Ri;
-            (*pc)++;
+            out = Rn & Ri;
             break;
         case OR:
-            RF[Rd] = RF[Rn] | Ri;
-            (*pc)++;
+            out = Rn | Ri;
             break;
         case XOR:
-            RF[Rd] = RF[Rn] ^ Ri;
-            (*pc)++;
+            out = Rn ^ Ri;
             break;
         case LD:
-            RF[Rd] = MEM[RF[Rn] + Ri];
-            (*pc)++;
+            // RF[Rd] = MEM[RF[Rn] + Ri];
+            // (*pc)++;
+            out = Rn + Ri;
             break;
         case LDC:
-            RF[Rd] = Ri;
-            (*pc)++;
+            // RF[Rd] = Ri;
+            out = Ri;
+            // (*pc)++;
             break;
         case ST:
-            MEM[RF[Rn] + Ri] = RF[Rd];
-            (*pc)++;
+            // MEM[RF[Rn] + Ri] = RF[Rd];
+            out = Rn + Ri;       
             break;
         case STC:
-            MEM[Ri] = Rd;
-            (*pc)++;
+            // MEM[Ri] = Rd;
+            out = Ri;
             break;
         case BLT:
-            if (RF[Rn] < Ri) *pc = RF[Rd];
-            else (*pc)++;
+            // if (RF[Rn] < Ri) *pc = RF[Rd];
+            // else 
+            exmem->cond = (Rn < Ri);
+            out = Rd;
             break;
         case BNZ:
-            if (Ri != 0) *pc = RF[Rd];
-            else (*pc)++;
+            // if (Ri != 0) *pc = RF[Rd];
+            // else 
+            exmem->cond = (Rn != 0);
+            out = Rd;
             break;
         case B:
-            *pc = RF[Rd];
+            exmem->cond = true;
+            out = Rd;
             break;
         case J:
-            (*pc) += Rd;
+            exmem->cond = true;
+            out = (idex->npc) + Rd;
             break;
         case JLT:
-            if(RF[Rn] < Ri) (*pc) += Rd;
-            else (*pc)++;
+            // if(RF[Rn] < Ri) (*pc) += Rd;
+            // else 
+            exmem->cond = (Rn < Ri);
+            out = (idex->npc) + Rd;
             break;
         case JNZ:
-            if(Ri != 0) (*pc) += Rd;
-            else (*pc)++;
+            // if(Ri != 0) (*pc) += Rd;
+            // break;
+            exmem->cond = (Rn != 0);
+            out = (idex->npc) + Rd;
             break;
         case CMP:
-            RF[Rd] = std::max(-1, std::min(RF[Rn] - Ri, 1));
-            (*pc)++;
+            // RF[Rd] = std::max(-1, std::min(RF[Rn] - Ri, 1));
+            out = std::max(-1, std::min(Rn - Ri, 1));
             break;
         case HALT:
             *halt = true;
             break;
         default:
-            std::cout << "Error: Opcode not recognised: " << instr.opcode << std::endl;
+            std::cout << "Error: Opcode not recognised: " << opcode << std::endl;
             error = 1;
             break;
     }
 
+    exmem->ALUOut = out;
     return 0;
 }
