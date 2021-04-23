@@ -9,7 +9,7 @@ ExecutionUnit::ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegiste
 int ExecutionUnit::execute() {
     (*exmem) = (*idex);
     exmem->active = false;
-
+    exmem->cond = false;
     int error = 0;
     opcode opcode = idex->cir.opcode;
     int Rn = idex->Rn;
@@ -92,6 +92,7 @@ int ExecutionUnit::execute() {
             // else 
             exmem->cond = (Rn < Ri);
             out = (idex->npc) + Rd;
+            std::cout << "JLT" << idex->Rd << idex->Rn << idex->Ri << " " << exmem->cond << " " << out << std::endl;
             break;
         case JNZ:
             // if(Ri != 0) (*pc) += Rd;

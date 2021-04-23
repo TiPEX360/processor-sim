@@ -9,16 +9,13 @@ WriteBackUnit::WriteBackUnit(int *RF, PipelineRegister *memwb) {
 int WriteBackUnit::wb() {
     int tick = 0;
     opcode opcode = memwb->cir.opcode;
-    std::cout << "WB: " << opcode << std::endl;
-    if(opcode >= ADD && opcode <= XOR) {
+    if(opcode >= ADD && opcode <= XOR || (opcode == CMP)) {
         RF[memwb->Rd] = memwb->ALUOut;
         tick++;
     }
     else if(opcode >= LD && opcode <= LDC) {
-        //NOT HERE FOR LDC >:(
         RF[memwb->Rd] = memwb->MEMLoadData;
-        std::cout << "RF[" << memwb->Rd << "]<-" << memwb->MEMLoadData << std::endl;
-        std::cout << memwb->cir.immediate << std::endl;
+        // std::cout << "MEM" << memwb->Rd << memwb->MEMLoadData << std::endl;
         tick++;
     }
     

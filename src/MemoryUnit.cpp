@@ -20,6 +20,7 @@ int MemoryUnit::memory() {
     }
     else if(opcode == LDC) {
         memwb->MEMLoadData = exmem->Ri;
+
     }
     //Store
     else if(opcode == ST) {
@@ -28,7 +29,6 @@ int MemoryUnit::memory() {
     }
     else if(opcode == STC) {
         MEM[exmem->ALUOut] = exmem->Rd;
-        std::cout << exmem->Rd << "->" << exmem->ALUOut << std::endl;
         tick++;
     }
 

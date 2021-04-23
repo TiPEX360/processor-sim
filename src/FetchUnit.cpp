@@ -10,17 +10,18 @@ FetchUnit::FetchUnit(int *pc, Instr *INSTR, PipelineRegister *ifid, PipelineRegi
 int FetchUnit::fetch() {
     int error = 0;
     if((*pc) < 512) {
-
-        ifid->cir = INSTR[*pc];
-        if(exmem->cir.opcode >= BLT && exmem->cir.opcode <= JNZ && exmem->cond) {
-            ifid->npc = exmem->ALUOut;
-            std::cout << "branch" << *pc << std::endl;
+        if((exmem->cir.opcode >= BLT) && (exmem->cir.opcode <= JNZ) && exmem->cond) {
+            // ifid->cir = INSTR[exmem->ALUOut];
+            // ifid->npc = exmem->ALUOut; //FETCH CORRECT INSTR HERE
             (*pc) = exmem->ALUOut;
-        } else {
-            std::cout << "next" << *pc << std::endl;
-            ifid->npc = (*pc)++;
-            (*pc)++;
         }
+        // } else {
+            ifid->cir = INSTR[*pc];
+            std::cout << "PC: " << *pc << " " << std::endl;
+            ifid->npc = (*pc) + 1;
+            (*pc)++;
+        // }
+        //ORDER OF THESE MIGHT HAVE TO CHANGE WITH PIPELINING
 
         ifid->active = true;
     } 

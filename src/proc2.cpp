@@ -138,7 +138,6 @@ int main(int argc, char *argv[]) {
     PipelineRegister idex = PipelineRegister();
     PipelineRegister exmem = PipelineRegister();
     PipelineRegister memwb = PipelineRegister();
-    std::cout << pc << std::endl;
     FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
     DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
     ExecutionUnit executionUnit(&halt, &idex, &exmem);
@@ -156,13 +155,14 @@ int main(int argc, char *argv[]) {
 
     while(!halt) {
         // tick(cir);
-        if(memwb.active) writeBackUnit.wb();
-        if(exmem.active) memoryUnit.memory();
-        if(idex.active) executionUnit.execute();
-        if(ifid.active && !halt) decodeUnit.decode();
+        // std::cout << "PC: " << *pc << " ";
         if(!halt) fetchUnit.fetch();
-        // if((*pc) != 0 ) std::cout << *pc << std::endl;
-        cycles ++;
+        std::cout << ifid.cir.opcode << std::endl;
+        if(ifid.active && !halt) decodeUnit.decode();
+        if(idex.active) executionUnit.execute();
+        if(exmem.active) memoryUnit.memory();
+        if(memwb.active) writeBackUnit.wb();
+        cycles++;
     }
 
     for(int i = 0; i < 1024; i++) {
