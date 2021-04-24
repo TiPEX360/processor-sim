@@ -12,8 +12,8 @@ int ExecutionUnit::execute() {
     exmem->cond = false;
     int error = 0;
     opcode opcode = idex->cir.opcode;
-    int Rn = idex->Rn;
     int Rd = idex->Rd;
+    int Rn = idex->Rn;
     int Ri = idex->Ri;
     int out;
 
@@ -30,9 +30,11 @@ int ExecutionUnit::execute() {
             break;
         case SUB:
             out = Rn - Ri;
+            // std::cout << "Remainder: " << out << "Rd:" << Rd << std::endl;
             break;
         case DIV:
-            out = Rn / Ri;
+            out = (int)(Rn / Ri);
+            std::cout << "Rd " << Rd << " Rn " << Rn << " Ri " << Ri << std::endl;
             break;
         case LSH:
             out = Rn << Ri;
@@ -76,7 +78,7 @@ int ExecutionUnit::execute() {
         case BNZ:
             // if (Ri != 0) *pc = RF[Rd];
             // else 
-            exmem->cond = (Rn != 0);
+            exmem->cond = (Ri != 0);
             out = Rd;
             break;
         case B:
@@ -92,13 +94,14 @@ int ExecutionUnit::execute() {
             // else 
             exmem->cond = (Rn < Ri);
             out = (idex->npc) + Rd;
-            std::cout << "JLT" << idex->Rd << idex->Rn << idex->Ri << " " << exmem->cond << " " << out << std::endl;
+            // std::cout << "JLT" << idex->Rd << idex->Rn << idex->Ri << " " << exmem->cond << " " << out << std::endl;
             break;
         case JNZ:
             // if(Ri != 0) (*pc) += Rd;
             // break;
-            exmem->cond = (Rn != 0);
+            exmem->cond = (Ri != 0);
             out = (idex->npc) + Rd;
+            // std::cout << "JNZ " << idex->Rd << " " << idex->Rn << " " << idex->Ri << std::endl;
             break;
         case CMP:
             // RF[Rd] = std::max(-1, std::min(RF[Rn] - Ri, 1));

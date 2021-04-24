@@ -13,7 +13,9 @@ std::vector<std::string> split(const std::string &line, char delimiter) {
 	std::vector<std::string> tokens;
 	size_t pos;
 	while ((pos = haystack.find(delimiter)) != std::string::npos) {
-		tokens.push_back(haystack.substr(0, pos));
+        if(haystack.substr(0, pos).length() > 0 && haystack.substr(0, pos)[0] != '\0') {
+		    tokens.push_back(haystack.substr(0, pos));
+        }
 		haystack.erase(0, pos + 1);
 	}
 	// Push the remaining chars onto the vector
@@ -47,6 +49,8 @@ void loadProgram(const char *path, Instr *INSTR) {
         }   
         std::vector<std::string> tokens = split(line, ' ');
         
+        //Remove empty tokens
+
         //Replace tokens
         for(int i = 0; i < tokens.size(); i++) {
             if(tokens[i].compare("lr") == 0) tokens[i] = "r29";
@@ -141,7 +145,7 @@ int main(int argc, char *argv[]) {
     FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
     DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
     ExecutionUnit executionUnit(&halt, &idex, &exmem);
-    MemoryUnit memoryUnit(MEM, &exmem, &memwb);
+    MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);
     WriteBackUnit writeBackUnit(RF, &memwb);
 
     if(argc < 2) {
@@ -157,7 +161,6 @@ int main(int argc, char *argv[]) {
         // tick(cir);
         // std::cout << "PC: " << *pc << " ";
         if(!halt) fetchUnit.fetch();
-        std::cout << ifid.cir.opcode << std::endl;
         if(ifid.active && !halt) decodeUnit.decode();
         if(idex.active) executionUnit.execute();
         if(exmem.active) memoryUnit.memory();
@@ -168,6 +171,10 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < 1024; i++) {
         if (MEM[i] != 0) std::cout << MEM[i] << std::endl;
     }
+
+    // for(int i = 0; i < 512; i++) {
+    //     if (INSTR[i].opcode != 0) std::cout << INSTR[i].opcode << std::endl;
+    // }
     std::cout << "Cycles: " << cycles << std::endl;
     return 0;
 }

@@ -28,7 +28,10 @@ public:
     
     PipelineRegister() {
         active = false;
-        Rd, Rn, Ri, npc = 0;
+        Rd = 0;
+        Rn = 0;
+        Ri = 0;
+        npc = 0;
         cir = {NOP, 0, 0, 0, false};
         ALUOut = 0;
         MEMLoadData = 0;

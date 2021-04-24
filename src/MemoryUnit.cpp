@@ -1,10 +1,11 @@
 #include "MemoryUnit.h"
 #include <iostream>
 
-MemoryUnit::MemoryUnit(int *MEM, PipelineRegister *exmem, PipelineRegister *memwb) {
+MemoryUnit::MemoryUnit(int *pc, int *MEM, PipelineRegister *exmem, PipelineRegister *memwb) {
     MemoryUnit::MEM = MEM;
     MemoryUnit::exmem = exmem;
     MemoryUnit::memwb = memwb;
+    MemoryUnit::pc = pc;
 }
 
 int MemoryUnit::memory() {
@@ -31,6 +32,11 @@ int MemoryUnit::memory() {
         MEM[exmem->ALUOut] = exmem->Rd;
         tick++;
     }
+    else if((exmem->cir.opcode >= BLT) && (exmem->cir.opcode <= JNZ) && exmem->cond) {
+            // ifid->cir = INSTR[exmem->ALUOut];
+            // ifid->npc = exmem->ALUOut; //FETCH CORRECT INSTR HERE
+            (*pc) = exmem->ALUOut;
+        }
 
     exmem->active = false;
     memwb->active = true;

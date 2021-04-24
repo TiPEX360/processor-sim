@@ -7,7 +7,8 @@ private:
     int *MEM;
     PipelineRegister *exmem;
     PipelineRegister *memwb;
+    int *pc;
 public:
-    MemoryUnit(int *MEM, PipelineRegister *exmem, PipelineRegister *memwb);
+    MemoryUnit(int *pc, int *MEM, PipelineRegister *exmem, PipelineRegister *memwb);
     int memory();
 };
