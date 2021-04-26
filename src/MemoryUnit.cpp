@@ -9,37 +9,32 @@ MemoryUnit::MemoryUnit(int *pc, int *MEM, PipelineRegister *exmem, PipelineRegis
 }
 
 int MemoryUnit::memory() {
-    int tick = 0;
-    *(memwb) = *(exmem);
-    memwb->active = false;
 
+    *(memwb) = *(exmem);
     opcode opcode = exmem->cir.opcode;
     //Load
     if(opcode == LD) {
         memwb->MEMLoadData = MEM[exmem->ALUOut];
-        tick++;
     }
     else if(opcode == LDC) {
-        memwb->MEMLoadData = exmem->Ri;
+        memwb->MEMLoadData = exmem->ALUOut;
 
     }
     //Store
     else if(opcode == ST) {
         MEM[exmem->ALUOut] = exmem->Rd;
-        tick++;
     }
     else if(opcode == STC) {
         MEM[exmem->ALUOut] = exmem->Rd;
-        tick++;
     }
-    else if((exmem->cir.opcode >= BLT) && (exmem->cir.opcode <= JNZ) && exmem->cond) {
-            // ifid->cir = INSTR[exmem->ALUOut];
-            // ifid->npc = exmem->ALUOut; //FETCH CORRECT INSTR HERE
-            (*pc) = exmem->ALUOut;
-        }
-
-    exmem->active = false;
+    else if((opcode >= BLT) && (opcode <= JNZ) && exmem->cond) {
+        // ifid->cir = INSTR[exmem->ALUOut];
+        // ifid->npc = exmem->ALUOut; //FETCH CORRECT INSTR HERE
+        (*pc) = exmem->ALUOut;
+    }
+    std::cout << "Memory// Op: " << opcode << " cond: " << exmem->cond << std::endl;
     memwb->active = true;
+    exmem->active = false;
 
     return 0;
 }

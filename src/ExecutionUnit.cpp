@@ -7,9 +7,21 @@ ExecutionUnit::ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegiste
 }
 
 int ExecutionUnit::execute() {
+    
+    if(exmem->cond) {
+        std::cout << "EXEC FLUSH" << std::endl;
+        idex->cond = true;
+
+        exmem->cond = false;
+
+        exmem->active = false;
+        idex->active = false;
+        return 1;
+    }
+    
     (*exmem) = (*idex);
-    exmem->active = false;
-    exmem->cond = false;
+    
+    
     int error = 0;
     opcode opcode = idex->cir.opcode;
     int Rd = idex->Rd;
@@ -30,7 +42,6 @@ int ExecutionUnit::execute() {
             break;
         case SUB:
             out = Rn - Ri;
-            // std::cout << "Remainder: " << out << "Rd:" << Rd << std::endl;
             break;
         case DIV:
             out = (int)(Rn / Ri);
@@ -52,32 +63,22 @@ int ExecutionUnit::execute() {
             out = Rn ^ Ri;
             break;
         case LD:
-            // RF[Rd] = MEM[RF[Rn] + Ri];
-            // (*pc)++;
             out = Rn + Ri;
             break;
         case LDC:
-            // RF[Rd] = Ri;
-            out = Ri;
-            // (*pc)++;
+            out = Ri; //Rd?
             break;
         case ST:
-            // MEM[RF[Rn] + Ri] = RF[Rd];
             out = Rn + Ri;       
             break;
         case STC:
-            // MEM[Ri] = Rd;
             out = Ri;
             break;
         case BLT:
-            // if (RF[Rn] < Ri) *pc = RF[Rd];
-            // else 
             exmem->cond = (Rn < Ri);
             out = Rd;
             break;
         case BNZ:
-            // if (Ri != 0) *pc = RF[Rd];
-            // else 
             exmem->cond = (Ri != 0);
             out = Rd;
             break;
@@ -90,8 +91,6 @@ int ExecutionUnit::execute() {
             out = (idex->npc) + Rd;
             break;
         case JLT:
-            // if(RF[Rn] < Ri) (*pc) += Rd;
-            // else 
             exmem->cond = (Rn < Ri);
             out = (idex->npc) + Rd;
             // std::cout << "JLT" << idex->Rd << idex->Rn << idex->Ri << " " << exmem->cond << " " << out << std::endl;
@@ -101,6 +100,7 @@ int ExecutionUnit::execute() {
             // break;
             exmem->cond = (Ri != 0);
             out = (idex->npc) + Rd;
+            std::cout << "EXEC// " << Ri << " != 0 : " << exmem->cond << std::endl;
             // std::cout << "JNZ " << idex->Rd << " " << idex->Rn << " " << idex->Ri << std::endl;
             break;
         case CMP:
@@ -117,9 +117,9 @@ int ExecutionUnit::execute() {
     }
 
     exmem->ALUOut = out;
-
-    idex->active = false;
+    std::cout << "EXEC// out: " << exmem->ALUOut << std::endl;
     exmem->active = true;
+    idex->active = false;
 
 
     return 0;

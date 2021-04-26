@@ -10,10 +10,10 @@ FetchUnit::FetchUnit(int *pc, Instr *INSTR, PipelineRegister *ifid, PipelineRegi
 int FetchUnit::fetch() {
     int error = 0;
     (*ifid) = PipelineRegister();
-    
+
     if((*pc) < 512) {
         ifid->cir = INSTR[*pc];
-        std::cout << "PC: " << *pc << std::endl;
+        std::cout << "FETCH// PC: " << *pc << std::endl;
         (*pc)++;
         ifid->npc = (*pc);
         //ORDER OF THESE MIGHT HAVE TO CHANGE WITH PIPELINING

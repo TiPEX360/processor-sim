@@ -48,7 +48,10 @@ void loadProgram(const char *path, Instr *INSTR) {
             i++;
         }   
         std::vector<std::string> tokens = split(line, ' ');
-        
+
+        // if(tokens.size() > 0) {
+            // if(tokens[0].compare("jnz") == 0) std::cout << tokens.size() << tokens[0] << tokens[1] << tokens[2] << std::endl;
+        // }
         //Remove empty tokens
 
         //Replace tokens
@@ -98,6 +101,9 @@ void loadProgram(const char *path, Instr *INSTR) {
                 }
             }
 
+            // if(instr.opcode == JNZ) {
+            //     std::cout << (int)instr.Rd << " " << (int)instr.Rn << " " << (int)instr.Ri << std::endl;
+            // }
             
             // std::cout << tokens[0] << " " << (int)instr.immediate << " " << (int)instr.Rd << " " << (int)instr.Rn << " " << (int)instr.Ri << std::endl;
             
@@ -157,14 +163,15 @@ int main(int argc, char *argv[]) {
         MEM[i] = 0;
     }
 
-    while(!halt) {
+    while(memwb.active || exmem.active || idex.active || !halt) {
         // tick(cir);
         // std::cout << "PC: " << *pc << " ";
-        if(!halt) fetchUnit.fetch();
-        if(ifid.active && !halt) decodeUnit.decode();
-        if(idex.active) executionUnit.execute();
-        if(exmem.active) memoryUnit.memory();
+        std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
         if(memwb.active) writeBackUnit.wb();
+        if(exmem.active) memoryUnit.memory();
+        if(idex.active) executionUnit.execute();
+        if(ifid.active && !halt) decodeUnit.decode();
+        if(!halt) fetchUnit.fetch();
         cycles++;
     }
 
