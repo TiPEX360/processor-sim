@@ -164,8 +164,7 @@ int main(int argc, char *argv[]) {
     }
 
     while(memwb.active || exmem.active || idex.active || !halt) {
-        // tick(cir);
-        // std::cout << "PC: " << *pc << " ";
+
         std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
         if(memwb.active) writeBackUnit.wb();
         if(exmem.active) memoryUnit.memory();

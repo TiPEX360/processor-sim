@@ -25,12 +25,12 @@ int DecodeUnit::decode() {
 
     Instr i = ifid->cir;
 
-    std::cout << "DECODE// Rd: " << (int)i.Rd << " Rn: " << (int)i.Rn << " Ri: " << (int)i.Ri << std::endl;
-    if(i.opcode == JNZ) {
-        for(int i = 0; i < 31; i++) {
-            std::cout << "RF[" << i << "] " << RF[i] << std::endl;
-        }
-    }
+    // std::cout << "DECODE// Rd: " << (int)i.Rd << " Rn: " << (int)i.Rn << " Ri: " << (int)i.Ri << std::endl;
+    // if(i.opcode == JNZ) {
+    //     for(int i = 0; i < 31; i++) {
+    //         std::cout << "RF[" << i << "] " << RF[i] << std::endl;
+    //     }
+    // }
 
     //Register fetch
     if((i.opcode == ST) || (i.opcode >= BLT && i.opcode <= B)) idex->Rd = RF[i.Rd];

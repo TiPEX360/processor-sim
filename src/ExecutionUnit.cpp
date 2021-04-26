@@ -9,7 +9,7 @@ ExecutionUnit::ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegiste
 int ExecutionUnit::execute() {
     
     if(exmem->cond) {
-        std::cout << "EXEC FLUSH" << std::endl;
+        // std::cout << "EXEC FLUSH" << std::endl;
         idex->cond = true;
 
         exmem->cond = false;

@@ -13,7 +13,7 @@ int WriteBackUnit::wb() {
     }
     else if(opcode >= LD && opcode <= LDC) {
         RF[memwb->Rd] = memwb->MEMLoadData;
-        std::cout << "RF[" << memwb->Rd << "]<-"<< memwb->MEMLoadData << std::endl;
+        // std::cout << "RF[" << memwb->Rd << "]<-"<< memwb->MEMLoadData << std::endl;
     }
     std::cout << "WB// Op: " << opcode << std::endl;
     memwb->active = false;
