@@ -7,6 +7,9 @@
 #include "ExecutionUnit.h"
 #include "MemoryUnit.h"
 #include "WriteBackUnit.h"
+#include "ReservationStation.h"
+
+const int RS_SIZE = 8;
 
 std::vector<std::string> split(const std::string &line, char delimiter) {
 	std::string haystack = line;
@@ -128,28 +131,40 @@ int main(int argc, char *argv[]) {
     int cycles = 0;
     
     //Buffers
-    int32_t RF[31];
+    Register RF[31];
     int32_t MEM[1024];
     Instr INSTR[512];
     for(int i = 0; i < 31; i++) {
-        RF[i] = 0;
+        RF[i] = (Register){0, -1};
     }
     for(int i = 0; i < 1024; i++) {
         MEM[i] = 0;
     }
 
     //Special purpose register pointers
-    int *lr = &RF[29];
-	int *pc = &RF[30];
+    Register *lr = &RF[29];
+	Register *pc = &RF[30];
     Instr *cir = new Instr; //RF[31]
 
     //Units
     PipelineRegister ifid = PipelineRegister();
+
+    PipelineRegister idrs0 = PipelineRegister();
+    PipelineRegister idrs1 = PipelineRegister();
+    PipelineRegister idrs2 = PipelineRegister();
+    PipelineRegister idrs3 = PipelineRegister();
+
     PipelineRegister idex = PipelineRegister();
     PipelineRegister exmem = PipelineRegister();
     PipelineRegister memwb = PipelineRegister();
     FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
     DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
+
+    ReservationStation RS0 = ReservationStation(RF, &idrs0, RS_SIZE);
+    ReservationStation RS1 = ReservationStation(RF, &idrs1, RS_SIZE);
+    ReservationStation RS2 = ReservationStation(RF, &idrs2, RS_SIZE);
+    ReservationStation RS3 = ReservationStation(RF, &idrs3, RS_SIZE);
+
     ExecutionUnit executionUnit(&halt, &idex, &exmem);
     MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);
     WriteBackUnit writeBackUnit(RF, &memwb);
@@ -163,14 +178,14 @@ int main(int argc, char *argv[]) {
         MEM[i] = 0;
     }
 
-    while(memwb.active || exmem.active || idex.active || !halt) {
+    while(!halt) {
 
         std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
-        if(memwb.active) writeBackUnit.wb();
-        if(exmem.active) memoryUnit.memory();
-        if(idex.active) executionUnit.execute();
-        if(ifid.active && !halt) decodeUnit.decode();
-        if(!halt) fetchUnit.fetch();
+        writeBackUnit.tick();
+        memoryUnit.tick();
+        executionUnit.tick();
+        decodeUnit.tick();
+        fetchUnit.tick();
         cycles++;
     }
 

@@ -12,11 +12,43 @@ enum opcode {
     HALT
 };
 
+
+class PipelineRegister {
+public:
+    bool active;
+    int Rd;
+    int Rn;
+    int Ri;
+    int npc;
+    Instr cir;
+    int ALUOut;
+    int MEMLoadData;
+    bool cond;
+    
+    PipelineRegister() {
+        active = false;
+        Rd = 0;
+        Rn = 0;
+        Ri = 0;
+        npc = 0;
+        cir = {NOP, 0, 0, 0, false};
+        ALUOut = 0;
+        MEMLoadData = 0;
+        cond = false;
+    }
+};
+
+typedef int RSID;
+
 enum addrMode {
     REGISTER,
     IMMEDIATE,
 };
 
+struct Register {
+    int32_t value;
+    int RS;
+};
 
 struct Instr {
     opcode opcode;
