@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <stdint.h>
 
 enum opcode {
     NOP,
@@ -12,6 +13,40 @@ enum opcode {
     HALT
 };
 
+const int RS_COUNT = 4;
+
+typedef int RSID;
+
+enum addrMode {
+    REGISTER,
+    IMMEDIATE,
+};
+
+
+
+struct Register {
+    int32_t value;
+    int RS;
+};
+
+struct Instr {
+    opcode opcode;
+    unsigned char Rd;
+    unsigned char Rn;
+    signed int Ri : 10; 
+    bool immediate;
+    int npc;
+    int RSID;
+};
+
+// struct FetchedInstr : Instr {
+//     int npc;
+// };
+
+
+// struct IssuedInstr : FetchedInstr {
+//     int RSID;
+// };
 
 class PipelineRegister {
 public:
@@ -36,24 +71,4 @@ public:
         MEMLoadData = 0;
         cond = false;
     }
-};
-
-typedef int RSID;
-
-enum addrMode {
-    REGISTER,
-    IMMEDIATE,
-};
-
-struct Register {
-    int32_t value;
-    int RS;
-};
-
-struct Instr {
-    opcode opcode;
-    unsigned char Rd;
-    unsigned char Rn;
-    signed int Ri : 10; 
-    bool immediate;
 };

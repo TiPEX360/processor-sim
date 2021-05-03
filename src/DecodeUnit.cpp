@@ -1,47 +1,97 @@
 #include "DecodeUnit.h"
 #include <iostream>
-DecodeUnit::DecodeUnit(int *RF, Instr* cir, PipelineRegister *ifid, PipelineRegister *idex) {
-    DecodeUnit::cir = cir;
-    DecodeUnit::ifid = ifid;
-    DecodeUnit::idex = idex;
-    DecodeUnit::RF = RF;
-}
 
-int DecodeUnit::decode() {
-    //Copy state
-    if(idex->cond) {
-
-        idex->cond = false;
-
-        idex->active = false;
-        ifid->active = false;
-        return 1;
-    }
-
-    (*idex) = (*ifid);
-
-
-
-
-    Instr i = ifid->cir;
-
-    // std::cout << "DECODE// Rd: " << (int)i.Rd << " Rn: " << (int)i.Rn << " Ri: " << (int)i.Ri << std::endl;
-    // if(i.opcode == JNZ) {
-    //     for(int i = 0; i < 31; i++) {
-    //         std::cout << "RF[" << i << "] " << RF[i] << std::endl;
+void DecodeUnit::tick() {
+    //Try assign current instruction to a reservation station
+    Instr i = currentFetched->front();
+    std::cout << "Issuing: " << i.opcode << std::endl;
+    // bool issued = false;
+    // if(i.instr.opcode == NOP) {
+    //     for(int RS = 0; RS < RS_COUNT; RS++) {
+    //         // IssuedInstr issued = {i, RS};
+    //         current.push_back(issued);
+    //         // idrs[rs].active = true; //handle noops in RS
+    //         // issued = true;
+    //         instrQueue.pop();
     //     }
     // }
+    bool found = false;
+    if(i.opcode >= ADD && i.opcode <= XOR) {
+        for(int RS = 0; RS < RS_COUNT && !found; RS++) {
+            if((*RSs)[RS].type == ALU && (*RSs)[RS].current.size() < RS_SIZE) {
+                // std::queue<InstrData> current;
+                found = true;
+                Instr issued = i;
+                i.RSID = RS;
+                currentIssued.push_back(issued);
+                nextFetched->pop();
+                // idrs[rs].cir = i;
+                // idrs[rs].active = true;
+                // issued = true;
+            }
+        }
+    }
+    else if(i.opcode >= LD && i.opcode <= STC) {
+        for(int RS = 0; RS < RS_COUNT && !found; RS++) {
+            if((*RSs)[RS].type == LDST && (*RSs)[RS].current.size() < RS_SIZE) {
+                found = true;
+                Instr issued = i;
+                i.RSID = RS;
+                currentIssued.push_back(issued);
+                std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
+                nextFetched->pop();
+                std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
+                // idrs[rs].cir = i;
+                // idrs[rs].active = true;
+                // issued = true;
+            }
+        }
+    }
+    else if(i.opcode >= BLT && i.opcode <= JNZ) {
+        for(int RS = 0; RS < RS_COUNT && !found; RS++) {
+            if((*RSs)[RS].type == BRANCH && (*RSs)[RS].current.size() < RS_SIZE) {
+                found = true;
+                Instr issued = i;
+                i.RSID = RS;
+                currentIssued.push_back(issued);
+                nextFetched->pop();
+                // idrs[rs].cir = i;
+                // idrs[rs].active = true;
+                // issued = true;
+            }
+        }
+    }
+    else {
+        //NOP
+        nextFetched->pop();
+    }
 
-    //Register fetch
-    if((i.opcode == ST) || (i.opcode >= BLT && i.opcode <= B)) idex->Rd = RF[i.Rd];
-    else idex->Rd = i.Rd;
-    idex->Rn = RF[i.Rn];
-    if(i.immediate) idex->Ri = i.Ri;
-    else idex->Ri = RF[i.Ri];
-    // std::cout << i.Ri << std::endl;
-    ifid->active = false;
-    idex->active = true;
+    //Take next instruction from fetch queue
+    // if(issued) {
+    //     next.i = instrQueue.front();
+    //     instrQueue.pop();
+    // } else {
+        //block 
+        // instrQueue.pop();
+}
 
-    std::cout << "DECODE// Op: " << idex->cir.opcode << " Rd: " << idex->Rd << " Rn: " << idex->Rn << " Ri: " << idex->Ri << std::endl;
-    return 0;
+
+
+
+void DecodeUnit::update() {
+    DecodeUnit::currentIssued = DecodeUnit::nextIssued;
+}
+
+
+
+DecodeUnit::DecodeUnit(std::queue<Instr> *currentFetched, std::queue<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs) {
+    // DecodeUnit::RF = RF;
+    DecodeUnit::currentFetched = currentFetched;
+    DecodeUnit::nextFetched = nextFetched;
+    DecodeUnit::RSs = RSs;
+    // DecodeUnit::ifid = ifid;
+    // DecodeUnit::idrs = idrs;
+    // DecodeUnit::RSs = RSs;
+
+    // DecodeUnit::current.i = {NOP, 0, 0, 0, true};
 }

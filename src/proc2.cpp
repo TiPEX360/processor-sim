@@ -9,7 +9,7 @@
 #include "WriteBackUnit.h"
 #include "ReservationStation.h"
 
-const int RS_SIZE = 8;
+
 
 std::vector<std::string> split(const std::string &line, char delimiter) {
 	std::string haystack = line;
@@ -39,6 +39,8 @@ void loadProgram(const char *path, Instr *INSTR) {
         instr.Rn = 0;
         instr.Ri = 0;
         instr.immediate = false;
+        instr.npc = 0;
+        instr.RSID = 0;
 
         //Remove comments !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         bool comment = false;
@@ -116,14 +118,7 @@ void loadProgram(const char *path, Instr *INSTR) {
 
         }
     }
-
     in.close();
-}
-
-void tick(Instr *cir) {
-//         executionUnit.execute(*cir);
-//         decodeUnit.decode();
-//         fetchUnit.fetch();
 }
 
 int main(int argc, char *argv[]) {
@@ -140,6 +135,9 @@ int main(int argc, char *argv[]) {
     for(int i = 0; i < 1024; i++) {
         MEM[i] = 0;
     }
+    for(int i = 0; i < 512; i++) {
+        INSTR[i] = (Instr){NOP, 0, 0, 0, true, 0, 0};
+    }
 
     //Special purpose register pointers
     Register *lr = &RF[29];
@@ -147,55 +145,64 @@ int main(int argc, char *argv[]) {
     Instr *cir = new Instr; //RF[31]
 
     //Units
-    PipelineRegister ifid = PipelineRegister();
+    // PipelineRegister ifid = PipelineRegister();
 
-    PipelineRegister idrs0 = PipelineRegister();
-    PipelineRegister idrs1 = PipelineRegister();
-    PipelineRegister idrs2 = PipelineRegister();
-    PipelineRegister idrs3 = PipelineRegister();
+    // PipelineRegister idrs[4];
 
-    PipelineRegister idex = PipelineRegister();
-    PipelineRegister exmem = PipelineRegister();
-    PipelineRegister memwb = PipelineRegister();
-    FetchUnit fetchUnit(pc, INSTR, &ifid, &exmem);
-    DecodeUnit decodeUnit(RF, cir, &ifid, &idex);
+    // PipelineRegister idex = PipelineRegister();
+    // PipelineRegister exmem = PipelineRegister();
+    // PipelineRegister memwb = PipelineRegister();
 
-    ReservationStation RS0 = ReservationStation(RF, &idrs0, RS_SIZE);
-    ReservationStation RS1 = ReservationStation(RF, &idrs1, RS_SIZE);
-    ReservationStation RS2 = ReservationStation(RF, &idrs2, RS_SIZE);
-    ReservationStation RS3 = ReservationStation(RF, &idrs3, RS_SIZE);
+    // std::queue<Instr> instrQueue;
+    std::array<ReservationStation, RS_COUNT> RSs;
 
-    ExecutionUnit executionUnit(&halt, &idex, &exmem);
-    MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);
-    WriteBackUnit writeBackUnit(RF, &memwb);
+    FetchUnit fetchUnit(pc, INSTR);
+    DecodeUnit decodeUnit(&fetchUnit.current, &fetchUnit.next, &RSs);
+
+    RSs[0] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 0, RS_COUNT);
+    RSs[1] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 1, RS_COUNT);
+    RSs[2] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
+    RSs[3] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
+
+    // ExecutionUnit executionUnit(&halt, &idex, &exmem);
+    // MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);
+    // WriteBackUnit writeBackUnit(RF, &memwb);
 
     if(argc < 2) {
         std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
         return 1;   
     }
     loadProgram(argv[1], INSTR);
-    for(int i = 0; i < 1024; i++) {
-        MEM[i] = 0;
-    }
+
 
     while(!halt) {
-
         std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
-        writeBackUnit.tick();
-        memoryUnit.tick();
-        executionUnit.tick();
-        decodeUnit.tick();
+        // writeBackUnit.tick();
+        // memoryUnit.tick();
+        // executionUnit.tick();
+        // fetchUnit.before();
+        if(cycles > 24) break;
+        if(fetchUnit.current.size() > 0 && fetchUnit.current.back().opcode == HALT) halt = true;
+        // for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
         fetchUnit.tick();
+        decodeUnit.tick();
+        // std::cout << "here2" << std::endl;
         cycles++;
+        // for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
+        decodeUnit.update();
+        fetchUnit.after();
+        // std::cout << fetchUnit.current.back().opcode;
+        
+
     }
 
     for(int i = 0; i < 1024; i++) {
         if (MEM[i] != 0) std::cout << MEM[i] << std::endl;
     }
 
-    // for(int i = 0; i < 512; i++) {
-    //     if (INSTR[i].opcode != 0) std::cout << INSTR[i].opcode << std::endl;
-    // }
+    for(int i = 0; i < 512; i++) {
+        if (INSTR[i].opcode != 0) std::cout << INSTR[i].opcode << std::endl;
+    }
     std::cout << "Cycles: " << cycles << std::endl;
     return 0;
 }

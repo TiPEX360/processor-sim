@@ -1,28 +1,58 @@
 #include "FetchUnit.h"
 
-FetchUnit::FetchUnit(int *pc, Instr *INSTR, PipelineRegister *ifid, PipelineRegister *exmem) {
-    FetchUnit::pc = pc;
-    FetchUnit::INSTR = INSTR;
-    FetchUnit::ifid = ifid;
-    FetchUnit::exmem = exmem;
+// int FetchUnit::fetch() {
+//     int error = 0;
+//     (*ifid) = PipelineRegister();
+
+//     if((*pc) < 512) {
+//         ifid->cir = INSTR[*pc];
+//         std::cout << "FETCH// PC: " << *pc << std::endl;
+//         (*pc)++;
+//         ifid->npc = (*pc);
+//         //ORDER OF THESE MIGHT HAVE TO CHANGE WITH PIPELINING
+
+//         ifid->active = true;
+//     } 
+//     else {
+//         std::cout << "Error: PC out of Memory range: " << *pc << std::endl;
+//         error = 1;
+//     }
+//     return error;
+// }
+
+void FetchUnit::before() {
+    next = current;
 }
 
-int FetchUnit::fetch() {
-    int error = 0;
-    (*ifid) = PipelineRegister();
-
-    if((*pc) < 512) {
-        ifid->cir = INSTR[*pc];
-        std::cout << "FETCH// PC: " << *pc << std::endl;
-        (*pc)++;
-        ifid->npc = (*pc);
-        //ORDER OF THESE MIGHT HAVE TO CHANGE WITH PIPELINING
-
-        ifid->active = true;
-    } 
-    else {
-        std::cout << "Error: PC out of Memory range: " << *pc << std::endl;
-        error = 1;
+void FetchUnit::tick() {
+    // *ifid = PipelineRegister();
+    if(pc->value < 512) {
+        Instr n;
+        n = INSTR[pc->value];
+        // std::cout << pc->value << "opcode " << n.opcode << std::endl;
+        pc->value++;
+        n.npc = pc->value;
+        next.push(n);
+        // ifid->npc = (*pc);
+        // ifid->active = true;
     }
-    return error;
+    std::cout << "Next: " << next.front().opcode << std::endl;
+}
+
+void FetchUnit::after() {
+    // current = std::vector<Instr>(); //change queue to std::vector for this and use clone().
+    // for(int i = 0; i < next.size(); i++) current.push_back(next[i]);
+    // current = next.
+    current = next;
+    std::cout << "Current: " << current.front().opcode << std::endl;
+    std::cout << "Size: " << current.size() << std::endl;
+}
+
+
+FetchUnit::FetchUnit(Register *pc, Instr *INSTR) {
+    FetchUnit::pc = pc;
+    FetchUnit::INSTR = INSTR;
+    FetchUnit::current = std::queue<Instr>();
+    FetchUnit::next = std::queue<Instr>();
+    next.push({NOP, 0, 0, 0, true, 0});
 }

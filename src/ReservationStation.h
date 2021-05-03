@@ -1,7 +1,14 @@
+#pragma once
 #include "instr.h"
 #include <vector>
+#include <queue>
 
-struct RSData {
+
+const int RS_SIZE = 8;
+
+enum RSType {ALU, LDST, BRANCH};
+
+struct RSEntry {
     opcode opcode;
     RSID RSd;
     RSID RSn;
@@ -19,10 +26,15 @@ private:
     PipelineRegister *rsex;
     int RSCount;
     Register *RF;
+    std::vector<Instr> *issuedCurrent;
+    std::vector<Instr> *issuedNext;
 public:
-    std::vector<RSData> current;
-    std::vector<RSData> next;
+    int RSID;
+    std::vector<RSEntry> current;
+    std::vector<RSEntry> next;
+    RSType type;
     void tick();
     void update();
-    ReservationStation(Register *RF, PipelineRegister *idrs, int RSCount);
+    ReservationStation() {};
+    ReservationStation(Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
 };

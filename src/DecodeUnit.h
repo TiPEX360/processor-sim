@@ -1,15 +1,34 @@
 #pragma once
 #include "instr.h"
-#include "PipelineRegister.h"
+#include "ReservationStation.h"
+#include <queue>
+#include "FetchUnit.h"
+
+struct DecodeData {
+    Instr i;
+};
+
+
 
 class DecodeUnit {
 private:
-    Instr *cir;
-    PipelineRegister *ifid;
-    PipelineRegister *idex;
-    int *RF;
-
+    // PipelineRegister *idrs;
+    // PipelineRegister *ifid;
+    std::array<ReservationStation, RS_COUNT> *RSs;
+    std::queue<Instr> *currentFetched;
+    std::queue<Instr> *nextFetched;
 public:
-    DecodeUnit(int *RF, Instr * cir, PipelineRegister *ifid, PipelineRegister *idex);
-    int decode();
+    // DecodeData current;
+    // DecodeData next;
+
+    std::vector<Instr> currentIssued;
+    std::vector<Instr> nextIssued;
+    // IssuedInstr n
+
+
+    void tick();
+    void update();
+
+    DecodeUnit();
+    DecodeUnit(std::queue<Instr> *currentFetched, std::queue<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs);
 };

@@ -2,15 +2,28 @@
 #include "instr.h"
 #include <iostream>
 #include "PipelineRegister.h"
+#include <queue>
+#include <vector>
+
 
 class FetchUnit {
+
 private:
-    int *pc;
+    Register *pc;
     Instr *INSTR;
     PipelineRegister *ifid;
     PipelineRegister *exmem;
-
 public:
-    FetchUnit(int *pc, Instr *INSTR, PipelineRegister *ifid, PipelineRegister *exmem);
-    int fetch();
+
+    std::queue<Instr> current;
+    std::queue<Instr> next;
+
+
+    FetchUnit(Register *pc, Instr *INSTR);
+    // int fetch();
+    void before();
+    void tick();
+    void after();
+
+    FetchUnit();
 };
