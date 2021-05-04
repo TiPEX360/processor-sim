@@ -3,7 +3,7 @@
 #include "instr.h"
 #include "ReservationStation.h"
 
-enum InstrType { REG, LOAD, STORE, BRANCH};
+enum InstrType { REG, MEM, BRANCH};
 
 typedef int ROBID;
 
@@ -26,7 +26,7 @@ public:
     std::vector<ROBEntry> currentROB;
     std::vector<ROBEntry> nextROB;
     
-    ROBID addEntry(Instr i);
+    ROBID addEntry(RSEntry RSe);
     void tick();
     void update();
     ReorderBuffer() {};

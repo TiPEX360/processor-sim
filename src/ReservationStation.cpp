@@ -20,7 +20,7 @@ void ReservationStation::tick() {
                     if(RF[instr.Rd].RS == -1) n.Rd = RF[instr.Rd].value;
                 }
                 else n.Rd = instr.Rd;
-                //Rn
+                //Rn !!Always register addressed
                 if(RF[instr.Rn].RS == -1) n.Rn = RF[instr.Rn].value;
                 //Ri
                 if(instr.immediate) n.Ri = instr.Ri;
@@ -40,8 +40,12 @@ void ReservationStation::tick() {
                 if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;
                 else n.ready = false;
 
-                //Add reservation station to queue
+                //Add entry to ROB
+                n.ROBId = ROB->addEntry(n);
+
+                //Add reservation station entry
                 nextEntries.push_back(n);
+
 
                 //remove taken instruction from issued
                 issuedNext->erase(issuedNext->begin() + i);
@@ -106,8 +110,9 @@ void ReservationStation::update() {
     // for(int i = 0; i < nextEntries.size(); i++) ReservationStation::currentEntries[i] = ReservationStation::nextEntries[i];
 }
 
-ReservationStation::ReservationStation(Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {
+ReservationStation::ReservationStation(ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {
     ReservationStation::RF = RF;
+    ReservationStation::ROB = ROB;
     ReservationStation::issuedCurrent = issuedCurrent;
     ReservationStation::issuedNext = issuedNext;
     ReservationStation::type = type;

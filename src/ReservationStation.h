@@ -2,6 +2,7 @@
 #include "instr.h"
 #include <vector>
 #include <queue>
+#include "ReorderBuffer.hpp"
 
 
 const int RS_SIZE = 8;
@@ -18,16 +19,16 @@ struct RSEntry {
     int Ri;
     bool busy;
     bool ready;
+    ROBID ROBId;
 };
 
 class ReservationStation {
 private:
-    PipelineRegister *idrs;
-    PipelineRegister *rsex;
     int RSCount;
     Register *RF;
     std::vector<Instr> *issuedCurrent;
     std::vector<Instr> *issuedNext;
+    ReorderBuffer *ROB;
 public:
     int RSID;
     std::vector<RSEntry> currentEntries;
@@ -36,5 +37,5 @@ public:
     void tick();
     void update();
     ReservationStation() {};
-    ReservationStation(Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
+    ReservationStation(ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
 };

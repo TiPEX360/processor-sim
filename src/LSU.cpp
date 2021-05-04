@@ -1,0 +1,76 @@
+#include "LSU.hpp"
+#include <iostream>
+
+void LSU::tick() {
+    //If no instruction is being executed. search RS for oldest RSEntry which is ready
+    if(progress == 0) {
+        bool found = false;
+        for(int entry = 0; entry < RS_SIZE && !found; entry++) {
+            if(RS->currentEntries[entry].ready) {
+                found = true;
+                processing = RS->currentEntries[entry];
+
+                switch(processing.opcode) {
+                    case LD:
+                        duration = 2;
+                        break;
+                    case LDC:
+                        duration = 1;
+                        break;
+                    case ST:
+                        duration = 3;
+                        break;
+                    case STC:
+                        duration = 2;
+                        break;
+                    default:
+                        std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
+                        break;
+                }
+                progress++;
+            }
+        }
+    }
+
+    //If instruction is being executed, progress it
+    if(progress > 0) progress++;
+
+    if(progress == duration) {
+        nextOut.id = processing.ROBId;
+        switch(processing.opcode) {
+            case LD:
+                nextOut.dest = processing.Rd;
+                nextOut.result = MEM[processing.Rn + processing.Ri];
+                break;
+            //THIS SHOULD GO IN ALU
+            // case LDC:
+            //     nextOut.dest = processing.Rd;
+            //     nextOut.result = processing.Ri;
+            //     duration = 1;
+            //     break;
+            case ST:
+                nextOut.dest = processing.Rn + processing.Ri;
+                duration = 1;
+                break;
+            case STC:
+                nextOut.dest = processing.Ri;
+                duration = 1;
+                break;
+            default:
+                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
+                break;
+        }
+    }
+}
+
+
+LSU::LSU(uint32_t *MEM, ReservationStation *RS, ReorderBuffer *ROB) {
+    LSU::RS = RS;
+    LSU::ROB = ROB;
+    LSU::MEM = MEM;
+    progress = 0;
+}
+
+LSU::LSU() {
+    progress = 0;
+}

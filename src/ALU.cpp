@@ -1,4 +1,5 @@
 #include "ALU.hpp"
+#include <iostream>
 
 void ALU::tick() {
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
@@ -38,6 +39,9 @@ void ALU::tick() {
                         break;
                     case XOR:
                         duration = 1;
+                        break;
+                    default:
+                        std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << processing.opcode << std::endl;
                         break;
                 }
                 progress++;
