@@ -6,9 +6,10 @@ void ReservationStation::tick() {
     //Search issued instructions to see if this RS has been assigned an instruction
 
     for(int i = 0; i < issuedCurrent->size(); i++) {
+        std::cout << (*issuedCurrent)[i].RSID << std::endl;
         if((*issuedCurrent)[i].RSID == RSID) {
             //New instruction found
-            if(current.size() < RS_SIZE) {
+            if(currentEntries.size() < RS_SIZE) {
                 RSEntry n;
                 Instr instr = (*issuedCurrent)[i];
                 n.busy = true;
@@ -40,7 +41,7 @@ void ReservationStation::tick() {
                 else n.ready = false;
 
                 //Add reservation station to queue
-                next.push_back(n);
+                nextEntries.push_back(n);
 
                 //remove taken instruction from issued
                 issuedNext->erase(issuedNext->begin() + i);
@@ -51,6 +52,7 @@ void ReservationStation::tick() {
             }
         }
     }
+    std::cout << "RSID: " << RSID << " Entries: " << currentEntries.size() << std::endl;
 
     //Add potential new instruction to RS queue
     // if(idrs->active) {
@@ -99,7 +101,9 @@ void ReservationStation::tick() {
 }
 
 void ReservationStation::update() {
-    for(int i = 0; i < current.size(); i++) ReservationStation::current[i] = ReservationStation::next[i];
+    currentEntries = nextEntries;
+    // currentEntries.clear();
+    // for(int i = 0; i < nextEntries.size(); i++) ReservationStation::currentEntries[i] = ReservationStation::nextEntries[i];
 }
 
 ReservationStation::ReservationStation(Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {

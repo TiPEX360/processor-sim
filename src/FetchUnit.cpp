@@ -20,9 +20,9 @@
 //     return error;
 // }
 
-void FetchUnit::before() {
-    next = current;
-}
+// void FetchUnit::before() {
+//     next = current;
+// }
 
 void FetchUnit::tick() {
     // *ifid = PipelineRegister();
@@ -36,16 +36,14 @@ void FetchUnit::tick() {
         // ifid->npc = (*pc);
         // ifid->active = true;
     }
-    std::cout << "Next: " << next.front().opcode << std::endl;
+    std::cout << "Queued: " << next.back().opcode << std::endl;
 }
 
-void FetchUnit::after() {
+void FetchUnit::update() {
     // current = std::vector<Instr>(); //change queue to std::vector for this and use clone().
     // for(int i = 0; i < next.size(); i++) current.push_back(next[i]);
     // current = next.
     current = next;
-    std::cout << "Current: " << current.front().opcode << std::endl;
-    std::cout << "Size: " << current.size() << std::endl;
 }
 
 

@@ -21,9 +21,9 @@ public:
 
     FetchUnit(Register *pc, Instr *INSTR);
     // int fetch();
-    void before();
+    // void before();
     void tick();
-    void after();
+    void update();
 
     FetchUnit();
 };

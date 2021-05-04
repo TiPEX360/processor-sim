@@ -18,12 +18,12 @@ void DecodeUnit::tick() {
     bool found = false;
     if(i.opcode >= ADD && i.opcode <= XOR) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == ALU && (*RSs)[RS].current.size() < RS_SIZE) {
+            if((*RSs)[RS].type == ALU && (*RSs)[RS].currentEntries.size() < RS_SIZE) {
                 // std::queue<InstrData> current;
                 found = true;
                 Instr issued = i;
-                i.RSID = RS;
-                currentIssued.push_back(issued);
+                issued.RSID = RS;
+                nextIssued.push_back(issued);
                 nextFetched->pop();
                 // idrs[rs].cir = i;
                 // idrs[rs].active = true;
@@ -33,14 +33,15 @@ void DecodeUnit::tick() {
     }
     else if(i.opcode >= LD && i.opcode <= STC) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == LDST && (*RSs)[RS].current.size() < RS_SIZE) {
+            if((*RSs)[RS].type == LDST && (*RSs)[RS].currentEntries.size() < RS_SIZE) {
                 found = true;
                 Instr issued = i;
-                i.RSID = RS;
-                currentIssued.push_back(issued);
-                std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
+                issued.RSID = RS;
+                std::cout << "LDST RS: " << RS << std::endl;
+                nextIssued.push_back(issued);
+                // std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
                 nextFetched->pop();
-                std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
+                // std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
                 // idrs[rs].cir = i;
                 // idrs[rs].active = true;
                 // issued = true;
@@ -49,11 +50,11 @@ void DecodeUnit::tick() {
     }
     else if(i.opcode >= BLT && i.opcode <= JNZ) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == BRANCH && (*RSs)[RS].current.size() < RS_SIZE) {
+            if((*RSs)[RS].type == BRANCH && (*RSs)[RS].currentEntries.size() < RS_SIZE) {
                 found = true;
                 Instr issued = i;
-                i.RSID = RS;
-                currentIssued.push_back(issued);
+                issued.RSID = RS;
+                nextIssued.push_back(issued);
                 nextFetched->pop();
                 // idrs[rs].cir = i;
                 // idrs[rs].active = true;

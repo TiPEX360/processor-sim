@@ -182,15 +182,16 @@ int main(int argc, char *argv[]) {
         // executionUnit.tick();
         // fetchUnit.before();
         if(cycles > 24) break;
-        if(fetchUnit.current.size() > 0 && fetchUnit.current.back().opcode == HALT) halt = true;
-        // for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
+        if(fetchUnit.current.size() > 0 && fetchUnit.current.front().opcode == HALT) halt = true;
         fetchUnit.tick();
         decodeUnit.tick();
+        for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
+        // std::cout << decodeUnit.currentIssued.size() << std::endl;
         // std::cout << "here2" << std::endl;
         cycles++;
-        // for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
         decodeUnit.update();
-        fetchUnit.after();
+        fetchUnit.update();
+        for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
         // std::cout << fetchUnit.current.back().opcode;
         
 

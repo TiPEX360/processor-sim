@@ -30,8 +30,8 @@ private:
     std::vector<Instr> *issuedNext;
 public:
     int RSID;
-    std::vector<RSEntry> current;
-    std::vector<RSEntry> next;
+    std::vector<RSEntry> currentEntries;
+    std::vector<RSEntry> nextEntries;
     RSType type;
     void tick();
     void update();
