@@ -2,6 +2,7 @@
 #include <vector>
 #include "instr.h"
 #include "ReservationStation.h"
+#include "ExecutionUnit.h"
 
 enum InstrType { REG, MEM, BRANCH};
 
@@ -23,16 +24,17 @@ private:
     Register *RF;
     int32_t *MEM;
     std::vector<ReservationStation> *RSs;
-
+    std::vector<ExecutionUnit *> *EUs;
 public:
     std::vector<ROBEntry> currentROB;
     std::vector<ROBEntry> nextROB;
     int currentOccupied = 0;
     int nextOccupied = 0;
 
+    int updateEntry(int index, ROBEntry e);
     ROBID addEntry(RSEntry RSe);
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(Register *RF, int32_t *MEM, std::vector<ReservationStation> *RSs);
+    ReorderBuffer(std::vector<ExecutionUnit *> *EUs, Register *RF, int32_t *MEM, std::vector<ReservationStation> *RSs);
 };

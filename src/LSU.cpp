@@ -15,13 +15,13 @@ void LSU::tick() {
                 duration = 1;
                 break;
             case LD:
-                duration = 2;
+                duration = 3;
                 break;
             case LDC:
                 duration = 1;
                 break;
             case ST:
-                duration = 3;
+                duration = 2;
                 break;
             case STC:
                 duration = 2;
@@ -44,6 +44,7 @@ void LSU::tick() {
                 break;
             case LD:
                 nextOut.dest = processing.Rd;
+                nextOut.type = REG;
                 nextOut.result = MEM[processing.Rn + processing.Ri];
                 break;
             //THIS SHOULD GO IN ALU
@@ -53,11 +54,15 @@ void LSU::tick() {
             //     duration = 1;
             //     break;
             case ST:
+                nextOut.result = processing.Rd;
                 nextOut.dest = processing.Rn + processing.Ri;
+                nextOut.type = InstrType::MEM;
                 duration = 1;
                 break;
             case STC:
+                nextOut.result = processing.Rd;
                 nextOut.dest = processing.Ri;
+                nextOut.type = InstrType::MEM;
                 duration = 1;
                 break;
             default:

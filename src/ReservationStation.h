@@ -40,6 +40,7 @@ public:
     void tick();
     void update();
     void addEntry(Instr i);
+    int updateEntry(ROBEntry e);
     RSEntry getReadyEntry();
     ReservationStation() {};
     ReservationStation(std::vector<ReservationStation> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 

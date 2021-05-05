@@ -15,6 +15,7 @@
 //     int execute();
 // };
 
+const int EXEC_COUNT = 4;
 
 class ExecutionUnit {
 protected: 
