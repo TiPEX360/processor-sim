@@ -2,51 +2,52 @@
 #include <iostream>
 
 void ALU::tick() {
-    //If no instruction is being executed. search RS for oldest RSEntry which is ready
+    //No instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
-        bool found = false;
-        for(int entry = 0; entry < RS_SIZE && !found; entry++) {
-            if(RS->currentEntries[entry].ready) {
-                found = true;
-                processing = RS->currentEntries[entry];
+        // bool found = false;
+        // for(int entry = 0; entry < RS_SIZE && !found; entry++) {
+        //     if(RS->currentEntries[entry].ready) {
+        //         found = true;
+        processing = RS->getReadyEntry();
 
-                switch(processing.opcode) {
-                    case NOP:
-                        break;
-                    case ADD:
-                        duration = 1;
-                        break;
-                    case MUL:
-                       duration = 2;
-                        break;
-                    case SUB:
-                        duration = 1;
-                        break;
-                    case DIV:
-                        duration = 4;
-                        break;
-                    case LSH:
-                        duration = 1;
-                        break;
-                    case RSH:
-                        duration = 1;
-                        break;
-                    case AND:
-                        duration = 1;
-                        break;
-                    case OR:
-                        duration = 1;
-                        break;
-                    case XOR:
-                        duration = 1;
-                        break;
-                    default:
-                        std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << processing.opcode << std::endl;
-                        break;
-                }
-                progress++;
-            }
+        switch(processing.opcode) {
+            case NOP:
+                duration = 1;
+                break;
+            case ADD:
+                duration = 1;
+                break;
+            case MUL:
+                duration = 2;
+                break;
+            case SUB:
+                duration = 1;
+                break;
+            case DIV:
+                duration = 4;
+                break;
+            case LSH:
+                duration = 1;
+                break;
+            case RSH:
+                duration = 1;
+                break;
+            case AND:
+                duration = 1;
+                break;
+            case OR:
+                duration = 1;
+                break;
+            case XOR:
+                duration = 1;
+                break;
+            default:
+                std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << processing.opcode << std::endl;
+                break;
         }
+        progress++;
+        //     }
+        // }
     }
 
     //If instruction is being executed, progress it
@@ -54,9 +55,11 @@ void ALU::tick() {
 
     //Execute instruction if on final stage of execution
     if(progress == duration) {
-        nextOut.dest = processing.Rd;
-        nextOut.type = REG;
-        nextOut.id = processing.ROBId;
+        if(processing.opcode != NOP) {
+            nextOut.dest = processing.Rd;
+            nextOut.type = REG;
+            nextOut.id = processing.ROBId;
+        }
         switch(processing.opcode) {
             case NOP:
                 break;

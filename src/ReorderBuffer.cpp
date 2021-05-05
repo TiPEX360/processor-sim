@@ -25,8 +25,9 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe) {
     return e.id;
 }
 
+//Write Result Step
 void ReorderBuffer::tick() {
-
+    
 }
 
 void ReorderBuffer::update() {

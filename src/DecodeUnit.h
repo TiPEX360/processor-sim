@@ -3,6 +3,7 @@
 #include "ReservationStation.h"
 #include <queue>
 #include "FetchUnit.h"
+#include "ReorderBuffer.hpp"
 
 struct DecodeData {
     Instr i;
@@ -17,6 +18,7 @@ private:
     std::array<ReservationStation, RS_COUNT> *RSs;
     std::queue<Instr> *currentFetched;
     std::queue<Instr> *nextFetched;
+    ReorderBuffer *ROB;
 public:
     // DecodeData current;
     // DecodeData next;

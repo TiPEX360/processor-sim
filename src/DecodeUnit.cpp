@@ -5,29 +5,20 @@ void DecodeUnit::tick() {
     //Try assign current instruction to a reservation station
     Instr i = currentFetched->front();
     std::cout << "Issuing: " << i.opcode << std::endl;
-    // bool issued = false;
-    // if(i.instr.opcode == NOP) {
-    //     for(int RS = 0; RS < RS_COUNT; RS++) {
-    //         // IssuedInstr issued = {i, RS};
-    //         current.push_back(issued);
-    //         // idrs[rs].active = true; //handle noops in RS
-    //         // issued = true;
-    //         instrQueue.pop();
-    //     }
-    // }
+
     bool found = false;
     if(i.opcode >= ADD && i.opcode <= XOR) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == ALU && (*RSs)[RS].currentEntries.size() < RS_SIZE) {
-                // std::queue<InstrData> current;
+            if((*RSs)[RS].type == ALU && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
+            
+                //NEW WAY
                 found = true;
                 Instr issued = i;
                 issued.RSID = RS;
-                nextIssued.push_back(issued);
+            
+                (*RSs)[RS].addEntry(i);
                 nextFetched->pop();
-                // idrs[rs].cir = i;
-                // idrs[rs].active = true;
-                // issued = true;
+                (*RSs)[RS].nextOccupied++;
             }
         }
     }

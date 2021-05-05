@@ -7,6 +7,8 @@ enum InstrType { REG, MEM, BRANCH};
 
 typedef int ROBID;
 
+const int ROB_MAX = 128;
+
 struct ROBEntry {
     ROBID id;
     InstrType type;
@@ -25,7 +27,9 @@ private:
 public:
     std::vector<ROBEntry> currentROB;
     std::vector<ROBEntry> nextROB;
-    
+    int currentOccupied = 0;
+    int nextOccupied = 0;
+
     ROBID addEntry(RSEntry RSe);
     void tick();
     void update();

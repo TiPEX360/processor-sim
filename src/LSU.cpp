@@ -4,40 +4,44 @@
 void LSU::tick() {
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
-        bool found = false;
-        for(int entry = 0; entry < RS_SIZE && !found; entry++) {
-            if(RS->currentEntries[entry].ready) {
-                found = true;
-                processing = RS->currentEntries[entry];
+        // bool found = false;
+        // for(int entry = 0; entry < RS_SIZE && !found; entry++) {
+        //     if(RS->currentEntries[entry].ready) {
+        //         found = true;
+        processing = RS->getReadyEntry();
 
-                switch(processing.opcode) {
-                    case LD:
-                        duration = 2;
-                        break;
-                    case LDC:
-                        duration = 1;
-                        break;
-                    case ST:
-                        duration = 3;
-                        break;
-                    case STC:
-                        duration = 2;
-                        break;
-                    default:
-                        std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
-                        break;
-                }
-                progress++;
-            }
+        switch(processing.opcode) {
+            case NOP:
+                duration = 1;
+                break;
+            case LD:
+                duration = 2;
+                break;
+            case LDC:
+                duration = 1;
+                break;
+            case ST:
+                duration = 3;
+                break;
+            case STC:
+                duration = 2;
+                break;
+            default:
+                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
+                break;
         }
+        progress++;
     }
+    
 
     //If instruction is being executed, progress it
     if(progress > 0) progress++;
 
     if(progress == duration) {
-        nextOut.id = processing.ROBId;
+        if(processing.opcode != NOP) nextOut.id = processing.ROBId;
         switch(processing.opcode) {
+            case NOP:
+                break;
             case LD:
                 nextOut.dest = processing.Rd;
                 nextOut.result = MEM[processing.Rn + processing.Ri];
@@ -60,6 +64,7 @@ void LSU::tick() {
                 std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
                 break;
         }
+        progress = 0;
     }
 }
 
