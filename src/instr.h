@@ -33,8 +33,7 @@ struct RSEntry {
     int Rd;
     int Rn;
     int Ri;
-    bool busy;
-    bool ready;
+    bool executing;
     ROBID ROBId;
 };
 

@@ -182,22 +182,26 @@ int main(int argc, char *argv[]) {
     while(!halt) {
         std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
         cycles = cycles + 1;
+        if(cycles > 24) exit(1);
+        if(fetchUnit.currentFetched.size() > 0 && fetchUnit.currentFetched.front().opcode == opcode::HALT) halt = true;
         // writeBackUnit.tick();
         // memoryUnit.tick();
         // executionUnit.tick();
         // fetchUnit.before();
-        if(cycles > 24) exit(1);
-        if(fetchUnit.currentFetched.size() > 0 && fetchUnit.currentFetched.front().opcode == opcode::HALT) halt = true;
+        //TICK
         fetchUnit.tick();
         decodeUnit.tick();
-        // for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
-        // std::cout << decodeUnit.currentIssued.size() << std::endl;
-        // std::cout << "here2" << std::endl;
+        for(int i = 0; i < EXEC_COUNT; i++) {
+            EUs[i]->tick();
+        }
+
+        //UPDATE STATE
         decodeUnit.update();
         fetchUnit.update();
         for(int i = 0; i < 32; i++) currentRF[i] = nextRF[i];
         for(int i = 0; i < 1024; i++) currentMEM[i] = nextMEM[i];
         for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
+        // for(int i = 0; i < EXEC_COUNT; i++) EUs[i]->update; //UNNECESSARY
         // std::cout << fetchUnit.current.back().opcode;
         
 

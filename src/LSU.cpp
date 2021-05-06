@@ -3,6 +3,9 @@
 #include <iostream>
 using namespace EU;
 void LSU::tick() {
+    //If instruction is being executed, progress it
+    if(progress > 0) progress++;
+
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
         // bool found = false;
@@ -10,6 +13,7 @@ void LSU::tick() {
         //     if(RS->currentEntries[entry].ready) {
         //         found = true;
         processing = RS->getReadyEntry();
+        std::cout << "LSU Begin: " << (int)processing.opcode << std::endl;
 
         switch(processing.opcode) {
             case opcode::NOP:
@@ -35,8 +39,6 @@ void LSU::tick() {
     }
     
 
-    //If instruction is being executed, progress it
-    if(progress > 0) progress++;
 
     if(progress == duration) {
         if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
@@ -67,6 +69,8 @@ void LSU::tick() {
                 // duration = 1;
                 break;
         }
+        // std::cout << "LSU Executed: " << (int)processing.opcode << std::endl;
+        
         progress = 0;
     }
 }

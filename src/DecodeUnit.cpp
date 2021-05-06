@@ -10,28 +10,26 @@ void DecodeUnit::tick() {
     if(i.opcode == opcode::LDC || i.opcode >= opcode::ADD && i.opcode <= opcode::XOR) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
             if((*RSs)[RS].type == RSType::ALU && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
-                //NEW WAY
-                std::cout << "Found ALU RS" << std::endl;
+     
                 found = true;
                 i.RSID = RS;
             
                 (*RSs)[RS].addEntry(i);
                 nextFetched->pop();
                 (*RSs)[RS].nextOccupied++;
+                std::cout << (*RSs)[RS].nextEntries.size();
             }
         }
     }
     else if(i.opcode >= opcode::LD && i.opcode <= opcode::STC) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
             if((*RSs)[RS].type == RSType::LDST && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
-            
-                std::cout << "Found LDST RS" << std::endl;
-                //NEW WAY
+
+          
                 found = true;
                 i.RSID = RS;
             
                 (*RSs)[RS].addEntry(i);
-            std::cout << "here" << i.immediate << std::endl;
                 nextFetched->pop();
                 (*RSs)[RS].nextOccupied++;
             }
@@ -40,9 +38,8 @@ void DecodeUnit::tick() {
     else if(i.opcode >= opcode::BLT && i.opcode <= opcode::JNZ) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
             if((*RSs)[RS].type == RSType::BRANCH && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
-            
-                std::cout << "Found BRANCH RS" << std::endl;
-                //NEW WAY
+
+      
                 found = true;
                 i.RSID = RS;
             
@@ -54,7 +51,8 @@ void DecodeUnit::tick() {
     }
     else {
         //NOP
-        std::cout << "NOP" << std::endl;
+        if(i.opcode == opcode::HALT) std::cout << "HALT" << std::endl;
+        else std::cout << "NOP" << std::endl;
         nextFetched->pop();
     }
 

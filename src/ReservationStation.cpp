@@ -3,12 +3,17 @@
 #include <iostream>
 
 RSEntry ReservationStation::getReadyEntry() {
+    // if(currentEntries.size() > 0) std::cout << (int)currentEntries[0].opcode << " RSd " << (int)currentEntries[0].RSd << " RSn: " << (int)currentEntries[0].RSn << " RSi: " << (int)currentEntries[0].RSi << std::endl;
     for(int e = 0; e < currentEntries.size(); e++) {
         RSEntry entry = currentEntries[e];
-        if(entry.RSd == -1 && entry.RSn == -1 && entry.RSi == -1) return entry;
+        if(!entry.executing && entry.RSd == -1 && entry.RSn == -1 && entry.RSi == -1) {
+            nextEntries[e].executing = true;
+            return nextEntries[e];
+        }
     }
     RSEntry nullEntry;
     nullEntry.opcode = opcode::NOP;
+    nullEntry.executing = true;
     return nullEntry;
 }
 
@@ -17,10 +22,11 @@ int ReservationStation::updateEntry(ROBEntry e) {
 }
 
 void ReservationStation::addEntry(Instr i) {
+    std::cout << "Size: " << currentEntries.size() << std::endl;
     if(currentEntries.size() < RS_SIZE) { 
         RSEntry n;
         Instr instr = i;
-        n.busy = true;
+        n.executing = false;
         n.opcode = instr.opcode;
         //Rd !!REGISTER VALUE FOR BELOW ELSE IMMEDIATE
         if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
@@ -75,7 +81,10 @@ void ReservationStation::addEntry(Instr i) {
         found = false;
 
         //Ri !!Immediate only if (instr.immediate == true)
-        if(instr.immediate) n.Ri = instr.Ri;
+        if(instr.immediate) {
+            n.Ri = instr.Ri;
+            n.RSi = -1;
+        }
         else {
             bool found = false;
             int r = ROB->currentOccupied;
@@ -118,8 +127,8 @@ void ReservationStation::addEntry(Instr i) {
 
 
         //Add reservation station entry
-        if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;
-        else n.ready = false;
+        // if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;
+        // else n.ready = false;
         nextEntries.push_back(n);
     }
     else {
@@ -139,7 +148,7 @@ void ReservationStation::tick() {
     //         if(currentEntries.size() < RS_SIZE) {
     //             RSEntry n;
     //             Instr instr = (*issuedCurrent)[i];
-    //             n.busy = true;
+    //             n. = true;
     //             n.opcode = instr.opcode;
 
     //             //Rd

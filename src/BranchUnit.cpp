@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace EU;
 void BranchUnit::tick() {
+    //If instruction is being executed, progress it
+    if(progress > 0) progress++;
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
         // bool found = false;
@@ -10,30 +12,39 @@ void BranchUnit::tick() {
         //     if(RS->currentEntries[entry].ready) {
         //         found = true;
         processing = RS->getReadyEntry();
+        std::cout << "BU Begin: " << (int)processing.opcode << std::endl;
 
         switch(processing.opcode) {
             case opcode::NOP:
                 duration = 1;
                 break;
             case opcode::BLT:
-                duration = 3;
+                duration = 1;
                 break;
             case opcode::BNZ:
                 duration = 1;
                 break;
+            case opcode::B:
+                duration = 1;
+                break;
+            case opcode::JLT:
+                duration = 1;
+                break;
+            case opcode::JNZ:
+                duration = 1;
+                break;
             case opcode::J:
-                duration = 2;
+                duration = 1;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << (int)processing.opcode << std::endl;
+                std::cout << "ERROR: Invalid instruction in BU. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;
     }
     
 
-    //If instruction is being executed, progress it
-    if(progress > 0) progress++;
+
 
     if(progress == duration) {
         if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
@@ -75,7 +86,8 @@ void BranchUnit::tick() {
         if(nextOut.result == 1) {
             nextPC->value = nextOut.dest;
         }
-
+        // std::cout << "BU Executed: " << (int)processing.opcode << std::endl;
+        
         progress = 0;
     }
 }
