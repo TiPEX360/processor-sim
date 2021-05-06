@@ -41,6 +41,9 @@ void ALU::tick() {
             case XOR:
                 duration = 1;
                 break;
+            case LDC:
+                duration = 1;
+                break;
             default:
                 std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << processing.opcode << std::endl;
                 break;
@@ -90,6 +93,9 @@ void ALU::tick() {
                 break;
             case XOR:
                 nextOut.result = processing.Rn ^ processing.Ri;
+                break;
+            case LDC:
+                nextOut.result = processing.Ri;
                 break;
         }
         progress = 0;

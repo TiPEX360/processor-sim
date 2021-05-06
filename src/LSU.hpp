@@ -8,6 +8,8 @@
 class LSU : public ExecutionUnit {
 private:
     uint32_t *MEM;
+    ReservationStation *RS;
+    ReorderBuffer *ROB;
 public:
     virtual void tick();
     void update();

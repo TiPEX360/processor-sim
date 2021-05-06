@@ -26,12 +26,20 @@
 
 void FetchUnit::tick() {
     // *ifid = PipelineRegister();
-    if(pc->value < 512) {
+    if(currentPC->value < 512) {
         Instr n;
-        n = INSTR[pc->value];
+        n = INSTR[currentPC->value];
         // std::cout << pc->value << "opcode " << n.opcode << std::endl;
-        pc->value++;
-        n.npc = pc->value;
+        bool branch = false;
+        if(n.opcode >= BLT && n.opcode <= JNZ) {
+            branch = branchBuffer->predictBranchDynamic(currentPC->value, n);
+        }
+        if(!branch) nextPC->value = currentPC->value + 1;
+        else {
+            //branch??!??
+            nextPC ->value = currentPC->value + 1; //dont take branch anyway ;)
+        }
+        n.npc = nextPC->value;
         next.push(n);
         // ifid->npc = (*pc);
         // ifid->active = true;
@@ -47,8 +55,10 @@ void FetchUnit::update() {
 }
 
 
-FetchUnit::FetchUnit(Register *pc, Instr *INSTR) {
-    FetchUnit::pc = pc;
+FetchUnit::FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, Instr *INSTR) {
+    FetchUnit::currentPC = currentPC;
+    FetchUnit::nextPC = nextPC;
+    FetchUnit::branchBuffer = branchBuffer;
     FetchUnit::INSTR = INSTR;
     FetchUnit::current = std::queue<Instr>();
     FetchUnit::next = std::queue<Instr>();

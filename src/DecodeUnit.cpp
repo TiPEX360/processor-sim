@@ -24,32 +24,31 @@ void DecodeUnit::tick() {
     }
     else if(i.opcode >= LD && i.opcode <= STC) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == LDST && (*RSs)[RS].currentEntries.size() < RS_SIZE) {
+            if((*RSs)[RS].type == LDST && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
+            
+                //NEW WAY
                 found = true;
                 Instr issued = i;
                 issued.RSID = RS;
-                std::cout << "LDST RS: " << RS << std::endl;
-                nextIssued.push_back(issued);
-                // std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
+            
+                (*RSs)[RS].addEntry(i);
                 nextFetched->pop();
-                // std::cout << "NextFetch: " << nextFetched->front().opcode << std::endl;
-                // idrs[rs].cir = i;
-                // idrs[rs].active = true;
-                // issued = true;
+                (*RSs)[RS].nextOccupied++;
             }
         }
     }
     else if(i.opcode >= BLT && i.opcode <= JNZ) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == BRANCH && (*RSs)[RS].currentEntries.size() < RS_SIZE) {
+            if((*RSs)[RS].type == BRANCH && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
+            
+                //NEW WAY
                 found = true;
                 Instr issued = i;
                 issued.RSID = RS;
-                nextIssued.push_back(issued);
+            
+                (*RSs)[RS].addEntry(i);
                 nextFetched->pop();
-                // idrs[rs].cir = i;
-                // idrs[rs].active = true;
-                // issued = true;
+                (*RSs)[RS].nextOccupied++;
             }
         }
     }

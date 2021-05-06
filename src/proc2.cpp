@@ -8,6 +8,7 @@
 #include "MemoryUnit.h"
 #include "WriteBackUnit.h"
 #include "ReservationStation.h"
+#include "BPB.hpp"
 
 
 
@@ -126,22 +127,28 @@ int main(int argc, char *argv[]) {
     int cycles = 0;
     
     //Buffers
-    Register RF[31];
-    int32_t MEM[1024];
+    Register currentRF[31];
+    Register nextRF[31];
+    int32_t currentMEM[1024];
+    int32_t nextMEM[1024];
     Instr INSTR[512];
     for(int i = 0; i < 31; i++) {
-        RF[i] = (Register){0, -1};
+        currentRF[i] = (Register){0, -1};
+        nextRF[i] = (Register){0, -1};
     }
     for(int i = 0; i < 1024; i++) {
-        MEM[i] = 0;
+        currentMEM[i] = 0;
+        nextMEM[i] = 0;
     }
     for(int i = 0; i < 512; i++) {
         INSTR[i] = (Instr){NOP, 0, 0, 0, true, 0, 0};
     }
 
     //Special purpose register pointers
-    Register *lr = &RF[29];
-	Register *pc = &RF[30];
+    Register *currentLR = &currentRF[29];
+	Register *currentPC = &currentRF[30];
+    Register *nextLR = &nextRF[29];
+	Register *nextPC = &nextRF[30];
     Instr *cir = new Instr; //RF[31]
 
     //Units
@@ -156,13 +163,14 @@ int main(int argc, char *argv[]) {
     // std::queue<Instr> instrQueue;
     std::array<ReservationStation, RS_COUNT> RSs;
 
-    FetchUnit fetchUnit(pc, INSTR);
+    BPB branchBuffer = BPB();
+    FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
     DecodeUnit decodeUnit(&fetchUnit.current, &fetchUnit.next, &RSs);
 
-    RSs[0] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 0, RS_COUNT);
-    RSs[1] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 1, RS_COUNT);
-    RSs[2] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
-    RSs[3] = ReservationStation(RF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
+    RSs[0] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 0, RS_COUNT);
+    RSs[1] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 1, RS_COUNT);
+    RSs[2] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
+    RSs[3] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
 
     // ExecutionUnit executionUnit(&halt, &idex, &exmem);
     // MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);

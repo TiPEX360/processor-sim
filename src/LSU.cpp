@@ -57,13 +57,13 @@ void LSU::tick() {
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Rn + processing.Ri;
                 nextOut.type = InstrType::MEM;
-                duration = 1;
+                // duration = 1;
                 break;
             case STC:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Ri;
                 nextOut.type = InstrType::MEM;
-                duration = 1;
+                // duration = 1;
                 break;
             default:
                 std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
