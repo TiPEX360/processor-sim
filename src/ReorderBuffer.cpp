@@ -24,7 +24,6 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe) {
     e.id = id;
 
     nextROB.push_back(e);
-
     return e.id;
 }
 
@@ -86,6 +85,7 @@ void ReorderBuffer::tick() {
 
 void ReorderBuffer::update() {
     currentROB = nextROB;
+    currentOccupied = nextOccupied;
 }
 
 ReorderBuffer::ReorderBuffer(std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {

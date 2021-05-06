@@ -127,8 +127,6 @@ void loadProgram(const char *path, Instr *INSTR) {
 }
 
 int main(int argc, char *argv[]) {
-    bool halt = false;
-    int cycles = 0;
     
     //Buffers
     Register currentRF[31];
@@ -160,18 +158,18 @@ int main(int argc, char *argv[]) {
 
     BPB branchBuffer = BPB();
     FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
-    DecodeUnit decodeUnit(&fetchUnit.current, &fetchUnit.next, &RSs);
     std::array<ExecutionUnit *, EXEC_COUNT> EUs;
     ReorderBuffer ROB(&EUs, nextRF, nextMEM, &RSs);
+    DecodeUnit decodeUnit(&fetchUnit.currentFetched, &fetchUnit.nextFetched, &RSs, &ROB);
     EUs[0] = new EU::ALU(&RSs[0], &ROB);
     EUs[1] = new EU::ALU(&RSs[1], &ROB);
     EUs[2] = new EU::LSU(currentMEM, &RSs[2], &ROB);
     EUs[3] = new EU::BranchUnit(nextPC, &RSs[3], &ROB);
 
-    RSs[0] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 0, RS_COUNT);
-    RSs[1] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 1, RS_COUNT);
-    RSs[2] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
-    RSs[3] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
+    RSs[0] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 0, RS_COUNT);
+    RSs[1] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 1, RS_COUNT);
+    RSs[2] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
+    RSs[3] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
 
     if(argc < 2) {
         std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
@@ -179,28 +177,31 @@ int main(int argc, char *argv[]) {
     }
     loadProgram(argv[1], INSTR);
 
-
-    // while(!halt) {
-    //     std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
-    //     // writeBackUnit.tick();
-    //     // memoryUnit.tick();
-    //     // executionUnit.tick();
-    //     // fetchUnit.before();
-    //     if(cycles > 24) break;
-    //     if(fetchUnit.current.size() > 0 && fetchUnit.current.front().opcode == opcode::HALT) halt = true;
-    //     fetchUnit.tick();
-    //     decodeUnit.tick();
-    //     for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
-    //     // std::cout << decodeUnit.currentIssued.size() << std::endl;
-    //     // std::cout << "here2" << std::endl;
-    //     cycles++;
-    //     decodeUnit.update();
-    //     fetchUnit.update();
-    //     for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
-    //     // std::cout << fetchUnit.current.back().opcode;
+    bool halt = false;
+    int cycles = 0;
+    while(!halt) {
+        std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
+        cycles = cycles + 1;
+        // writeBackUnit.tick();
+        // memoryUnit.tick();
+        // executionUnit.tick();
+        // fetchUnit.before();
+        if(cycles > 24) exit(1);
+        if(fetchUnit.currentFetched.size() > 0 && fetchUnit.currentFetched.front().opcode == opcode::HALT) halt = true;
+        fetchUnit.tick();
+        decodeUnit.tick();
+        // for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
+        // std::cout << decodeUnit.currentIssued.size() << std::endl;
+        // std::cout << "here2" << std::endl;
+        decodeUnit.update();
+        fetchUnit.update();
+        for(int i = 0; i < 32; i++) currentRF[i] = nextRF[i];
+        for(int i = 0; i < 1024; i++) currentMEM[i] = nextMEM[i];
+        for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
+        // std::cout << fetchUnit.current.back().opcode;
         
 
-    // }
+    }
 
     for(int i = 0; i < 1024; i++) {
         if (currentMEM[i] != 0) std::cout << currentMEM[i] << std::endl;

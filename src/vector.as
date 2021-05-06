@@ -14,11 +14,12 @@ ldc r1 #0       //&a[0]
 ldc r2 #5       //&b[0]
 ldc r3 #10      //&c[0]
 
-add lr pc #0   //lr<-pc+1
+//add lr pc #0   //lr<-pc+1
 ld r4 r1 r0    //r4 <- a[i]
 ld r5 r2 r0    //r5 <- b[i]
 add r6 r4 r5    // r6 <- r4 + r5
 st r6 r3 r0    // c[i] = r6
 add r0 r0 #1   // i++
-blt lr r0 r2       // &b[0] < i
+//blt lr r0 r2       // &b[0] < i
+blt #14 r0 r2       // &b[0] < i
 halt

@@ -15,8 +15,8 @@ private:
     BPB *branchBuffer;
 public:
 
-    std::queue<Instr> current;
-    std::queue<Instr> next;
+    std::queue<Instr> currentFetched;
+    std::queue<Instr> nextFetched;
 
 
     FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, Instr *INSTR);

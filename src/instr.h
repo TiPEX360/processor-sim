@@ -19,7 +19,7 @@ const int EXEC_COUNT = 4;
 
 typedef int RSID;
 
-enum RSType {ALU, LDST, BRANCH};
+enum class RSType {ALU, LDST, BRANCH};
 
 typedef int ROBID;
 

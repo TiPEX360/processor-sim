@@ -17,17 +17,16 @@ int ReservationStation::updateEntry(ROBEntry e) {
 }
 
 void ReservationStation::addEntry(Instr i) {
-    if(currentEntries.size() < RS_SIZE) {
+    if(currentEntries.size() < RS_SIZE) { 
         RSEntry n;
         Instr instr = i;
         n.busy = true;
         n.opcode = instr.opcode;
-
         //Rd !!REGISTER VALUE FOR BELOW ELSE IMMEDIATE
         if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
             bool found = false;
             int r = ROB->currentOccupied;
-            while(!found && r >= 0) {
+            while(ROB->currentOccupied > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
                     found = true;
                     n.Rd = ROB->currentROB[r].result;
@@ -54,7 +53,7 @@ void ReservationStation::addEntry(Instr i) {
         //Rn !!Always register addressed
         bool found = false;
         int r = ROB->currentOccupied;
-        while(!found && r >= 0) {
+        while(ROB->currentOccupied > 0 && !found && r >= 0) {
             if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
                 found = true;
                 n.Rn = ROB->currentROB[r].result;
@@ -80,7 +79,7 @@ void ReservationStation::addEntry(Instr i) {
         else {
             bool found = false;
             int r = ROB->currentOccupied;
-            while(!found && r >= 0) {
+            while(ROB->currentOccupied > 0 && !found && r >= 0 && r != 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                     found = true;
                     n.Ri = ROB->currentROB[r].result;
@@ -251,5 +250,6 @@ ReservationStation::ReservationStation(std::array<ReservationStation, RS_COUNT> 
     ReservationStation::type = type;
     ReservationStation::RSID = RSID;
     ReservationStation::RSCount = RSCount;
+    ReservationStation::currentOccupied = 0;
     // ReservationStation::rsex = rsex;
 }

@@ -16,13 +16,13 @@ void FetchUnit::tick() {
             nextPC->value = currentPC->value + 1; //dont take branch anyway ;)
         }
         n.npc = currentPC->value + 1; //save what PC would be had branch not been taken
-        next.push(n);
+        nextFetched.push(n);
     }
-    std::cout << "Queued: " << (int)next.back().opcode << std::endl;
+    std::cout << "Queued: " << (int)nextFetched.back().opcode << std::endl;
 }
 
 void FetchUnit::update() {
-    current = next;
+    currentFetched = nextFetched;
 }
 
 
@@ -31,7 +31,7 @@ FetchUnit::FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, I
     FetchUnit::nextPC = nextPC;
     FetchUnit::branchBuffer = branchBuffer;
     FetchUnit::INSTR = INSTR;
-    FetchUnit::current = std::queue<Instr>();
-    FetchUnit::next = std::queue<Instr>();
-    next.push({opcode::NOP, 0, 0, 0, true, 0});
+    FetchUnit::currentFetched = std::queue<Instr>();
+    FetchUnit::nextFetched = std::queue<Instr>();
+    nextFetched.push({opcode::NOP, 0, 0, 0, true, 0});
 }
