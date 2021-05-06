@@ -21,10 +21,10 @@ struct ROBEntry {
 
 class ReorderBuffer {
 private:
-    Register *RF;
-    int32_t *MEM;
-    std::vector<ReservationStation> *RSs;
-    std::vector<ExecutionUnit *> *EUs;
+    Register *nextRF;
+    int32_t *nextMEM;
+    std::array<ReservationStation, RS_COUNT> *RSs;
+    std::array<ExecutionUnit *, EXEC_COUNT> *EUs;
 public:
     std::vector<ROBEntry> currentROB;
     std::vector<ROBEntry> nextROB;
@@ -36,5 +36,5 @@ public:
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(std::vector<ExecutionUnit *> *EUs, Register *RF, int32_t *MEM, std::vector<ReservationStation> *RSs);
+    ReorderBuffer(std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
 };

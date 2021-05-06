@@ -16,5 +16,6 @@ private:
 public:
     bool predictBranchDynamic(uint32_t pc, Instr i);
     void updateBranch();
+    void update();
     BPB();
 };

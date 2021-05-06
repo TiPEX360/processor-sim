@@ -1,6 +1,6 @@
 #include "BranchUnit.hpp"
 #include <iostream>
-
+using namespace EU;
 void BranchUnit::tick() {
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
@@ -54,15 +54,15 @@ void BranchUnit::tick() {
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
             case JLT:
-                nextOut.dest = processing.Rd + pc->value;
+                nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
             case JNZ:
-                nextOut.dest = processing.Rd + pc->value;
+                nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
             case J:
-                nextOut.dest = processing.Rd + pc->value;
+                nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
                 break;
@@ -73,15 +73,15 @@ void BranchUnit::tick() {
 
         //Take branch
         if(nextOut.result == 1) {
-            pc->next.value = nextOut.dest;
+            nextPC->value = nextOut.dest;
         }
 
         progress = 0;
     }
 }
 
-BranchUnit::BranchUnit(Register *pc, ReservationStation *RS, ReorderBuffer *ROB) {
-    BranchUnit::pc = pc;
+BranchUnit::BranchUnit(Register *nextPC, ReservationStation *RS, ReorderBuffer *ROB) {
+    BranchUnit::nextPC = nextPC;
     BranchUnit::RS = RS;
     BranchUnit::ROB = ROB;
 }

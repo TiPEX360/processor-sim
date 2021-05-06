@@ -5,9 +5,13 @@
 #include "FetchUnit.h"
 #include "DecodeUnit.h"
 #include "ExecutionUnit.h"
+#include "ALU.hpp"
+#include "LSU.hpp"
+#include "BranchUnit.hpp"
 #include "MemoryUnit.h"
 #include "WriteBackUnit.h"
 #include "ReservationStation.h"
+#include "ReorderBuffer.hpp"
 #include "BPB.hpp"
 
 
@@ -166,11 +170,17 @@ int main(int argc, char *argv[]) {
     BPB branchBuffer = BPB();
     FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
     DecodeUnit decodeUnit(&fetchUnit.current, &fetchUnit.next, &RSs);
+    std::array<ExecutionUnit *, EXEC_COUNT> EUs;
+    ReorderBuffer ROB(&EUs, nextRF, nextMEM, &RSs);
+    EUs[0] = new EU::ALU(&RSs[0], &ROB);
+    EUs[1] = new EU::ALU(&RSs[1], &ROB);
+    EUs[2] = new EU::LSU(currentMEM, &RSs[2], &ROB);
+    EUs[3] = new EU::BranchUnit(nextPC, &RSs[3], &ROB);
 
-    RSs[0] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 0, RS_COUNT);
-    RSs[1] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 1, RS_COUNT);
-    RSs[2] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
-    RSs[3] = ReservationStation(currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
+    RSs[0] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 0, RS_COUNT);
+    RSs[1] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, ALU, 1, RS_COUNT);
+    RSs[2] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
+    RSs[3] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
 
     // ExecutionUnit executionUnit(&halt, &idex, &exmem);
     // MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);
@@ -206,7 +216,7 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i = 0; i < 1024; i++) {
-        if (MEM[i] != 0) std::cout << MEM[i] << std::endl;
+        if (currentMEM[i] != 0) std::cout << currentMEM[i] << std::endl;
     }
 
     for(int i = 0; i < 512; i++) {

@@ -37,12 +37,10 @@ void FetchUnit::tick() {
         if(!branch) nextPC->value = currentPC->value + 1;
         else {
             //branch??!??
-            nextPC ->value = currentPC->value + 1; //dont take branch anyway ;)
+            nextPC->value = currentPC->value + 1; //dont take branch anyway ;)
         }
-        n.npc = nextPC->value;
+        n.npc = currentPC->value + 1; //save what PC would be had branch not been taken
         next.push(n);
-        // ifid->npc = (*pc);
-        // ifid->active = true;
     }
     std::cout << "Queued: " << next.back().opcode << std::endl;
 }

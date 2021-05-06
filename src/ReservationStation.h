@@ -28,7 +28,7 @@ private:
     Register *RF;
     std::vector<Instr> *issuedCurrent;
     std::vector<Instr> *issuedNext;
-    std::vector<ReservationStation> *RSs;
+    std::array<ReservationStation, RS_COUNT> *RSs;
     ReorderBuffer *ROB;
 public:
     int RSID;
@@ -43,5 +43,5 @@ public:
     int updateEntry(ROBEntry e);
     RSEntry getReadyEntry();
     ReservationStation() {};
-    ReservationStation(std::vector<ReservationStation> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
+    ReservationStation(std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
 };

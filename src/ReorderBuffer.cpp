@@ -68,12 +68,12 @@ void ReorderBuffer::tick() {
         nextROB.erase(nextROB.begin());
 
         if(committing.type == REG) {
-            RF[committing.dest].value = committing.result;
-            RF[committing.dest].RS = -1;
+            nextRF[committing.dest].value = committing.result;
+            nextRF[committing.dest].RS = -1;
 
         }
         else if(committing.type == InstrType::MEM) {
-            MEM[committing.dest] = committing.result;
+            nextMEM[committing.dest] = committing.result;
         }
         else if(committing.type == InstrType::BRANCH) {
             //do branch shit
@@ -86,11 +86,11 @@ void ReorderBuffer::update() {
     currentROB = nextROB;
 }
 
-ReorderBuffer::ReorderBuffer(std::vector<ExecutionUnit *> *EUs, Register *RF, int32_t *MEM, std::vector<ReservationStation> *RSs) {
-    ReorderBuffer::RF = RF;
-    ReorderBuffer::MEM = MEM;
-    ReorderBuffer::RSs = RSs;
+ReorderBuffer::ReorderBuffer(std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
+    ReorderBuffer::nextRF = nextRF;
+    ReorderBuffer::nextMEM = nextMEM;
+    ReorderBuffer::RSs = RSs;
 }
 
 ReorderBuffer::ReorderBuffer()  {};

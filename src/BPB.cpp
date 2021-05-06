@@ -7,6 +7,7 @@ BPB::BPB() {
     }
 }
 
+//Called during fetch
 bool BPB::predictBranchDynamic(uint32_t pc, Instr i) {
     int index = (pc & 0x0000001F);
         //Predict
@@ -20,7 +21,16 @@ bool BPB::predictBranchDynamic(uint32_t pc, Instr i) {
     if(state == (char)2) {
         return true;
     }
-    else(state == (char)3) {
+    else {
         return true;
     }
+}
+
+//Called during wb
+void BPB::updateBranch() {
+
+}
+
+void BPB::update() {
+    for(int i = 0; i < 16; i++) currentBuffer[i] = nextBuffer[i];
 }

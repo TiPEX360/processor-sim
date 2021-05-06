@@ -4,16 +4,17 @@
 #include <ExecutionUnit.h>
 
 
+namespace EU {
+    class LSU : public ExecutionUnit {
+    private:
+        int32_t *currentMEM;
+        ReservationStation *RS;
+        ReorderBuffer *ROB;
+    public:
+        virtual void tick();
+        void update();
 
-class LSU : public ExecutionUnit {
-private:
-    uint32_t *MEM;
-    ReservationStation *RS;
-    ReorderBuffer *ROB;
-public:
-    virtual void tick();
-    void update();
-
-    LSU(uint32_t *MEM, ReservationStation *RS, ReorderBuffer *ROB);
-    LSU();
-};
+        LSU(int32_t *currentMEM, ReservationStation *RS, ReorderBuffer *ROB);
+        LSU();
+    };
+}

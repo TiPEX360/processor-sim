@@ -4,12 +4,13 @@
 #include <ExecutionUnit.h>
 
 
+namespace EU {
+    class ALU : public ExecutionUnit {
+    public:
+        virtual void tick();
+        void update();
 
-class ALU : public ExecutionUnit {
-public:
-    virtual void tick();
-    void update();
-
-    ALU(ReservationStation *RS, ReorderBuffer *ROB);
-    ALU();
-};
+        ALU(ReservationStation *RS, ReorderBuffer *ROB);
+        ALU();
+    };
+}

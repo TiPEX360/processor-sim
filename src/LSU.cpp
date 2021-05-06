@@ -1,6 +1,6 @@
 #include "LSU.hpp"
 #include <iostream>
-
+using namespace EU;
 void LSU::tick() {
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
@@ -45,7 +45,7 @@ void LSU::tick() {
             case LD:
                 nextOut.dest = processing.Rd;
                 nextOut.type = REG;
-                nextOut.result = MEM[processing.Rn + processing.Ri];
+                nextOut.result = currentMEM[processing.Rn + processing.Ri];
                 break;
             //THIS SHOULD GO IN ALU
             // case LDC:
@@ -74,10 +74,10 @@ void LSU::tick() {
 }
 
 
-LSU::LSU(uint32_t *MEM, ReservationStation *RS, ReorderBuffer *ROB) {
+LSU::LSU(int32_t *currentMEM, ReservationStation *RS, ReorderBuffer *ROB) {
     LSU::RS = RS;
     LSU::ROB = ROB;
-    LSU::MEM = MEM;
+    LSU::currentMEM = currentMEM;
     progress = 0;
 }
 

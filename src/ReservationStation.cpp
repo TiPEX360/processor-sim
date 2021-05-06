@@ -237,7 +237,7 @@ void ReservationStation::update() {
     // for(int i = 0; i < nextEntries.size(); i++) ReservationStation::currentEntries[i] = ReservationStation::nextEntries[i];
 }
 
-ReservationStation::ReservationStation(std::vector<ReservationStation> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {
+ReservationStation::ReservationStation(std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {
     ReservationStation::RSs = RSs;
     ReservationStation::RF = RF;
     ReservationStation::ROB = ROB;
