@@ -27,7 +27,8 @@ public:
     int nextOccupied = 0;
 
     int updateEntry(int index, ROBEntry e);
-    ROBID addEntry(RSEntry RSe);
+    ROBID addEntry(RSEntry RSe, RSID RSID);
+    RSID findRSID(RSEntry RSe);
     void tick();
     void update();
     ReorderBuffer() {};

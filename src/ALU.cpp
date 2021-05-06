@@ -14,7 +14,7 @@ void ALU::tick() {
         //     if(RS->currentEntries[entry].ready) {
         //         found = true;
         processing = RS->getReadyEntry();
-        std::cout << "ALU " << ALU::RS->RSID << " Begin: " << (int)processing.opcode << std::endl;
+        // std::cout << "ALU " << ALU::RS->RSID << " Begin: " << (int)processing.opcode << std::endl;
         switch(processing.opcode) {
             case opcode::NOP:
                 duration = 1;
@@ -67,6 +67,11 @@ void ALU::tick() {
         }
         switch(processing.opcode) {
             case opcode::NOP:
+                nextOut.dest = -1;
+                nextOut.type = InstrType::BRANCH;
+                nextOut.ready = false;
+                nextOut.id = -1;
+                nextOut.result = -1;
                 break;
             case opcode::ADD:
                 nextOut.result = processing.Rn + processing.Ri;

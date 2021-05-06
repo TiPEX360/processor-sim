@@ -194,6 +194,7 @@ int main(int argc, char *argv[]) {
         for(int i = 0; i < EXEC_COUNT; i++) {
             EUs[i]->tick();
         }
+        ROB.tick();
 
         //UPDATE STATE
         decodeUnit.update();
@@ -201,7 +202,11 @@ int main(int argc, char *argv[]) {
         for(int i = 0; i < 32; i++) currentRF[i] = nextRF[i];
         for(int i = 0; i < 1024; i++) currentMEM[i] = nextMEM[i];
         for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
-        // for(int i = 0; i < EXEC_COUNT; i++) EUs[i]->update; //UNNECESSARY
+        ROB.update();
+        for(int i = 0; i < EXEC_COUNT; i++) {
+            EUs[i]->update(); //UNNECESSARY
+            std::cout << "CDB " << i << ": " << EUs[i]->currentOut.id << std::endl;
+        }
         // std::cout << fetchUnit.current.back().opcode;
         
 

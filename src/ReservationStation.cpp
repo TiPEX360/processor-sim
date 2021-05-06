@@ -22,7 +22,7 @@ int ReservationStation::updateEntry(ROBEntry e) {
 }
 
 void ReservationStation::addEntry(Instr i) {
-    std::cout << "Size: " << currentEntries.size() << std::endl;
+    // std::cout << "Size: " << currentEntries.size() << std::endl;
     if(currentEntries.size() < RS_SIZE) { 
         RSEntry n;
         Instr instr = i;
@@ -104,12 +104,13 @@ void ReservationStation::addEntry(Instr i) {
                 r--;
             }
             if(!found) {
-                n.RSi = RF[instr.Ri].RS;
+                n.RSi = RF[instr.Ri].RS; //FIGURE OuT WHEN TO WRITE TO RF.RS Anser: in issue.
                 n.Ri = RF[instr.Ri].value;
             }
         }
         //Add entry to ROB
-        n.ROBId = ROB->addEntry(n);
+        n.ROBId = ROB->addEntry(n, RSID);
+        ROB->nextOccupied++;
 
         // //RSd
         // if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
@@ -123,8 +124,6 @@ void ReservationStation::addEntry(Instr i) {
         // //RSi
         // if(instr.immediate) n.RSi = -1;
         // else n.RSi = RF[instr.Ri].RS;
-
-
 
         //Add reservation station entry
         // if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;

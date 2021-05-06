@@ -13,7 +13,7 @@ void LSU::tick() {
         //     if(RS->currentEntries[entry].ready) {
         //         found = true;
         processing = RS->getReadyEntry();
-        std::cout << "LSU Begin: " << (int)processing.opcode << std::endl;
+        // std::cout << "LSU Begin: " << (int)processing.opcode << std::endl;
 
         switch(processing.opcode) {
             case opcode::NOP:
@@ -44,6 +44,11 @@ void LSU::tick() {
         if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
         switch(processing.opcode) {
             case opcode::NOP:
+                nextOut.dest = -1;
+                nextOut.type = InstrType::BRANCH;
+                nextOut.ready = false;
+                nextOut.id = -1;
+                nextOut.result = -1;
                 break;
             case opcode::LD:
                 nextOut.dest = processing.Rd;
