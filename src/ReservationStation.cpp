@@ -17,8 +17,32 @@ RSEntry ReservationStation::getReadyEntry() {
     return nullEntry;
 }
 
-int ReservationStation::updateEntry(ROBEntry e) {
+int ReservationStation::removeEntry(ROBEntry e) {
+    for(int i = 0; i < currentEntries.size(); i++) {
+        if(currentEntries[i].ROBId == e.id) {
+            currentEntries.erase(currentEntries.begin() + i);
+        }
+    }
+}
 
+int ReservationStation::updateEntry(int RS, ROBEntry e) {
+    //For each RSEntry check all operands if waiting for result from RS this robid is linked to
+    for(int i = 0; i < currentEntries.size(); i++) {
+        RSEntry RSe = currentEntries[i];
+        if(RSe.RSd == RS) {
+            RSe.Rd = e.result;
+            RSe.RSd = -1;
+        }
+        if(RSe.RSn == RS) {
+            RSe.Rn = e.result;
+            RSe.RSn = -1;
+        }
+        if(RSe.RSi == RS) {
+            RSe.Ri = e.result;
+            RSe.RSi = -1;
+        }
+        nextEntries[i] = RSe;
+    }
 }
 
 void ReservationStation::addEntry(Instr i) {

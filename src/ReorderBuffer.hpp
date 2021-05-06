@@ -28,7 +28,7 @@ public:
 
     int updateEntry(int index, ROBEntry e);
     ROBID addEntry(RSEntry RSe, RSID RSID);
-    RSID findRSID(RSEntry RSe);
+    RSID findRSIDByROBEntry(ROBEntry e);
     void tick();
     void update();
     ReorderBuffer() {};

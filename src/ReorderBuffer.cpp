@@ -36,15 +36,36 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID) {
     return e.id;
 }
 
+RSID ReorderBuffer::findRSIDByROBEntry(ROBEntry e) {
+    bool found = false;
+    int RSID = -1;
+    for(int RS = 0; RS < RS_COUNT && !found; RS++) {
+        for(int i = 0; i < (*RSs)[RS].currentEntries.size(); i++) {
+            if((*RSs)[RS].currentEntries[i].ROBId == e.id) {
+                return RS;
+            }
+        }
+    }
+    return -1;
+}
+
 int ReorderBuffer::updateEntry(int index, ROBEntry e) {
     if(nextROB[index].id == e.id) {
         //Update ROB
         nextROB[index] = e;
-
         if(e.type == InstrType::REG) {
             //Update RS
-            // for(int RS = 0; RS < RS_COUNT; RS++) (*RSs)[RS].updateEntry(e); // implement this (and mark RS as available)
+            int RSId = findRSIDByROBEntry(e);
+            if(RSId == -1) std::cout << "ERROR: No RS looking for this ROBEntry!" << std::endl;
+            int a;
+            std::cin >> a;
+            for(int RS = 0; RS < RS_COUNT; RS++) {
+                std::cout << "here ROBID: " << e.id << " Result: " << e.result << std::endl;
+                (*RSs)[RS].updateEntry(RSId, e); // implement this (and mark RS as available)
+            }
+       
             nextROB[index].ready = true;    
+            (*RSs)[RSId].removeEntry(e); //Free RS
         }
         else if(e.type == InstrType::MEM) {
             nextROB[index].ready = true; //assuming both address and value of store is available.
