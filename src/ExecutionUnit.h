@@ -1,7 +1,7 @@
 #pragma once
 #include "instr.h"
-#include <ReservationStation.h>
-#include <ReorderBuffer.hpp>
+#include "ReservationStation.h"
+// #include "ReorderBuffer.hpp"
 
 // class ExecutionUnit {
 // private: 
@@ -15,7 +15,6 @@
 //     int execute();
 // };
 
-const int EXEC_COUNT = 4;
 
 class ExecutionUnit {
 protected: 

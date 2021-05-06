@@ -2,25 +2,14 @@
 #include "instr.h"
 #include <vector>
 #include <queue>
-#include "ReorderBuffer.hpp"
+// #include "ReorderBuffer.hpp"
 
+class ReorderBuffer;
+
+struct ROBEntry;
 
 const int RS_SIZE = 8;
 
-enum RSType {ALU, LDST, BRANCH};
-
-struct RSEntry {
-    opcode opcode;
-    RSID RSd;
-    RSID RSn;
-    RSID RSi;
-    int Rd;
-    int Rn;
-    int Ri;
-    bool busy;
-    bool ready;
-    ROBID ROBId;
-};
 
 class ReservationStation {
 private:

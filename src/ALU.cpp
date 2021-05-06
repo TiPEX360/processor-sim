@@ -1,5 +1,8 @@
 #include "ALU.hpp"
+#include "ReorderBuffer.hpp"
 #include <iostream>
+
+using namespace EU;
 
 void ALU::tick() {
     //No instruction is being executed. search RS for oldest RSEntry which is ready
@@ -11,41 +14,41 @@ void ALU::tick() {
         processing = RS->getReadyEntry();
 
         switch(processing.opcode) {
-            case NOP:
+            case opcode::NOP:
                 duration = 1;
                 break;
-            case ADD:
+            case opcode::ADD:
                 duration = 1;
                 break;
-            case MUL:
+            case opcode::MUL:
                 duration = 2;
                 break;
-            case SUB:
+            case opcode::SUB:
                 duration = 1;
                 break;
-            case DIV:
+            case opcode::DIV:
                 duration = 4;
                 break;
-            case LSH:
+            case opcode::LSH:
                 duration = 1;
                 break;
-            case RSH:
+            case opcode::RSH:
                 duration = 1;
                 break;
-            case AND:
+            case opcode::AND:
                 duration = 1;
                 break;
-            case OR:
+            case opcode::OR:
                 duration = 1;
                 break;
-            case XOR:
+            case opcode::XOR:
                 duration = 1;
                 break;
-            case LDC:
+            case opcode::LDC:
                 duration = 1;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << processing.opcode << std::endl;
+                std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;
@@ -58,44 +61,46 @@ void ALU::tick() {
 
     //Execute instruction if on final stage of execution
     if(progress == duration) {
-        if(processing.opcode != NOP) {
+        if(processing.opcode != opcode::NOP) {
             nextOut.dest = processing.Rd;
-            nextOut.type = REG;
+            nextOut.type = InstrType::REG;
             nextOut.id = processing.ROBId;
         }
         switch(processing.opcode) {
-            case NOP:
+            case opcode::NOP:
                 break;
-            case ADD:
+            case opcode::ADD:
                 nextOut.result = processing.Rn + processing.Ri;
                 break;
-            case MUL:
+            case opcode::MUL:
                 nextOut.result = processing.Rn * processing.Ri;
                 break;
-            case SUB:
+            case opcode::SUB:
                 nextOut.result = processing.Rn - processing.Ri;
                 break;
-            case DIV:
+            case opcode::DIV:
                 nextOut.result = (int)(processing.Rn / processing.Ri);
                 // std::   nextOut.result << "Rd " << Rd << " Rn " << Rn << " Ri " << Ri << std::endl;
                 break;
-            case LSH:
+            case opcode::LSH:
                 nextOut.result = processing.Rn << processing.Ri;
                 break;
-            case RSH:
+            case opcode::RSH:
                 nextOut.result = processing.Rn >> processing.Ri;
                 break;
-            case AND:
+            case opcode::AND:
                 nextOut.result = processing.Rn & processing.Ri;
                 break;
-            case OR:
+            case opcode::OR:
                 nextOut.result = processing.Rn | processing.Ri;
                 break;
-            case XOR:
+            case opcode::XOR:
                 nextOut.result = processing.Rn ^ processing.Ri;
                 break;
-            case LDC:
+            case opcode::LDC:
                 nextOut.result = processing.Ri;
+                break;
+            default:
                 break;
         }
         progress = 0;

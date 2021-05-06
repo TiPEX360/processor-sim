@@ -73,28 +73,28 @@ void loadProgram(const char *path, Instr *INSTR) {
 
         if(tokens.size() > 0) {
             //Assign opcode
-            if(tokens[0].compare("nop") == 0) instr.opcode = NOP;
-            else if(tokens[0].compare("add") == 0) instr.opcode = ADD;
-            else if(tokens[0].compare("mul") == 0) instr.opcode = MUL;
-            else if(tokens[0].compare("sub") == 0) instr.opcode = SUB;
-            else if(tokens[0].compare("div") == 0) instr.opcode = DIV;
-            else if(tokens[0].compare("lsh") == 0) instr.opcode = LSH;
-            else if(tokens[0].compare("rsh") == 0) instr.opcode = RSH;
-            else if(tokens[0].compare("and") == 0) instr.opcode = AND;
-            else if(tokens[0].compare("or") == 0) instr.opcode = OR;
-            else if(tokens[0].compare("xor") == 0) instr.opcode = XOR;
-            else if(tokens[0].compare("ld") == 0) instr.opcode = LD;
-            else if(tokens[0].compare("ldc") == 0) instr.opcode = LDC;
-            else if(tokens[0].compare("st") == 0) instr.opcode = ST;
-            else if(tokens[0].compare("stc") == 0) instr.opcode = STC;
-            else if(tokens[0].compare("blt") == 0) instr.opcode = BLT;
-            else if(tokens[0].compare("bnz") == 0) instr.opcode = BNZ;
-            else if(tokens[0].compare("b") == 0) instr.opcode = B;
-            else if(tokens[0].compare("j") == 0) instr.opcode = J;  
-            else if(tokens[0].compare("jlt") == 0) instr.opcode = JLT;
-            else if(tokens[0].compare("jnz") == 0) instr.opcode = JNZ;
-            else if(tokens[0].compare("cmp") == 0) instr.opcode = CMP;
-            else if(tokens[0].compare("halt") == 0) instr.opcode = HALT;
+            if(tokens[0].compare("nop") == 0) instr.opcode = opcode::NOP;
+            else if(tokens[0].compare("add") == 0) instr.opcode = opcode::ADD;
+            else if(tokens[0].compare("mul") == 0) instr.opcode = opcode::MUL;
+            else if(tokens[0].compare("sub") == 0) instr.opcode = opcode::SUB;
+            else if(tokens[0].compare("div") == 0) instr.opcode = opcode::DIV;
+            else if(tokens[0].compare("lsh") == 0) instr.opcode = opcode::LSH;
+            else if(tokens[0].compare("rsh") == 0) instr.opcode = opcode::RSH;
+            else if(tokens[0].compare("and") == 0) instr.opcode = opcode::AND;
+            else if(tokens[0].compare("or") == 0) instr.opcode = opcode::OR;
+            else if(tokens[0].compare("xor") == 0) instr.opcode = opcode::XOR;
+            else if(tokens[0].compare("ld") == 0) instr.opcode = opcode::LD;
+            else if(tokens[0].compare("ldc") == 0) instr.opcode = opcode::LDC;
+            else if(tokens[0].compare("st") == 0) instr.opcode = opcode::ST;
+            else if(tokens[0].compare("stc") == 0) instr.opcode = opcode::STC;
+            else if(tokens[0].compare("blt") == 0) instr.opcode = opcode::BLT;
+            else if(tokens[0].compare("bnz") == 0) instr.opcode = opcode::BNZ;
+            else if(tokens[0].compare("b") == 0) instr.opcode = opcode::B;
+            else if(tokens[0].compare("j") == 0) instr.opcode = opcode::J;  
+            else if(tokens[0].compare("jlt") == 0) instr.opcode = opcode::JLT;
+            else if(tokens[0].compare("jnz") == 0) instr.opcode = opcode::JNZ;
+            else if(tokens[0].compare("cmp") == 0) instr.opcode = opcode::CMP;
+            else if(tokens[0].compare("halt") == 0) instr.opcode = opcode::HALT;
             else continue;
 
             //Assign operands
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
         nextMEM[i] = 0;
     }
     for(int i = 0; i < 512; i++) {
-        INSTR[i] = (Instr){NOP, 0, 0, 0, true, 0, 0};
+        INSTR[i] = (Instr){opcode::NOP, 0, 0, 0, true, 0, 0};
     }
 
     //Special purpose register pointers
@@ -156,15 +156,6 @@ int main(int argc, char *argv[]) {
     Instr *cir = new Instr; //RF[31]
 
     //Units
-    // PipelineRegister ifid = PipelineRegister();
-
-    // PipelineRegister idrs[4];
-
-    // PipelineRegister idex = PipelineRegister();
-    // PipelineRegister exmem = PipelineRegister();
-    // PipelineRegister memwb = PipelineRegister();
-
-    // std::queue<Instr> instrQueue;
     std::array<ReservationStation, RS_COUNT> RSs;
 
     BPB branchBuffer = BPB();
@@ -182,10 +173,6 @@ int main(int argc, char *argv[]) {
     RSs[2] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, LDST, 2, RS_COUNT);
     RSs[3] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, BRANCH, 3, RS_COUNT);
 
-    // ExecutionUnit executionUnit(&halt, &idex, &exmem);
-    // MemoryUnit memoryUnit(pc, MEM, &exmem, &memwb);
-    // WriteBackUnit writeBackUnit(RF, &memwb);
-
     if(argc < 2) {
         std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
         return 1;   
@@ -193,34 +180,34 @@ int main(int argc, char *argv[]) {
     loadProgram(argv[1], INSTR);
 
 
-    while(!halt) {
-        std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
-        // writeBackUnit.tick();
-        // memoryUnit.tick();
-        // executionUnit.tick();
-        // fetchUnit.before();
-        if(cycles > 24) break;
-        if(fetchUnit.current.size() > 0 && fetchUnit.current.front().opcode == HALT) halt = true;
-        fetchUnit.tick();
-        decodeUnit.tick();
-        for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
-        // std::cout << decodeUnit.currentIssued.size() << std::endl;
-        // std::cout << "here2" << std::endl;
-        cycles++;
-        decodeUnit.update();
-        fetchUnit.update();
-        for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
-        // std::cout << fetchUnit.current.back().opcode;
+    // while(!halt) {
+    //     std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
+    //     // writeBackUnit.tick();
+    //     // memoryUnit.tick();
+    //     // executionUnit.tick();
+    //     // fetchUnit.before();
+    //     if(cycles > 24) break;
+    //     if(fetchUnit.current.size() > 0 && fetchUnit.current.front().opcode == opcode::HALT) halt = true;
+    //     fetchUnit.tick();
+    //     decodeUnit.tick();
+    //     for(int i = 0; i < RS_COUNT; i++) RSs[i].tick();
+    //     // std::cout << decodeUnit.currentIssued.size() << std::endl;
+    //     // std::cout << "here2" << std::endl;
+    //     cycles++;
+    //     decodeUnit.update();
+    //     fetchUnit.update();
+    //     for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
+    //     // std::cout << fetchUnit.current.back().opcode;
         
 
-    }
+    // }
 
     for(int i = 0; i < 1024; i++) {
         if (currentMEM[i] != 0) std::cout << currentMEM[i] << std::endl;
     }
 
     for(int i = 0; i < 512; i++) {
-        if (INSTR[i].opcode != 0) std::cout << INSTR[i].opcode << std::endl;
+        if (INSTR[i].opcode != opcode::NOP) std::cout << (int)INSTR[i].opcode << std::endl;
     }
     std::cout << "Cycles: " << cycles << std::endl;
     return 0;

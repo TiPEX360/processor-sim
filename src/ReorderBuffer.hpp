@@ -1,23 +1,18 @@
 #pragma once
 #include <vector>
 #include "instr.h"
-#include "ReservationStation.h"
-#include "ExecutionUnit.h"
+// #include "ReservationStation.h"
+// #include "ExecutionUnit.h"
 
-enum InstrType { REG, MEM, BRANCH};
+// class ReservationStation;
+class ExecutionUnit;
+class ReservationStation;
+
 
 typedef int ROBID;
 
 const int ROB_MAX = 128;
 
-struct ROBEntry {
-    ROBID id;
-    InstrType type;
-    int result;
-    int dest;
-    bool ready;
-    //bool inUse;
-};
 
 class ReorderBuffer {
 private:

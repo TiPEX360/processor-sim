@@ -1,7 +1,6 @@
 #pragma once
 #include "instr.h"
 #include <iostream>
-#include "PipelineRegister.h"
 #include "BPB.hpp"
 #include <queue>
 #include <vector>
@@ -13,8 +12,6 @@ private:
     Register *currentPC;
     Register *nextPC;
     Instr *INSTR;
-    PipelineRegister *ifid;
-    PipelineRegister *exmem;
     BPB *branchBuffer;
 public:
 

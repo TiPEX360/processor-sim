@@ -2,7 +2,7 @@
 #include <array>
 #include <stdint.h>
 
-enum opcode {
+enum class opcode {
     NOP,
     ADD,  MUL, SUB, DIV,
     LSH, RSH, AND, OR, XOR,
@@ -15,9 +15,40 @@ enum opcode {
 
 const int RS_COUNT = 4;
 
+const int EXEC_COUNT = 4;
+
 typedef int RSID;
 
-enum addrMode {
+enum RSType {ALU, LDST, BRANCH};
+
+typedef int ROBID;
+
+enum class InstrType { REG, MEM, BRANCH};
+
+struct RSEntry {
+    opcode opcode;
+    RSID RSd;
+    RSID RSn;
+    RSID RSi;
+    int Rd;
+    int Rn;
+    int Ri;
+    bool busy;
+    bool ready;
+    ROBID ROBId;
+};
+
+
+struct ROBEntry {
+    ROBID id;
+    InstrType type;
+    int result;
+    int dest;
+    bool ready;
+    //bool inUse;
+};
+
+enum class addrMode {
     REGISTER,
     IMMEDIATE,
 };
@@ -66,7 +97,7 @@ public:
         Rn = 0;
         Ri = 0;
         npc = 0;
-        cir = {NOP, 0, 0, 0, false};
+        cir = {opcode::NOP, 0, 0, 0, false};
         ALUOut = 0;
         MEMLoadData = 0;
         cond = false;

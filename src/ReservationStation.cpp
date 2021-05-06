@@ -1,4 +1,5 @@
 #include "ReservationStation.h"
+#include "ReorderBuffer.hpp"
 #include <iostream>
 
 RSEntry ReservationStation::getReadyEntry() {
@@ -7,8 +8,12 @@ RSEntry ReservationStation::getReadyEntry() {
         if(entry.RSd == -1 && entry.RSn == -1 && entry.RSi == -1) return entry;
     }
     RSEntry nullEntry;
-    nullEntry.opcode = NOP;
+    nullEntry.opcode = opcode::NOP;
     return nullEntry;
+}
+
+int ReservationStation::updateEntry(ROBEntry e) {
+
 }
 
 void ReservationStation::addEntry(Instr i) {
@@ -19,11 +24,11 @@ void ReservationStation::addEntry(Instr i) {
         n.opcode = instr.opcode;
 
         //Rd !!REGISTER VALUE FOR BELOW ELSE IMMEDIATE
-        if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
+        if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
             bool found = false;
             int r = ROB->currentOccupied;
             while(!found && r >= 0) {
-                if(ROB->currentROB[r].type == REG && ROB->currentROB[r].dest == instr.Rd) {
+                if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
                     found = true;
                     n.Rd = ROB->currentROB[r].result;
                     // ROBID robId = ROB->currentROB[r].id;
@@ -50,7 +55,7 @@ void ReservationStation::addEntry(Instr i) {
         bool found = false;
         int r = ROB->currentOccupied;
         while(!found && r >= 0) {
-            if(ROB->currentROB[r].type == REG && ROB->currentROB[r].dest == instr.Rn) {
+            if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
                 found = true;
                 n.Rn = ROB->currentROB[r].result;
                 // ROBID robId = ROB->currentROB[r].id;
@@ -76,7 +81,7 @@ void ReservationStation::addEntry(Instr i) {
             bool found = false;
             int r = ROB->currentOccupied;
             while(!found && r >= 0) {
-                if(ROB->currentROB[r].type == REG && ROB->currentROB[r].dest == instr.Ri) {
+                if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                     found = true;
                     n.Ri = ROB->currentROB[r].result;
                     // ROBID robId = ROB->currentROB[r].id;

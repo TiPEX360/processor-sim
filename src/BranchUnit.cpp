@@ -1,4 +1,5 @@
 #include "BranchUnit.hpp"
+#include "ReorderBuffer.hpp"
 #include <iostream>
 using namespace EU;
 void BranchUnit::tick() {
@@ -11,20 +12,20 @@ void BranchUnit::tick() {
         processing = RS->getReadyEntry();
 
         switch(processing.opcode) {
-            case NOP:
+            case opcode::NOP:
                 duration = 1;
                 break;
-            case BLT:
+            case opcode::BLT:
                 duration = 3;
                 break;
-            case BNZ:
+            case opcode::BNZ:
                 duration = 1;
                 break;
-            case J:
+            case opcode::J:
                 duration = 2;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
+                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;
@@ -35,39 +36,38 @@ void BranchUnit::tick() {
     if(progress > 0) progress++;
 
     if(progress == duration) {
-        if(processing.opcode != NOP) nextOut.id = processing.ROBId;
+        if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
         switch(processing.opcode) {
-            case NOP:
+            case opcode::NOP:
                 break;
-            case BLT:
+            case opcode::BLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
                 break;
-            case BNZ:
+            case opcode::BNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
                 break;
-            case B:
+            case opcode::B:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
-            case JLT:
+            case opcode::JLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
-            case JNZ:
+            case opcode::JNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
-            case J:
+            case opcode::J:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
                 break;
         }
 

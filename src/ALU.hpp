@@ -1,7 +1,7 @@
 #pragma once
-#include <ReservationStation.h>
-#include <ReorderBuffer.hpp>
-#include <ExecutionUnit.h>
+#include "ReservationStation.h"
+#include "ReorderBuffer.hpp"
+#include "ExecutionUnit.h"
 
 
 namespace EU {

@@ -1,4 +1,5 @@
 #include "LSU.hpp"
+#include "ReorderBuffer.hpp"
 #include <iostream>
 using namespace EU;
 void LSU::tick() {
@@ -11,23 +12,23 @@ void LSU::tick() {
         processing = RS->getReadyEntry();
 
         switch(processing.opcode) {
-            case NOP:
+            case opcode::NOP:
                 duration = 1;
                 break;
-            case LD:
+            case opcode::LD:
                 duration = 3;
                 break;
-            case LDC:
+            case opcode::LDC:
                 duration = 1;
                 break;
-            case ST:
+            case opcode::ST:
                 duration = 2;
                 break;
-            case STC:
+            case opcode::STC:
                 duration = 2;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
+                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;
@@ -38,13 +39,13 @@ void LSU::tick() {
     if(progress > 0) progress++;
 
     if(progress == duration) {
-        if(processing.opcode != NOP) nextOut.id = processing.ROBId;
+        if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
         switch(processing.opcode) {
-            case NOP:
+            case opcode::NOP:
                 break;
-            case LD:
+            case opcode::LD:
                 nextOut.dest = processing.Rd;
-                nextOut.type = REG;
+                nextOut.type = InstrType::REG;
                 nextOut.result = currentMEM[processing.Rn + processing.Ri];
                 break;
             //THIS SHOULD GO IN ALU
@@ -53,20 +54,17 @@ void LSU::tick() {
             //     nextOut.result = processing.Ri;
             //     duration = 1;
             //     break;
-            case ST:
+            case opcode::ST:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Rn + processing.Ri;
                 nextOut.type = InstrType::MEM;
                 // duration = 1;
                 break;
-            case STC:
+            case opcode::STC:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Ri;
                 nextOut.type = InstrType::MEM;
                 // duration = 1;
-                break;
-            default:
-                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << processing.opcode << std::endl;
                 break;
         }
         progress = 0;

@@ -1,4 +1,6 @@
 #include "ReorderBuffer.hpp"
+#include "ReservationStation.h"
+#include "ExecutionUnit.h"
 #include <iostream>
 
 ROBID ReorderBuffer::addEntry(RSEntry RSe) {
@@ -6,9 +8,9 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe) {
     e.ready = false;
     e.dest = -1;
     e.result = -1;
-    if(RSe.opcode >= ADD && RSe.opcode <= XOR || RSe.opcode == LDC) e.type =  REG;
-    else if(RSe.opcode >= LD && RSe.opcode <= STC) e.type = InstrType::MEM;
-    else e.type = BRANCH;
+    if(RSe.opcode >= opcode::ADD && RSe.opcode <= opcode::XOR || RSe.opcode == opcode::LDC) e.type =  InstrType::REG;
+    else if(RSe.opcode >= opcode::LD && RSe.opcode <= opcode::STC) e.type = InstrType::MEM;
+    else e.type = InstrType::BRANCH;
 
     int id = -1; //check this logic
     bool exists = true;
@@ -31,7 +33,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
         //Update ROB
         nextROB[index] = e;
 
-        if(e.type == REG) {
+        if(e.type == InstrType::REG) {
             //Update RS
             for(int RS = 0; RS < RS_COUNT; RS++) (*RSs)[RS].updateEntry(e); // implement this (and mark RS as available)
             nextROB[index].ready;    
@@ -67,7 +69,7 @@ void ReorderBuffer::tick() {
         ROBEntry committing = currentROB[0];
         nextROB.erase(nextROB.begin());
 
-        if(committing.type == REG) {
+        if(committing.type == InstrType::REG) {
             nextRF[committing.dest].value = committing.result;
             nextRF[committing.dest].RS = -1;
 
@@ -93,4 +95,4 @@ ReorderBuffer::ReorderBuffer(std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Regis
     ReorderBuffer::RSs = RSs;
 }
 
-ReorderBuffer::ReorderBuffer()  {};
+// ReorderBuffer::ReorderBuffer()  {};

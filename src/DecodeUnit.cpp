@@ -4,10 +4,10 @@
 void DecodeUnit::tick() {
     //Try assign current instruction to a reservation station
     Instr i = currentFetched->front();
-    std::cout << "Issuing: " << i.opcode << std::endl;
+    std::cout << "Issuing: " << (int)i.opcode << std::endl;
 
     bool found = false;
-    if(i.opcode >= ADD && i.opcode <= XOR) {
+    if(i.opcode >= opcode::ADD && i.opcode <= opcode::XOR) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
             if((*RSs)[RS].type == ALU && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
             
@@ -22,7 +22,7 @@ void DecodeUnit::tick() {
             }
         }
     }
-    else if(i.opcode >= LD && i.opcode <= STC) {
+    else if(i.opcode >= opcode::LD && i.opcode <= opcode::STC) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
             if((*RSs)[RS].type == LDST && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
             
@@ -37,7 +37,7 @@ void DecodeUnit::tick() {
             }
         }
     }
-    else if(i.opcode >= BLT && i.opcode <= JNZ) {
+    else if(i.opcode >= opcode::BLT && i.opcode <= opcode::JNZ) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
             if((*RSs)[RS].type == BRANCH && (*RSs)[RS].currentOccupied < RS_SIZE && ROB->currentOccupied < ROB_MAX) {
             
