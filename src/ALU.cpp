@@ -111,7 +111,6 @@ void ALU::tick() {
                 nextOut.dest = -1;
                 nextOut.type = InstrType::HALT;
                 nextOut.ready = false;
-                nextOut.id = -1;
                 nextOut.result = -1;
                 break;
             default:

@@ -48,6 +48,7 @@ void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively f
         }
     }
     //Update RSs added in this cycle, only available in next cycle :o
+    //Consider putting this in decode stage
     for(int i = 0; i < nextEntries.size(); i++) {
         RSEntry RSe = nextEntries[i];
         if(!RSe.executing) {

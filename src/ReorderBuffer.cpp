@@ -107,6 +107,10 @@ void ReorderBuffer::tick() {
         nextROB.erase(nextROB.begin()); //erase not working >:(
 
         if(committing.type == InstrType::REG) {
+            if(committing.dest == 30) {
+                std::cout << "ERROR: TRYING TO CHANGE PC IN REG INSTRUCTION" << std::endl;
+                exit(1);
+            }
             std::cout << "commiting REG" << std::endl;
             nextRF[committing.dest].value = committing.result;
             nextRF[committing.dest].RS = -1;

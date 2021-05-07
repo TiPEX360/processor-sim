@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
     while(!halt) {
         std::cout << "--------------------- Cycle:  " << cycles << " ----------------------" << std::endl;
         cycles = cycles + 1;
-        if(cycles > 60) exit(1);
+        if(cycles > 200) exit(1);
         // if(fetchUnit.currentFetched.size() > 0 && fetchUnit.currentFetched.front().opcode == opcode::HALT) halt = true;
         // writeBackUnit.tick();
         // memoryUnit.tick();
