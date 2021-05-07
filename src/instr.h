@@ -65,7 +65,7 @@ struct Instr {
     unsigned char Rn;
     signed int Ri : 10; 
     bool immediate;
-    int npc;
+    int branchTaken;
     int RSID;
 };
 

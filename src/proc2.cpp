@@ -44,7 +44,7 @@ void loadProgram(const char *path, Instr *INSTR) {
         instr.Rn = 0;
         instr.Ri = 0;
         instr.immediate = false;
-        instr.npc = 0;
+        instr.branchTaken = 0;
         instr.RSID = 0;
 
         //Remove comments !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -9,13 +9,22 @@ void FetchUnit::tick() {
         bool branch = false;
         if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
             branch = branchBuffer->predictBranchDynamic(currentPC->value, n);
+            if(branch) {
+                //update PC
+                if(n.opcode >= opcode::BLT && n.opcode <= opcode::B) nextPC->value = n.Rd; //go to branch
+                else nextPC->value = currentPC->value + n.Rd;
+                
+                n.branchTaken = 1;
+
+                n.Rd = currentPC->value + 1; //where branch should go had it not been taken OR hadnt been
+            }
+            else {
+                nextPC->value = currentPC->value + 1;
+                n.branchTaken = 0;
+                if(n.opcode >= opcode::J && n.opcode <= opcode::JNZ) n.Rd = nextPC->value + n.Rd;
+            } 
         }
-        if(!branch) nextPC->value = currentPC->value + 1;
-        else {
-            //branch??!??
-            nextPC->value = currentPC->value + 1; //dont take branch anyway ;)
-        }
-        n.npc = currentPC->value + 1; //save what PC would be had branch not been taken
+        else nextPC->value = currentPC->value + 1;
         nextFetched.push(n);
     }
     std::cout << "Queued: " << (int)nextFetched.back().opcode << std::endl;
@@ -33,5 +42,5 @@ FetchUnit::FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, I
     FetchUnit::INSTR = INSTR;
     FetchUnit::currentFetched = std::queue<Instr>();
     FetchUnit::nextFetched = std::queue<Instr>();
-    nextFetched.push({opcode::NOP, 0, 0, 0, true, 0});
+    nextFetched.push({opcode::NOP, 0, 0, 0, true, 0, 0});
 }

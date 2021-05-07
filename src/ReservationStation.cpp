@@ -76,7 +76,8 @@ void ReservationStation::addEntry(Instr i) {
         n.executing = false;
         n.opcode = instr.opcode;
         //Rd REGISTER VALUE FOR BELOW ELSE IMMEDIATE
-        if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
+        // if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
+        if(n.opcode == opcode::ST) {
             bool found = false;
             int r = ROB->currentROB.size();
             while(ROB->currentROB.size() > 0 && !found && r >= 0) {
@@ -130,7 +131,7 @@ void ReservationStation::addEntry(Instr i) {
             n.Rn = RF[instr.Rn].value;
         }
         found = false;
-        if(n.opcode == opcode::LDC) {
+        if(n.opcode == opcode::LDC || n.opcode == opcode::JNZ || n.opcode == opcode::J || n.opcode == opcode::B || n.opcode == opcode::BNZ) {
             n.RSn = -1;
             n.Rn = 0;
         }
@@ -165,6 +166,10 @@ void ReservationStation::addEntry(Instr i) {
                 n.Ri = RF[instr.Ri].value;
             }
         }
+        if(n.opcode == opcode::B || n.opcode == opcode::J) {
+            n.Ri = 0;
+            n.RSi = -1;
+        }
 
         //Exception for HALT
         if(n.opcode == opcode::HALT) {
@@ -173,7 +178,7 @@ void ReservationStation::addEntry(Instr i) {
             n.RSd = -1;
         }
         //Add entry to ROB
-        n.ROBId = ROB->addEntry(n, RSID);
+        n.ROBId = ROB->addEntry(n, RSID, i.branchTaken);
 
         nextEntries.push_back(n);
     }

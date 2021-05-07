@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID) {
+ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
     ROBEntry e;
     e.ready = false;
     e.dest = -1;
@@ -19,6 +19,7 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID) {
     else {
         e.type = InstrType::BRANCH;
         e.dest = RSe.Rd;
+        e.result = branchTaken;
     }
 
     int id = -1; //check this logic
@@ -67,6 +68,11 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
         }
         else if(e.type == InstrType::BRANCH) {
             //do branch shit (BOOK SAYS NOTHING HAPPENS HERE)
+            //decide if branch requires flush :/
+            if(currentROB[index].result != e.result) {
+                //branch mispredicted!
+                nextROB[index].result = -1;
+            }
         }
         else if(e.type == InstrType::HALT) {
 
@@ -80,6 +86,10 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
         return 1;
     }
     return 0;
+}
+
+void ReorderBuffer::flush() {
+    std::cout << "FLUSHING PIPE" << std::endl;
 }
 
 void ReorderBuffer::tick() {
@@ -122,6 +132,7 @@ void ReorderBuffer::tick() {
         }
         else if(committing.type == InstrType::BRANCH) {
             //do branch shit FLUSH HERE
+            if(committing.result == -1) flush();
         }
         else if(committing.type == InstrType::HALT) {
             *halt = true;
