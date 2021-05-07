@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/proc2",
-            "args": ["${workspaceFoler}/gcd.as"],
+            "args": ["./src/gcd.as"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -20,12 +20,15 @@ RSEntry ReservationStation::getReadyEntry() {
 int ReservationStation::removeEntry(ROBEntry e) {
     for(int i = 0; i < currentEntries.size(); i++) {
         if(currentEntries[i].ROBId == e.id) {
-            currentEntries.erase(currentEntries.begin() + i);
+            nextEntries.erase(nextEntries.begin() + i);
+            nextOccupied--;
+            return 0;
         }
     }
+    return 1;
 }
 
-int ReservationStation::updateEntry(int RS, ROBEntry e) {
+void ReservationStation::updateEntry(int RS, ROBEntry e) {
     //For each RSEntry check all operands if waiting for result from RS this robid is linked to
     for(int i = 0; i < currentEntries.size(); i++) {
         RSEntry RSe = currentEntries[i];
@@ -80,7 +83,7 @@ void ReservationStation::addEntry(Instr i) {
             n.Rd = instr.Rd;
             n.RSd = -1;
         }
-        //Rn !!Always register addressed
+        //Rn !!Always register addressed (except STC then always available as 0)
         bool found = false;
         int r = ROB->currentOccupied;
         while(ROB->currentOccupied > 0 && !found && r >= 0) {
@@ -103,6 +106,10 @@ void ReservationStation::addEntry(Instr i) {
             n.Rn = RF[instr.Rn].value;
         }
         found = false;
+        if(n.opcode == opcode::LDC) {
+            n.RSn = -1;
+            n.Rn = 0;
+        }
 
         //Ri !!Immediate only if (instr.immediate == true)
         if(instr.immediate) {

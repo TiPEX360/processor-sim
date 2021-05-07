@@ -53,19 +53,15 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
     if(nextROB[index].id == e.id) {
         //Update ROB
         nextROB[index] = e;
+        int RSId = findRSIDByROBEntry(e);
+        if(RSId == -1) std::cout << "ERROR: No RS looking for this ROBEntry!" << std::endl;
         if(e.type == InstrType::REG) {
             //Update RS
-            int RSId = findRSIDByROBEntry(e);
-            if(RSId == -1) std::cout << "ERROR: No RS looking for this ROBEntry!" << std::endl;
-            int a;
-            std::cin >> a;
             for(int RS = 0; RS < RS_COUNT; RS++) {
-                std::cout << "here ROBID: " << e.id << " Result: " << e.result << std::endl;
-                (*RSs)[RS].updateEntry(RSId, e); // implement this (and mark RS as available)
+                (*RSs)[RS].updateEntry(RSId, e);//cannot call function WTF
             }
        
             nextROB[index].ready = true;    
-            (*RSs)[RSId].removeEntry(e); //Free RS
         }
         else if(e.type == InstrType::MEM) {
             nextROB[index].ready = true; //assuming both address and value of store is available.
@@ -73,6 +69,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
         else if(e.type == InstrType::BRANCH) {
             //do branch shit (BOOK SAYS NOTHING HAPPENS HERE)
         }
+        (*RSs)[RSId].removeEntry(e); //Free RS
 
     }
     else {
@@ -99,6 +96,7 @@ void ReorderBuffer::tick() {
     if(currentROB.size() > 0 && currentROB[0].ready) {
         ROBEntry committing = currentROB[0];
         nextROB.erase(nextROB.begin());
+        nextOccupied--;
 
         if(committing.type == InstrType::REG) {
             std::cout << "commiting REG" << std::endl;

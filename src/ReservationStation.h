@@ -29,7 +29,7 @@ public:
     void tick();
     void update();
     void addEntry(Instr i);
-    int updateEntry(int RS, ROBEntry e);
+    void updateEntry(int RS, ROBEntry e);
     int removeEntry(ROBEntry e);
     RSEntry getReadyEntry();
     ReservationStation() {};
