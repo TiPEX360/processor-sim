@@ -23,7 +23,7 @@ enum class RSType {ALU, LDST, BRANCH};
 
 typedef int ROBID;
 
-enum class InstrType { REG, MEM, BRANCH};
+enum class InstrType { REG, MEM, BRANCH, NOP, HALT};
 
 struct RSEntry {
     opcode opcode;

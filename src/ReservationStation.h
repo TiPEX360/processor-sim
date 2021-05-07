@@ -21,8 +21,6 @@ private:
     ReorderBuffer *ROB;
 public:
     int RSID;
-    int nextOccupied = 0;
-    int currentOccupied = 0;
     std::vector<RSEntry> currentEntries;
     std::vector<RSEntry> nextEntries;
     RSType type;

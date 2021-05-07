@@ -51,7 +51,7 @@ void BranchUnit::tick() {
         switch(processing.opcode) {
             case opcode::NOP:
                 nextOut.dest = -1;
-                nextOut.type = InstrType::BRANCH;
+                nextOut.type = InstrType::NOP;
                 nextOut.ready = false;
                 nextOut.id = -1;
                 nextOut.result = -1;
@@ -94,6 +94,14 @@ void BranchUnit::tick() {
         // std::cout << "BU Executed: " << (int)processing.opcode << std::endl;
         
         progress = 0;
+    }
+    else {
+        //Default null output
+        nextOut.dest = -1;
+        nextOut.type = InstrType::NOP;
+        nextOut.ready = false;
+        nextOut.id = -1;
+        nextOut.result = -1;
     }
 }
 

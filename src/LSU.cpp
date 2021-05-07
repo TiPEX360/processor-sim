@@ -22,9 +22,6 @@ void LSU::tick() {
             case opcode::LD:
                 duration = 3;
                 break;
-            case opcode::LDC:
-                duration = 1;
-                break;
             case opcode::ST:
                 duration = 2;
                 break;
@@ -77,6 +74,14 @@ void LSU::tick() {
         // std::cout << "LSU Executed: " << (int)processing.opcode << std::endl;
         
         progress = 0;
+    }
+    else {
+        //Default null output
+        nextOut.dest = -1;
+        nextOut.type = InstrType::NOP;
+        nextOut.ready = false;
+        nextOut.id = -1;
+        nextOut.result = -1;
     }
 }
 

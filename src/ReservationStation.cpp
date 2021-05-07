@@ -5,8 +5,7 @@
 RSEntry ReservationStation::getReadyEntry() {
     // if(currentEntries.size() > 0) std::cout << (int)currentEntries[0].opcode << " RSd " << (int)currentEntries[0].RSd << " RSn: " << (int)currentEntries[0].RSn << " RSi: " << (int)currentEntries[0].RSi << std::endl;
     for(int e = 0; e < currentEntries.size(); e++) {
-        RSEntry entry = currentEntries[e];
-        if(!entry.executing && entry.RSd == -1 && entry.RSn == -1 && entry.RSi == -1) {
+        if(!currentEntries[e].executing && currentEntries[e].RSd == -1 && currentEntries[e].RSn == -1 && currentEntries[e].RSi == -1) {
             nextEntries[e].executing = true;
             return nextEntries[e];
         }
@@ -21,53 +20,75 @@ int ReservationStation::removeEntry(ROBEntry e) {
     for(int i = 0; i < currentEntries.size(); i++) {
         if(currentEntries[i].ROBId == e.id) {
             nextEntries.erase(nextEntries.begin() + i);
-            nextOccupied--;
             return 0;
         }
     }
     return 1;
 }
 
-void ReservationStation::updateEntry(int RS, ROBEntry e) {
+void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively forwarding. Once this ROBEntry is 'current' (next cycle), RS will need to check for operands again!!! THIS IS IT! WE ARE NOT RECHECKING OpERANDS EVERY CYCLE!!!
+    //TODO: if executing == true, ignore it!!!
     //For each RSEntry check all operands if waiting for result from RS this robid is linked to
     for(int i = 0; i < currentEntries.size(); i++) {
         RSEntry RSe = currentEntries[i];
-        if(RSe.RSd == RS) {
-            RSe.Rd = e.result;
-            RSe.RSd = -1;
+        if(!RSe.executing) {
+            if(RSe.RSd == RS) {
+                RSe.Rd = e.result;
+                RSe.RSd = -1;
+            }
+            if(RSe.RSn == RS) {
+                RSe.Rn = e.result;
+                RSe.RSn = -1;
+            }
+            if(RSe.RSi == RS) {
+                RSe.Ri = e.result;
+                RSe.RSi = -1;
+            }
+            nextEntries[i] = RSe;
         }
-        if(RSe.RSn == RS) {
-            RSe.Rn = e.result;
-            RSe.RSn = -1;
+    }
+    //Update RSs added in this cycle, only available in next cycle :o
+    for(int i = 0; i < nextEntries.size(); i++) {
+        RSEntry RSe = nextEntries[i];
+        if(!RSe.executing) {
+            if(RSe.RSd == RS) {
+                RSe.Rd = e.result;
+                RSe.RSd = -1;
+            }
+            if(RSe.RSn == RS) {
+                RSe.Rn = e.result;
+                RSe.RSn = -1;
+            }
+            if(RSe.RSi == RS) {
+                RSe.Ri = e.result;
+                RSe.RSi = -1;
+            }
+            nextEntries[i] = RSe;
         }
-        if(RSe.RSi == RS) {
-            RSe.Ri = e.result;
-            RSe.RSi = -1;
-        }
-        nextEntries[i] = RSe;
     }
 }
 
 void ReservationStation::addEntry(Instr i) {
-    // std::cout << "Size: " << currentEntries.size() << std::endl;
     if(currentEntries.size() < RS_SIZE) { 
         RSEntry n;
         Instr instr = i;
         n.executing = false;
         n.opcode = instr.opcode;
-        //Rd !!REGISTER VALUE FOR BELOW ELSE IMMEDIATE
+        //Rd REGISTER VALUE FOR BELOW ELSE IMMEDIATE
         if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
             bool found = false;
-            int r = ROB->currentOccupied;
-            while(ROB->currentOccupied > 0 && !found && r >= 0) {
+            int r = ROB->currentROB.size();
+            while(ROB->currentROB.size() > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
                     found = true;
                     n.Rd = ROB->currentROB[r].result;
-                    // ROBID robId = ROB->currentROB[r].id;
-                    for(int RS = 0; RS < RS_COUNT; RS++) {
-                        for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                            if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                                n.RSd = ((*RSs)[RS].RSID);
+                    if(ROB->currentROB[r].ready) n.RSd = -1;
+                    else {
+                        for(int RS = 0; RS < RS_COUNT; RS++) {
+                            for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
+                                if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
+                                    n.RSd = ((*RSs)[RS].RSID);
+                                }
                             }
                         }
                     }
@@ -83,18 +104,20 @@ void ReservationStation::addEntry(Instr i) {
             n.Rd = instr.Rd;
             n.RSd = -1;
         }
-        //Rn !!Always register addressed (except STC then always available as 0)
+        //Rn Always register addressed (except STC then always available as 0)
         bool found = false;
-        int r = ROB->currentOccupied;
-        while(ROB->currentOccupied > 0 && !found && r >= 0) {
+        int r = ROB->currentROB.size();
+        while(ROB->currentROB.size() > 0 && !found && r >= 0) {
             if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
                 found = true;
                 n.Rn = ROB->currentROB[r].result;
-                // ROBID robId = ROB->currentROB[r].id;
-                for(int RS = 0; RS < RS_COUNT; RS++) {
-                    for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                        if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                            n.RSn = ((*RSs)[RS].RSID);
+                if(ROB->currentROB[r].ready) n.RSn = -1;
+                else {
+                    for(int RS = 0; RS < RS_COUNT; RS++) {
+                        for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
+                            if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
+                                n.RSn = ((*RSs)[RS].RSID);
+                            }
                         }
                     }
                 }
@@ -111,23 +134,25 @@ void ReservationStation::addEntry(Instr i) {
             n.Rn = 0;
         }
 
-        //Ri !!Immediate only if (instr.immediate == true)
+        //Ri Immediate only if (instr.immediate == true)
         if(instr.immediate) {
             n.Ri = instr.Ri;
             n.RSi = -1;
         }
         else {
             bool found = false;
-            int r = ROB->currentOccupied;
-            while(ROB->currentOccupied > 0 && !found && r >= 0 && r != 0) {
+            int r = ROB->currentROB.size();
+            while(ROB->currentROB.size() > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                     found = true;
                     n.Ri = ROB->currentROB[r].result;
-                    // ROBID robId = ROB->currentROB[r].id;
-                    for(int RS = 0; RS < RS_COUNT; RS++) {
-                        for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                            if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                                n.RSi = ((*RSs)[RS].RSID);
+                    if(ROB->currentROB[r].ready) n.RSi = -1;
+                    else {
+                        for(int RS = 0; RS < RS_COUNT; RS++) {
+                            for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
+                                if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
+                                    n.RSi = ((*RSs)[RS].RSID);
+                                }
                             }
                         }
                     }
@@ -135,30 +160,20 @@ void ReservationStation::addEntry(Instr i) {
                 r--;
             }
             if(!found) {
-                n.RSi = RF[instr.Ri].RS; //FIGURE OuT WHEN TO WRITE TO RF.RS Anser: in issue.
+                n.RSi = RF[instr.Ri].RS; 
                 n.Ri = RF[instr.Ri].value;
             }
         }
+
+        //Exception for HALT
+        if(n.opcode == opcode::HALT) {
+            n.RSn = -1;
+            n.RSi = -1;
+            n.RSd = -1;
+        }
         //Add entry to ROB
         n.ROBId = ROB->addEntry(n, RSID);
-        ROB->nextOccupied++;
 
-        // //RSd
-        // if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
-        //     n.RSd = RF[n.Rd].RS;
-        // }
-        // else n.RSd = -1;
-        // //RSn
-        // // n.RSn = 
-        // n.RSn = RF[instr.Rn].RS;
-        
-        // //RSi
-        // if(instr.immediate) n.RSi = -1;
-        // else n.RSi = RF[instr.Ri].RS;
-
-        //Add reservation station entry
-        // if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;
-        // else n.ready = false;
         nextEntries.push_back(n);
     }
     else {
@@ -167,115 +182,8 @@ void ReservationStation::addEntry(Instr i) {
 }
 
 
-void ReservationStation::tick() {
-
-    //Search issued instructions to see if this RS has been assigned an instruction
-
-    // for(int i = 0; i < issuedCurrent->size(); i++) {
-    //     std::cout << (*issuedCurrent)[i].RSID << std::endl;
-    //     if((*issuedCurrent)[i].RSID == RSID) {
-    //         //New instruction found
-    //         if(currentEntries.size() < RS_SIZE) {
-    //             RSEntry n;
-    //             Instr instr = (*issuedCurrent)[i];
-    //             n. = true;
-    //             n.opcode = instr.opcode;
-
-    //             //Rd
-    //             if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
-    //                 if(RF[instr.Rd].RS == -1) n.Rd = RF[instr.Rd].value;
-    //             }
-    //             else n.Rd = instr.Rd;
-    //             //Rn !!Always register addressed
-    //             if(RF[instr.Rn].RS == -1) n.Rn = RF[instr.Rn].value;
-    //             //Ri
-    //             if(instr.immediate) n.Ri = instr.Ri;
-    //             else if(RF[instr.Ri].RS == -1) n.Ri = RF[instr.Ri].value;
-     
-    //             //Add entry to ROB
-    //             n.ROBId = ROB->addEntry(n);
-
-    //             //RSd
-    //             if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
-    //                 n.RSd = RF[n.Rd].RS;
-    //             }
-    //             else n.RSd = -1;
-    //             //RSn
-    //             n.RSn = 
-    //             // n.RSn = RF[instr.Rn].RS;
-                
-    //             //RSi
-    //             if(instr.immediate) n.RSi = -1;
-    //             else n.RSi = RF[instr.Ri].RS;
-
-    //             if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;
-    //             else n.ready = false;
-
-
-    //             //Add reservation station entry
-    //             nextEntries.push_back(n);
-
-
-    //             //remove taken instruction from issued
-    //             issuedNext->erase(issuedNext->begin() + i);
-    //             // idrs->active = false;
-    //         }
-    //         else {
-    //             std::cout << "ERROR: Tried to issue instruction to RS which is full." << std::endl;
-    //         }
-    //     }
-    // }
-    std::cout << "RSID: " << RSID << " Entries: " << currentEntries.size() << std::endl;
-
-    //Add potential new instruction to RS queue
-    // if(idrs->active) {
-    //     if(current.size() < RSCount) {
-    //         RSEntry n;
-    //         Instr i = idrs->cir;
-    //         n.busy = true;
-    //         n.opcode = i.opcode;
-
-    //         //Rd
-    //         if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
-    //             if(RF[i.Rd].RS == -1) n.Rd = RF[i.Rd].value;
-    //         }
-    //         else n.Rd = i.Rd;
-    //         //Rn
-    //         if(RF[i.Rn].RS == -1) n.Rn = RF[i.Rn].value;
-    //         //Ri
-    //         if(i.immediate) n.Ri = i.Ri;
-    //         else if(RF[i.Ri].RS == -1) n.Ri = RF[i.Ri].value;
-
-    //         //RSd
-    //         if((n.opcode == ST) || (n.opcode >= BLT && n.opcode <= B)) {
-    //             n.RSd = RF[n.Rd].RS;
-    //         }
-    //         else n.RSd = -1;
-    //         //RSn
-    //         n.RSd = RF[i.Rn].RS;
-    //         //RSi
-    //         if(i.immediate) n.RSn = -1;
-    //         else n.RSn = RF[i.Ri].RS;
-
-    //         if(n.RSd == -1 && n.RSn == -1 && n.RSi == -1) n.ready = true;
-    //         else n.ready = false;
-
-    //         //Add reservation station to queue
-    //         next.push_back(n);
-
-    //         //flag taken instruction
-    //         idrs->active = false;
-    //     }
-
-
-    // }
-
-
-}
-
 void ReservationStation::update() {
     currentEntries = nextEntries;
-    currentOccupied = nextOccupied;
     // currentEntries.clear();
     // for(int i = 0; i < nextEntries.size(); i++) ReservationStation::currentEntries[i] = ReservationStation::nextEntries[i];
 }
@@ -289,6 +197,5 @@ ReservationStation::ReservationStation(std::array<ReservationStation, RS_COUNT> 
     ReservationStation::type = type;
     ReservationStation::RSID = RSID;
     ReservationStation::RSCount = RSCount;
-    ReservationStation::currentOccupied = 0;
     // ReservationStation::rsex = rsex;
 }

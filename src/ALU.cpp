@@ -49,6 +49,9 @@ void ALU::tick() {
             case opcode::LDC:
                 duration = 1;
                 break;
+            case opcode::HALT:
+                duration = 1;
+                break;
             default:
                 std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << (int)processing.opcode << std::endl;
                 break;
@@ -68,7 +71,7 @@ void ALU::tick() {
         switch(processing.opcode) {
             case opcode::NOP:
                 nextOut.dest = -1;
-                nextOut.type = InstrType::BRANCH;
+                nextOut.type = InstrType::NOP;
                 nextOut.ready = false;
                 nextOut.id = -1;
                 nextOut.result = -1;
@@ -104,11 +107,26 @@ void ALU::tick() {
             case opcode::LDC:
                 nextOut.result = processing.Ri;
                 break;
+            case opcode::HALT:
+                nextOut.dest = -1;
+                nextOut.type = InstrType::HALT;
+                nextOut.ready = false;
+                nextOut.id = -1;
+                nextOut.result = -1;
+                break;
             default:
                 break;
         }
         // std::cout << "ALU Executed: " << (int)processing.opcode << std::endl;
         progress = 0;
+    }
+    else {
+        //Default null output
+        nextOut.dest = -1;
+        nextOut.type = InstrType::NOP;
+        nextOut.ready = false;
+        nextOut.id = -1;
+        nextOut.result = -1;
     }
 }
 

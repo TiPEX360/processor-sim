@@ -20,11 +20,10 @@ private:
     int32_t *nextMEM;
     std::array<ReservationStation, RS_COUNT> *RSs;
     std::array<ExecutionUnit *, EXEC_COUNT> *EUs;
+    bool *halt;
 public:
     std::vector<ROBEntry> currentROB;
     std::vector<ROBEntry> nextROB;
-    int currentOccupied = 0;
-    int nextOccupied = 0;
 
     int updateEntry(int index, ROBEntry e);
     ROBID addEntry(RSEntry RSe, RSID RSID);
@@ -32,5 +31,5 @@ public:
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
+    ReorderBuffer(bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
 };

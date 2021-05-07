@@ -15,9 +15,10 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID) {
         nextRF[e.dest].RS = RSID;
     }
     else if(RSe.opcode >= opcode::ST && RSe.opcode <= opcode::STC) e.type = InstrType::MEM;
+    else if(RSe.opcode == opcode::HALT) e.type = InstrType::HALT;
     else {
         e.type = InstrType::BRANCH;
-        RSe.Rd;
+        e.dest = RSe.Rd;
     }
 
     int id = -1; //check this logic
@@ -51,7 +52,6 @@ RSID ReorderBuffer::findRSIDByROBEntry(ROBEntry e) {
 
 int ReorderBuffer::updateEntry(int index, ROBEntry e) {
     if(nextROB[index].id == e.id) {
-        //Update ROB
         nextROB[index] = e;
         int RSId = findRSIDByROBEntry(e);
         if(RSId == -1) std::cout << "ERROR: No RS looking for this ROBEntry!" << std::endl;
@@ -60,16 +60,19 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
             for(int RS = 0; RS < RS_COUNT; RS++) {
                 (*RSs)[RS].updateEntry(RSId, e);//cannot call function WTF
             }
-       
-            nextROB[index].ready = true;    
+        
         }
         else if(e.type == InstrType::MEM) {
-            nextROB[index].ready = true; //assuming both address and value of store is available.
+           
         }
         else if(e.type == InstrType::BRANCH) {
             //do branch shit (BOOK SAYS NOTHING HAPPENS HERE)
         }
-        (*RSs)[RSId].removeEntry(e); //Free RS
+        else if(e.type == InstrType::HALT) {
+
+        }
+        nextROB[index].ready = true; 
+        (*RSs)[RSId].removeEntry(e); //Free RS which produced result
 
     }
     else {
@@ -80,23 +83,28 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
 }
 
 void ReorderBuffer::tick() {
-    //Check all execution units for new outputs (is ROB already 'ready')
+    //WRITE RESULT
     for(int i = 0; i < EXEC_COUNT; i++) {
         ROBEntry out = (*EUs)[i]->currentOut;
-
-        for(int r = 0; r < currentROB.size(); r++) {
-            if(currentROB[r].id == out.id && !currentROB[r].ready) {
-                std::cout << "Updating ROBEntry" << std::endl;
-                updateEntry(r, out); //WRITE RESULT STEP
-            } 
+        if(out.type != InstrType::NOP) {
+            //Send CDB to waiting RSEntries not being executed
+            for(int r = 0; r < currentROB.size(); r++) {
+                if(currentROB[r].id == out.id && !currentROB[r].ready) {
+                    std::cout << "Updating ROBEntry" << std::endl;
+                    updateEntry(r, out);
+                } 
+            }
+            //Send CDB to waiting RSEntries added in *this* cycle :o
+            
+            
         }
+        
     }
 
     //COMMIT STEP
     if(currentROB.size() > 0 && currentROB[0].ready) {
         ROBEntry committing = currentROB[0];
-        nextROB.erase(nextROB.begin());
-        nextOccupied--;
+        nextROB.erase(nextROB.begin()); //erase not working >:(
 
         if(committing.type == InstrType::REG) {
             std::cout << "commiting REG" << std::endl;
@@ -111,20 +119,23 @@ void ReorderBuffer::tick() {
         else if(committing.type == InstrType::BRANCH) {
             //do branch shit FLUSH HERE
         }
+        else if(committing.type == InstrType::HALT) {
+            *halt = true;
+        }
     }
 
 }
 
 void ReorderBuffer::update() {
     currentROB = nextROB;
-    currentOccupied = nextOccupied;
 }
 
-ReorderBuffer::ReorderBuffer(std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
+ReorderBuffer::ReorderBuffer(bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
     ReorderBuffer::nextRF = nextRF;
     ReorderBuffer::nextMEM = nextMEM;
     ReorderBuffer::RSs = RSs;
+    ReorderBuffer::halt = halt;
 }
 
 // ReorderBuffer::ReorderBuffer()  {};
