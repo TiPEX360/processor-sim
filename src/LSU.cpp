@@ -70,6 +70,8 @@ void LSU::tick() {
                 nextOut.type = InstrType::MEM;
                 // duration = 1;
                 break;
+            default:
+                break;
         }
         // std::cout << "LSU Executed: " << (int)processing.opcode << std::endl;
         
