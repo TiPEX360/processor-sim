@@ -55,36 +55,43 @@ void BranchUnit::tick() {
                 nextOut.ready = false;
                 nextOut.id = -1;
                 nextOut.result = -1;
+                nextOut.bpc = 0;
                 break;
             case opcode::BLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
+                nextOut.bpc = processing.bpc;
                 break;
             case opcode::BNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
+                nextOut.bpc = processing.bpc;
                 break;
             case opcode::B:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
+                nextOut.bpc = processing.bpc;
                 break;
             case opcode::JLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
+                nextOut.bpc = processing.bpc;
                 break;
             case opcode::JNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
+                nextOut.bpc = processing.bpc;
                 break;
             case opcode::J:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
+                nextOut.bpc = processing.bpc;
                 break;
             default:
                 break;
@@ -105,6 +112,7 @@ void BranchUnit::tick() {
         nextOut.ready = false;
         nextOut.id = -1;
         nextOut.result = -1;
+        nextOut.bpc = 0;
     }
 }
 

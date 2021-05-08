@@ -9,6 +9,7 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
     e.ready = false;
     e.dest = -1;
     e.result = -1;
+    e.bpc = RSe.bpc;
     if((RSe.opcode >= opcode::ADD && RSe.opcode <= opcode::XOR) || RSe.opcode == opcode::LDC || RSe.opcode == opcode::LD) {
         e.type =  InstrType::REG;
         e.dest = RSe.Rd;
@@ -73,6 +74,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
                 //branch mispredicted!
                 nextROB[index].result = -1;
                 //update BPB
+                branchBuffer->updateBranch(e.bpc, e.result);
             }
         }
         else if(e.type == InstrType::HALT) {
@@ -167,13 +169,14 @@ void ReorderBuffer::update() {
     currentROB = nextROB;
 }
 
-ReorderBuffer::ReorderBuffer(std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
+ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
     ReorderBuffer::nextRF = nextRF;
     ReorderBuffer::nextMEM = nextMEM;
     ReorderBuffer::RSs = RSs;
     ReorderBuffer::halt = halt;
     ReorderBuffer::nextFetched = nextFetched;
+    ReorderBuffer::branchBuffer = branchBuffer;
 }
 
 // ReorderBuffer::ReorderBuffer()  {};

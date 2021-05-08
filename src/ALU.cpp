@@ -75,6 +75,7 @@ void ALU::tick() {
                 nextOut.ready = false;
                 nextOut.id = -1;
                 nextOut.result = -1;
+                nextOut.bpc = 0;
                 break;
             case opcode::ADD:
                 nextOut.result = processing.Rn + processing.Ri;
@@ -112,6 +113,7 @@ void ALU::tick() {
                 nextOut.type = InstrType::HALT;
                 nextOut.ready = false;
                 nextOut.result = -1;
+                nextOut.bpc = 0;
                 break;
             default:
                 break;
@@ -126,6 +128,7 @@ void ALU::tick() {
         nextOut.ready = false;
         nextOut.id = -1;
         nextOut.result = -1;
+        nextOut.bpc = 0;
     }
 }
 

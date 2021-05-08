@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include "instr.h"
+#include "BPB.hpp"
 // #include "ReservationStation.h"
 // #include "ExecutionUnit.h"
 
@@ -21,6 +22,7 @@ private:
     std::array<ReservationStation, RS_COUNT> *RSs;
     std::array<ExecutionUnit *, EXEC_COUNT> *EUs;
     std::queue<Instr> *nextFetched;
+    BPB *branchBuffer;
     bool *halt;
 public:
     std::vector<ROBEntry> currentROB;
@@ -33,5 +35,5 @@ public:
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
+    ReorderBuffer(BPB *branchBuffer, std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
 };

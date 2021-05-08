@@ -35,6 +35,7 @@ struct RSEntry {
     int Ri;
     bool executing;
     ROBID ROBId;
+    uint32_t bpc;
 };
 
 
@@ -44,6 +45,7 @@ struct ROBEntry {
     int result;
     int dest;
     bool ready;
+    uint32_t bpc;
     //bool inUse;
 };
 
@@ -67,6 +69,7 @@ struct Instr {
     bool immediate;
     int branchTaken;
     int RSID;
+    uint32_t bpc;
 };
 
 // struct FetchedInstr : Instr {

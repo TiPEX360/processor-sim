@@ -9,6 +9,7 @@ void FetchUnit::tick() {
         bool branch = false;
         if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
             branch = branchBuffer->predictBranchDynamic(currentPC->value, n);
+            n.bpc = currentPC->value;
             if(branch) {
                 //update PC
                 if(n.opcode >= opcode::BLT && n.opcode <= opcode::B) nextPC->value = n.Rd; //go to branch
@@ -42,5 +43,5 @@ FetchUnit::FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, I
     FetchUnit::INSTR = INSTR;
     FetchUnit::currentFetched = std::queue<Instr>();
     FetchUnit::nextFetched = std::queue<Instr>();
-    nextFetched.push({opcode::NOP, 0, 0, 0, true, 0, 0});
+    nextFetched.push({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
 }

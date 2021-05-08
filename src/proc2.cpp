@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
     FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
     std::array<ExecutionUnit *, EXEC_COUNT> EUs;
     bool halt = false; //KNOWN TO BE ROOT OF ALL PROBLEMS
-    ReorderBuffer ROB(&fetchUnit.nextFetched, &halt, &EUs, nextRF, nextMEM, &RSs);
+    ReorderBuffer ROB(&branchBuffer, &fetchUnit.nextFetched, &halt, &EUs, nextRF, nextMEM, &RSs);
     DecodeUnit decodeUnit(&fetchUnit.currentFetched, &fetchUnit.nextFetched, &RSs, &ROB);
 
     EUs[0] = new EU::ALU(&RSs[0], &ROB);
@@ -183,13 +183,8 @@ int main(int argc, char *argv[]) {
     while(!halt) {
         std::cout << "--------------------- Cycle:  " << cycles << " PC: " << currentPC->value << "----------------------" << std::endl;
         cycles = cycles + 1;
-        // if(cycles > 60) exit(1);
-        // if(fetchUnit.currentFetched.size() > 0 && fetchUnit.currentFetched.front().opcode == opcode::HALT) halt = true;
-        // writeBackUnit.tick();
-        // memoryUnit.tick();
-        // executionUnit.tick();
-        // fetchUnit.before();
-        //TICK
+
+        //Tick
         fetchUnit.tick();
         decodeUnit.tick();
         for(int i = 0; i < EXEC_COUNT; i++) {
@@ -197,7 +192,7 @@ int main(int argc, char *argv[]) {
         }
         ROB.tick();
 
-        //UPDATE STATE
+        //Update State
         decodeUnit.update();
         fetchUnit.update();
         for(int i = 0; i < 32; i++) currentRF[i] = nextRF[i];

@@ -77,6 +77,7 @@ void ReservationStation::addEntry(Instr i) {
         Instr instr = i;
         n.executing = false;
         n.opcode = instr.opcode;
+        n.bpc = i.bpc;
         //Rd REGISTER VALUE FOR BELOW ELSE IMMEDIATE
         // if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
         if(n.opcode == opcode::ST) {

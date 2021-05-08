@@ -3,7 +3,7 @@
 #include "instr.h"
 
 struct BPBEntry {
-    char state : 2; 
+    char state; 
     // bool initialised = false;
 };
 

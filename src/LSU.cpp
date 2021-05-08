@@ -46,29 +46,25 @@ void LSU::tick() {
                 nextOut.ready = false;
                 nextOut.id = -1;
                 nextOut.result = -1;
+                nextOut.bpc = 0;
                 break;
             case opcode::LD:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::REG;
                 nextOut.result = currentMEM[processing.Rn + processing.Ri];
+                nextOut.bpc = 0;
                 break;
-            //THIS SHOULD GO IN ALU
-            // case LDC:
-            //     nextOut.dest = processing.Rd;
-            //     nextOut.result = processing.Ri;
-            //     duration = 1;
-            //     break;
             case opcode::ST:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Rn + processing.Ri;
                 nextOut.type = InstrType::MEM;
-                // duration = 1;
+                nextOut.bpc = 0;
                 break;
             case opcode::STC:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Ri;
                 nextOut.type = InstrType::MEM;
-                // duration = 1;
+                nextOut.bpc = 0;
                 break;
             default:
                 break;
@@ -84,6 +80,7 @@ void LSU::tick() {
         nextOut.ready = false;
         nextOut.id = -1;
         nextOut.result = -1;
+        nextOut.bpc = 0;
     }
 }
 
