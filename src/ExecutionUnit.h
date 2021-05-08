@@ -31,4 +31,5 @@ public:
     // int execute();
     virtual void tick() = 0;
     void update();
+    void flush();
 };

@@ -72,6 +72,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
             if(currentROB[index].result != e.result) {
                 //branch mispredicted!
                 nextROB[index].result = -1;
+                //update BPB
             }
         }
         else if(e.type == InstrType::HALT) {
@@ -88,8 +89,29 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
     return 0;
 }
 
-void ReorderBuffer::flush() {
+void ReorderBuffer::flush(ROBEntry branchEntry) {
     std::cout << "FLUSHING PIPE" << std::endl;
+    //Clear ROB
+    nextROB.clear();
+    //Clear all RSs
+    for(int RS = 0; RS < RS_COUNT; RS++) {
+        (*RSs)[RS].currentEntries.clear(); //probably unnecessary
+        (*RSs)[RS].nextEntries.clear();
+    }
+    //Clear EUs
+    for(int EU = 0; EU < EXEC_COUNT; EU++) {
+        (*EUs)[EU]->flush();
+    }
+    //Clear issued
+    // std::queue<Instr> emptyQueue;
+    // std::swap(*nextFetched, emptyQueue);
+    while(nextFetched->size() > 0) {
+        nextFetched->pop();
+    }
+    Instr nop = {};
+    nextFetched->push({opcode::NOP, 0, 0, 0, true, 0, 0});
+    //set pc
+    nextRF[30].value = branchEntry.dest;
 }
 
 void ReorderBuffer::tick() {
@@ -132,7 +154,7 @@ void ReorderBuffer::tick() {
         }
         else if(committing.type == InstrType::BRANCH) {
             //do branch shit FLUSH HERE
-            if(committing.result == -1) flush();
+            if(committing.result == -1) flush(committing);
         }
         else if(committing.type == InstrType::HALT) {
             *halt = true;
@@ -145,12 +167,13 @@ void ReorderBuffer::update() {
     currentROB = nextROB;
 }
 
-ReorderBuffer::ReorderBuffer(bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
+ReorderBuffer::ReorderBuffer(std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
     ReorderBuffer::nextRF = nextRF;
     ReorderBuffer::nextMEM = nextMEM;
     ReorderBuffer::RSs = RSs;
     ReorderBuffer::halt = halt;
+    ReorderBuffer::nextFetched = nextFetched;
 }
 
 // ReorderBuffer::ReorderBuffer()  {};

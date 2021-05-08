@@ -4,6 +4,16 @@ void ExecutionUnit::update() {
     currentOut = nextOut;
 }
 
+void ExecutionUnit::flush() {
+    RSEntry nullEntry;
+    nullEntry.opcode = opcode::NOP;
+    nullEntry.executing = true;
+    processing = nullEntry;
+    nextOut = {-1, InstrType::NOP, -1, -1, false};
+    duration = 0;
+    progress = 0;
+}
+
 // ExecutionUnit::ExecutionUnit(bool *halt, PipelineRegister *idex, PipelineRegister *exmem) {
 //     ExecutionUnit::halt = halt;
 //     ExecutionUnit::idex = idex;

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <queue>
 #include "instr.h"
 // #include "ReservationStation.h"
 // #include "ExecutionUnit.h"
@@ -7,7 +8,6 @@
 // class ReservationStation;
 class ExecutionUnit;
 class ReservationStation;
-
 
 typedef int ROBID;
 
@@ -20,6 +20,7 @@ private:
     int32_t *nextMEM;
     std::array<ReservationStation, RS_COUNT> *RSs;
     std::array<ExecutionUnit *, EXEC_COUNT> *EUs;
+    std::queue<Instr> *nextFetched;
     bool *halt;
 public:
     std::vector<ROBEntry> currentROB;
@@ -27,10 +28,10 @@ public:
 
     int updateEntry(int index, ROBEntry e);
     ROBID addEntry(RSEntry RSe, RSID RSID, int branchTaken);
-    void flush();
+    void flush(ROBEntry branchEntry);
     RSID findRSIDByROBEntry(ROBEntry e);
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
+    ReorderBuffer(std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
 };

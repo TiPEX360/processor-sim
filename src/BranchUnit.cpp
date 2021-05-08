@@ -70,14 +70,17 @@ void BranchUnit::tick() {
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
+                break;
             case opcode::JLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
+                break;
             case opcode::JNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
+                break;
             case opcode::J:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
@@ -88,9 +91,9 @@ void BranchUnit::tick() {
         }
 
         //Take branch
-        if(nextOut.result == 1) {
-            nextPC->value = nextOut.dest;
-        }
+        // if(nextOut.result == 1) {
+        //     nextPC->value = nextOut.dest;//FFS......
+        // }
         // std::cout << "BU Executed: " << (int)processing.opcode << std::endl;
         
         progress = 0;
