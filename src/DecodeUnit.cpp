@@ -8,14 +8,22 @@ void DecodeUnit::tick() {
 
     bool found = false;
     if(i.opcode == opcode::HALT || i.opcode == opcode::LDC || i.opcode >= opcode::ADD && i.opcode <= opcode::XOR) {
-        for(int RS = 0; RS < RS_COUNT && !found; RS++) {
+        std::vector<int> availableRSs;
+        for(int RS = 0; RS < RS_COUNT; RS++) {
             if((*RSs)[RS].type == RSType::ALU && (*RSs)[RS].currentEntries.size() < RS_SIZE && ROB->currentROB.size() < ROB_MAX) {
-                found = true;
-                i.RSID = RS;
-                (*RSs)[RS].addEntry(i);
-                nextFetched->pop();
-                std::cout << (*RSs)[RS].nextEntries.size();
+                availableRSs.push_back(RS);
             }
+        }
+        if(availableRSs.size() > 0) {
+            int bestRS = availableRSs[0];
+            for(int RS = 0; RS < availableRSs.size(); RS++) {
+                if((*RSs)[availableRSs[RS]].currentEntries.size() < (*RSs)[bestRS].currentEntries.size()) bestRS = RS;
+            }
+            found = true;
+            i.RSID = bestRS;
+            (*RSs)[bestRS].addEntry(i);
+            nextFetched->pop();
+            std::cout << (*RSs)[bestRS].nextEntries.size();
         }
     }
     else if(i.opcode >= opcode::LD && i.opcode <= opcode::STC) {
