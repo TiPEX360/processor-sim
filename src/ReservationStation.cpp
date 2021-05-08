@@ -29,24 +29,26 @@ int ReservationStation::removeEntry(ROBEntry e) {
 void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively forwarding. Once this ROBEntry is 'current' (next cycle), RS will need to check for operands again!!! THIS IS IT! WE ARE NOT RECHECKING OpERANDS EVERY CYCLE!!!
     //TODO: if executing == true, ignore it!!!
     //For each RSEntry check all operands if waiting for result from RS this robid is linked to
-    for(int i = 0; i < currentEntries.size(); i++) {
-        RSEntry RSe = currentEntries[i];
-        if(!RSe.executing) {
-            if(RSe.RSd == e.id) {
-                RSe.Rd = e.result;
-                RSe.RSd = -1;
-            }
-            if(RSe.RSn == e.id) {
-                RSe.Rn = e.result;
-                RSe.RSn = -1;
-            }
-            if(RSe.RSi == e.id) {
-                RSe.Ri = e.result;
-                RSe.RSi = -1;
-            }
-            nextEntries[i] = RSe;
-        }
-    }
+    //TOGO: only update nextEntries IFFFF actually changed anything... or take nextEntries as currentEntries straight away...
+    //ORRRR just do the second part of loop from the get go... idk how safe these last two options are though ;)
+    // for(int i = 0; i < currentEntries.size(); i++) {
+    //     RSEntry RSe = currentEntries[i];
+    //     if(!RSe.executing) {
+    //         if(RSe.RSd == e.id) {
+    //             RSe.Rd = e.result;
+    //             RSe.RSd = -1;
+    //         }
+    //         if(RSe.RSn == e.id) {
+    //             RSe.Rn = e.result;
+    //             RSe.RSn = -1;
+    //         }
+    //         if(RSe.RSi == e.id) {
+    //             RSe.Ri = e.result;
+    //             RSe.RSi = -1;
+    //         }
+    //         nextEntries[i] = RSe;
+    //     }
+    // }
     //Update RSs added in this cycle, only available in next cycle :o
     //Consider putting this in decode stage
     for(int i = 0; i < nextEntries.size(); i++) {

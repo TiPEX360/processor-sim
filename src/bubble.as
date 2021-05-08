@@ -12,23 +12,23 @@ stc #25 #9
 ldc r0 #0 //i
 ldc r4 #9 //size - 1
 
-add r10 pc #0 //outer loop start
+//add r10 pc #0 //outer loop start
 ldc r1 #0 //j
 
-add r11 pc #0 //inner loop start
-nop
+//add r11 pc #0 //inner loop start
+//nop
 ld r2 r1 #0 //a
 ld r3 r1 #1 //b
 
-nop
-nop
-jlt #2 r2 r3 //a < b?
+//nop
+//nop
+jlt #2 r2 r3 //a < b? //check #15->#18 jumped to
 st r2 r1 #1 //swap
 st r3 r1 #0
 
 
 add r1 r1 #1 //j++
-blt r11 r1 r4 //branch inner loop
+blt #13 r1 r4 //branch inner loop
 add r0 r0 #1 //i++
-blt r10 r0 r4 //branch outer loop
+blt #12 r0 r4 //branch outer loop
 halt
