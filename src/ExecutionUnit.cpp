@@ -10,7 +10,7 @@ void ExecutionUnit::flush() {
     nullEntry.executing = true;
     processing = nullEntry;
     nextOut = {-1, InstrType::NOP, -1, -1, false};
-    duration = 0;
+    duration = 1;
     progress = 0;
 }
 

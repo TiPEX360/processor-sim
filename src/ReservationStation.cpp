@@ -147,6 +147,8 @@ void ReservationStation::addEntry(Instr i) {
             while(ROB->currentROB.size() > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                     found = true;
+                            ///IDEA!!! if !ROB[r].ready then Ri is NOT result but ROBID. That way, can check value coming from correct ROBEntry
+                    //ORRRRR RSi actually stored ROBID. <-- i like this option more :)
                     n.Ri = ROB->currentROB[r].result;
                     if(ROB->currentROB[r].ready) n.RSi = -1;
                     else {

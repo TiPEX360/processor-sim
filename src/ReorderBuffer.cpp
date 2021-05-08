@@ -103,13 +103,13 @@ void ReorderBuffer::flush(ROBEntry branchEntry) {
         (*EUs)[EU]->flush();
     }
     //Clear issued
-    // std::queue<Instr> emptyQueue;
-    // std::swap(*nextFetched, emptyQueue);
     while(nextFetched->size() > 0) {
         nextFetched->pop();
     }
     Instr nop = {};
     nextFetched->push({opcode::NOP, 0, 0, 0, true, 0, 0});
+    //Reset scoreboard
+    for(int i = 0; i < 31; i++) nextRF[i].RS = -1;
     //set pc
     nextRF[30].value = branchEntry.dest;
 }
