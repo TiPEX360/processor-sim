@@ -32,15 +32,15 @@ void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively f
     for(int i = 0; i < currentEntries.size(); i++) {
         RSEntry RSe = currentEntries[i];
         if(!RSe.executing) {
-            if(RSe.RSd == RS) {
+            if(RSe.RSd == e.id) {
                 RSe.Rd = e.result;
                 RSe.RSd = -1;
             }
-            if(RSe.RSn == RS) {
+            if(RSe.RSn == e.id) {
                 RSe.Rn = e.result;
                 RSe.RSn = -1;
             }
-            if(RSe.RSi == RS) {
+            if(RSe.RSi == e.id) {
                 RSe.Ri = e.result;
                 RSe.RSi = -1;
             }
@@ -52,15 +52,15 @@ void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively f
     for(int i = 0; i < nextEntries.size(); i++) {
         RSEntry RSe = nextEntries[i];
         if(!RSe.executing) {
-            if(RSe.RSd == RS) {
+            if(RSe.RSd == e.id) {
                 RSe.Rd = e.result;
                 RSe.RSd = -1;
             }
-            if(RSe.RSn == RS) {
+            if(RSe.RSn == e.id) {
                 RSe.Rn = e.result;
                 RSe.RSn = -1;
             }
-            if(RSe.RSi == RS) {
+            if(RSe.RSi == e.id) {
                 RSe.Ri = e.result;
                 RSe.RSi = -1;
             }
@@ -79,26 +79,27 @@ void ReservationStation::addEntry(Instr i) {
         // if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
         if(n.opcode == opcode::ST) {
             bool found = false;
-            int r = ROB->currentROB.size();
+            int r = ROB->currentROB.size() - 1;
             while(ROB->currentROB.size() > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
                     found = true;
                     n.Rd = ROB->currentROB[r].result;
                     if(ROB->currentROB[r].ready) n.RSd = -1;
                     else {
-                        for(int RS = 0; RS < RS_COUNT; RS++) {
-                            for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                                if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                                    n.RSd = ((*RSs)[RS].RSID);
-                                }
-                            }
-                        }
+                        n.RSd = ROB->currentROB[r].id;
+                        // for(int RS = 0; RS < RS_COUNT; RS++) {
+                        //     for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
+                        //         if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
+                        //             n.RSd = ((*RSs)[RS].RSID);
+                        //         }
+                        //     }
+                        // }
                     }
                 }
                 r--;
             }
             if(!found) {
-                n.RSd = RF[instr.Rd].RS;
+                n.RSd = RF[instr.Rd].RS; // should ALWAYS be -1 if we got to here
                 n.Rd = RF[instr.Rd].value;
             }
         }
@@ -108,20 +109,21 @@ void ReservationStation::addEntry(Instr i) {
         }
         //Rn Always register addressed (except STC then always available as 0)
         bool found = false;
-        int r = ROB->currentROB.size();
+        int r = ROB->currentROB.size() - 1;
         while(ROB->currentROB.size() > 0 && !found && r >= 0) {
             if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
                 found = true;
                 n.Rn = ROB->currentROB[r].result;
                 if(ROB->currentROB[r].ready) n.RSn = -1;
                 else {
-                    for(int RS = 0; RS < RS_COUNT; RS++) {
-                        for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                            if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                                n.RSn = ((*RSs)[RS].RSID);
-                            }
-                        }
-                    }
+                    n.RSn = ROB->currentROB[r].id;
+                    // for(int RS = 0; RS < RS_COUNT; RS++) {
+                    //     for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
+                    //         if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
+                    //             n.RSn = ((*RSs)[RS].RSID);
+                    //         }
+                    //     }
+                    // }
                 }
             }
             r--;
@@ -143,7 +145,7 @@ void ReservationStation::addEntry(Instr i) {
         }
         else {
             bool found = false;
-            int r = ROB->currentROB.size();
+            int r = ROB->currentROB.size() - 1;
             while(ROB->currentROB.size() > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                     found = true;
@@ -152,13 +154,14 @@ void ReservationStation::addEntry(Instr i) {
                     n.Ri = ROB->currentROB[r].result;
                     if(ROB->currentROB[r].ready) n.RSi = -1;
                     else {
-                        for(int RS = 0; RS < RS_COUNT; RS++) {
-                            for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                                if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                                    n.RSi = ((*RSs)[RS].RSID);
-                                }
-                            }
-                        }
+                        n.RSi = ROB->currentROB[r].id;
+                        // for(int RS = 0; RS < RS_COUNT; RS++) {
+                        //     for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
+                        //         if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
+                        //             n.RSi = ((*RSs)[RS].RSID);
+                        //         }
+                        //     }
+                        // }
                     }
                 }
                 r--;
