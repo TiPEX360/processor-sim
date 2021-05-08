@@ -13,24 +13,20 @@ struct DecodeData {
 
 class DecodeUnit {
 private:
-    // PipelineRegister *idrs;
-    // PipelineRegister *ifid;
     std::array<ReservationStation, RS_COUNT> *RSs;
-    std::queue<Instr> *currentFetched;
-    std::queue<Instr> *nextFetched;
+    std::array<std::queue<Instr>, 4> *currentFetched;
+    std::array<std::queue<Instr>, 4> *nextFetched;
     ReorderBuffer *ROB;
-public:
-    // DecodeData current;
-    // DecodeData next;
 
+    bool issueInstr(Instr n);
+public:
     std::vector<Instr> currentIssued;
     std::vector<Instr> nextIssued;
-    // IssuedInstr n
 
 
     void tick();
     void update();
 
     DecodeUnit();
-    DecodeUnit(std::queue<Instr> *currentFetched, std::queue<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB);
+    DecodeUnit(std::array<std::queue<Instr>, 4> *currentFetched, std::array<std::queue<Instr>, 4> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB);
 };
