@@ -9,7 +9,7 @@ BPB::BPB() {
 
 //Called during fetch
 bool BPB::predictBranchDynamic(uint32_t pc, Instr i) {
-    int index = (pc & 0x0000001F);
+    int index = (pc % 15);
         //Predict
     char state = currentBuffer[index].state;
     if(state == 0) {
@@ -28,23 +28,25 @@ bool BPB::predictBranchDynamic(uint32_t pc, Instr i) {
 
 //Called during wb
 void BPB::updateBranch(uint32_t pc, bool taken) {
-    int index = (pc & 0x0000001F);
+    //multiple branches go through before state updated???
+    int index = (pc % 15);
 
     char state = currentBuffer[index].state;
     if(state == 0) {
-        if(taken) nextBuffer[index].state = 1;
+        if(taken) currentBuffer[index].state = 1;
     }
     if(state == 1) {
-        if(taken) nextBuffer[index].state = 3;
+        if(taken) currentBuffer[index].state = 3;
     }
     if(state == 2) {
-        if(!taken) nextBuffer[index].state = 0;
+        if(!taken) currentBuffer[index].state = 0;
     }
     else {
-        if(!taken) nextBuffer[index].state = 2;
+        if(!taken) currentBuffer[index].state = 2;
     }
+    // for(int i = 0; i < 16; i++) currentBuffer[i].state = nextBuffer[i].state;
 }
 
 void BPB::update() {
-    for(int i = 0; i < 16; i++) currentBuffer[i] = nextBuffer[i];
+    // for(int i = 0; i < 16; i++) currentBuffer[i].state = nextBuffer[i].state;
 }

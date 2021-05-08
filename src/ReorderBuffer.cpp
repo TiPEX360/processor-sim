@@ -73,9 +73,9 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
             if(currentROB[index].result != e.result) {
                 //branch mispredicted!
                 nextROB[index].result = -1;
-                //update BPB
-                branchBuffer->updateBranch(e.bpc, e.result);
             }
+            //update BPB
+            branchBuffer->updateBranch(e.bpc, e.result);
         }
         else if(e.type == InstrType::HALT) {
 

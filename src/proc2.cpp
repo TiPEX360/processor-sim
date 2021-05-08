@@ -212,9 +212,9 @@ int main(int argc, char *argv[]) {
         if (currentMEM[i] != 0) std::cout << currentMEM[i] << std::endl;
     }
 
-    for(int i = 0; i < 512; i++) {
-        if (INSTR[i].opcode != opcode::NOP) std::cout << (int)INSTR[i].opcode << std::endl;
-    }
+    // for(int i = 0; i < 512; i++) {
+    //     if (INSTR[i].opcode != opcode::NOP) std::cout << (int)INSTR[i].opcode << std::endl;
+    // }
     std::cout << "Cycles: " << cycles << std::endl;
     return 0;
 }
