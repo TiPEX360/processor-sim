@@ -1,0 +1,53 @@
+Date : 2021-05-05 12:32:46
+Directory : /home/dziurawy-beret/ACA2021
+Total : 26 files,  1176 codes, 405 comments, 253 blanks, all 1834 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |         24 |      1,131 |        405 |        245 |      1,781 |
+| Markdown |          1 |         41 |          0 |          6 |         47 |
+| Makefile |          1 |          4 |          0 |          2 |          6 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                    | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                       |         26 |      1,176 |        405 |        253 |      1,834 |
+| src                                                     |         24 |      1,131 |        405 |        245 |      1,781 |
++---------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                | language | code       | comment    | blank      | total      |
++---------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/dziurawy-beret/ACA2021/Makefile                   | Makefile |          4 |          0 |          2 |          6 |
+| /home/dziurawy-beret/ACA2021/README.md                  | Markdown |         41 |          0 |          6 |         47 |
+| /home/dziurawy-beret/ACA2021/src/ALU.cpp                | C++      |         91 |         10 |          7 |        108 |
+| /home/dziurawy-beret/ACA2021/src/ALU.hpp                | C++      |         11 |          0 |          4 |         15 |
+| /home/dziurawy-beret/ACA2021/src/DecodeUnit.cpp         | C++      |         53 |         23 |         13 |         89 |
+| /home/dziurawy-beret/ACA2021/src/DecodeUnit.h           | C++      |         23 |          5 |          8 |         36 |
+| /home/dziurawy-beret/ACA2021/src/ExecutionUnit.cpp      | C++      |          4 |        111 |         15 |        130 |
+| /home/dziurawy-beret/ACA2021/src/ExecutionUnit.h        | C++      |         17 |         12 |          5 |         34 |
+| /home/dziurawy-beret/ACA2021/src/FetchUnit.cpp          | C++      |         21 |         27 |          9 |         57 |
+| /home/dziurawy-beret/ACA2021/src/FetchUnit.h            | C++      |         20 |          2 |          7 |         29 |
+| /home/dziurawy-beret/ACA2021/src/LSU.cpp                | C++      |         61 |         12 |          9 |         82 |
+| /home/dziurawy-beret/ACA2021/src/LSU.hpp                | C++      |         13 |          0 |          4 |         17 |
+| /home/dziurawy-beret/ACA2021/src/MemoryUnit.cpp         | C++      |         31 |          4 |          5 |         40 |
+| /home/dziurawy-beret/ACA2021/src/MemoryUnit.h           | C++      |         13 |          0 |          1 |         14 |
+| /home/dziurawy-beret/ACA2021/src/PipelineRegister.h     | C++      |          2 |         20 |          8 |         30 |
+| /home/dziurawy-beret/ACA2021/src/ReorderBuffer.cpp      | C++      |         33 |          0 |          9 |         42 |
+| /home/dziurawy-beret/ACA2021/src/ReorderBuffer.hpp      | C++      |         30 |          1 |          7 |         38 |
+| /home/dziurawy-beret/ACA2021/src/ReservationStation.cpp | C++      |        113 |        103 |         34 |        250 |
+| /home/dziurawy-beret/ACA2021/src/ReservationStation.h   | C++      |         41 |          0 |          5 |         46 |
+| /home/dziurawy-beret/ACA2021/src/WriteBackUnit.cpp      | C++      |         18 |          1 |          3 |         22 |
+| /home/dziurawy-beret/ACA2021/src/WriteBackUnit.h        | C++      |         11 |          0 |          1 |         12 |
+| /home/dziurawy-beret/ACA2021/src/assembler.cpp          | C++      |         76 |          2 |         12 |         90 |
+| /home/dziurawy-beret/ACA2021/src/assembler2.cpp         | C++      |         72 |         18 |         13 |        103 |
+| /home/dziurawy-beret/ACA2021/src/instr.h                | C++      |         55 |          6 |         13 |         74 |
+| /home/dziurawy-beret/ACA2021/src/proc.cpp               | C++      |        178 |         16 |         20 |        214 |
+| /home/dziurawy-beret/ACA2021/src/proc2.cpp              | C++      |        144 |         32 |         33 |        209 |
+| Total                                                   |          |      1,176 |        405 |        253 |      1,834 |
++---------------------------------------------------------+----------+------------+------------+------------+------------+
