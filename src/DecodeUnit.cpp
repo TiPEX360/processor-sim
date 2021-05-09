@@ -1,7 +1,7 @@
 #include "DecodeUnit.h"
 #include <iostream>
 
-bool DecodeUnit::issueInstr(Instr n) {
+bool DecodeUnit::issueInstr(int counter, Instr n) {
     bool found = false;
     if(n.opcode == opcode::HALT || n.opcode == opcode::LDC || n.opcode >= opcode::ADD && n.opcode <= opcode::XOR) {
         std::vector<int> availableRSs;
@@ -17,7 +17,7 @@ bool DecodeUnit::issueInstr(Instr n) {
             }
             found = true;
             n.RSID = bestRS;
-            (*RSs)[bestRS].addEntry(n);
+            (*RSs)[bestRS].addEntry(counter, n);
             // nextFetched->pop();
             std::cout << (*RSs)[bestRS].nextEntries.size();
         }
@@ -27,7 +27,7 @@ bool DecodeUnit::issueInstr(Instr n) {
             if((*RSs)[RS].type == RSType::LDST && (*RSs)[RS].nextEntries.size() < RS_SIZE && ROB->nextROB.size() < ROB_MAX) {
                 found = true;
                 n.RSID = RS;
-                (*RSs)[RS].addEntry(n);
+                (*RSs)[RS].addEntry(counter, n);
                 // nextFetched->pop();
             }
         }
@@ -37,7 +37,7 @@ bool DecodeUnit::issueInstr(Instr n) {
             if((*RSs)[RS].type == RSType::BRANCH && (*RSs)[RS].nextEntries.size() < RS_SIZE && ROB->nextROB.size() < ROB_MAX) {
                 found = true;
                 n.RSID = RS;
-                (*RSs)[RS].addEntry(n);
+                (*RSs)[RS].addEntry(counter, n);
                 // nextFetched->pop();
             }
         }
@@ -53,9 +53,6 @@ bool DecodeUnit::issueInstr(Instr n) {
 }
 
 void DecodeUnit::tick() {
-    // //Try assign current instruction to a reservation station
-    // std::vector<Instr> bundle;
-    // for(int i = 0; i < 4; i++) bundle.push_back((*currentFetched)[i].front());
     bool bundleBroken = false;
     std::vector<Instr> remainder;
     for(int i = 0; i < 4; i++) {
@@ -63,7 +60,7 @@ void DecodeUnit::tick() {
         if(bundleBroken) {
             remainder.push_back((*currentFetched)[i].front());
         }
-        else if(!issueInstr((*currentFetched)[i].front())) {
+        else if(!issueInstr(i, (*currentFetched)[i].front())) {
             bundleBroken = true;
         }
         (*nextFetched)[i].pop();

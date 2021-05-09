@@ -129,6 +129,7 @@ void loadProgram(const char *path, Instr *INSTR) {
 int main(int argc, char *argv[]) {
     
     //Buffers
+    BundleWriteLog BWL[4];
     Register currentRF[31];
     Register nextRF[31];
     int32_t currentMEM[1024];
@@ -168,10 +169,10 @@ int main(int argc, char *argv[]) {
     EUs[2] = new EU::LSU(currentMEM, &RSs[2], &ROB);
     EUs[3] = new EU::BranchUnit(nextPC, &RSs[3], &ROB);
 
-    RSs[0] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 0, RS_COUNT);
-    RSs[1] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 1, RS_COUNT);
-    RSs[2] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
-    RSs[3] = ReservationStation(&RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
+    RSs[0] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 0, RS_COUNT);
+    RSs[1] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 1, RS_COUNT);
+    RSs[2] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
+    RSs[3] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
 
     if(argc < 2) {
         std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
@@ -186,6 +187,7 @@ int main(int argc, char *argv[]) {
 
         //Tick
         fetchUnit.tick();
+        for(int i = 0; i < 4; i++) BWL[i] = {-1, -1};
         decodeUnit.tick();
         for(int i = 0; i < EXEC_COUNT; i++) {
             EUs[i]->tick();

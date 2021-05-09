@@ -72,6 +72,10 @@ struct Instr {
     uint32_t bpc;
 };
 
+struct BundleWriteLog {
+    int dest;
+    ROBID ROBId;
+};
 // struct FetchedInstr : Instr {
 //     int npc;
 // };

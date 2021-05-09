@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
+ROBEntry ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
     ROBEntry e;
     e.ready = false;
     e.dest = -1;
@@ -36,7 +36,7 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
 
     nextROB.push_back(e);
 
-    return e.id;
+    return e;
 }
 
 RSID ReorderBuffer::findRSIDByROBEntry(ROBEntry e) {

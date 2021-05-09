@@ -18,7 +18,7 @@ private:
     std::array<std::queue<Instr>, 4> *nextFetched;
     ReorderBuffer *ROB;
 
-    bool issueInstr(Instr n);
+    bool issueInstr(int counter, Instr n);
 public:
     std::vector<Instr> currentIssued;
     std::vector<Instr> nextIssued;

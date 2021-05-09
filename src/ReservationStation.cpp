@@ -47,7 +47,7 @@ void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively f
     }
 }
 
-void ReservationStation::addEntry(Instr i) {
+void ReservationStation::addEntry(int counter, Instr i) {
     if(nextEntries.size() < RS_SIZE) { 
         RSEntry n;
         Instr instr = i;
@@ -57,20 +57,29 @@ void ReservationStation::addEntry(Instr i) {
         if(n.opcode == opcode::ST) {
             bool found = false;
             int r = ROB->currentROB.size() - 1;
-            while(ROB->currentROB.size() > 0 && !found && r >= 0) {
-                if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
+            //Check if previous instruction in bundle written to Rd
+            for(int i = 0; i < 4; i++) {
+                if(BWL[i].dest == n.Rd && BWL[i].dest != -1) {
                     found = true;
-                    n.Rd = ROB->currentROB[r].result;
-                    if(ROB->currentROB[r].ready) n.RSd = -1;
-                    else {
-                        n.RSd = ROB->currentROB[r].id;
-                    }
+                    n.RSd = BWL[i].ROBId;
                 }
-                r--;
             }
-            if(!found) {
-                n.RSd = RF[instr.Rd].RS; // should ALWAYS be -1 if we got to here
-                n.Rd = RF[instr.Rd].value;
+            if(!found) { 
+                while(ROB->currentROB.size() > 0 && !found && r >= 0) {
+                    if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
+                        found = true;
+                        n.Rd = ROB->currentROB[r].result;
+                        if(ROB->currentROB[r].ready) n.RSd = -1;
+                        else {
+                            n.RSd = ROB->currentROB[r].id;
+                        }
+                    }
+                    r--;
+                }
+                if(!found) {
+                    n.RSd = RF[instr.Rd].RS; // should ALWAYS be -1 if we got to here
+                    n.Rd = RF[instr.Rd].value;
+                }
             }
         }
         else {
@@ -80,20 +89,28 @@ void ReservationStation::addEntry(Instr i) {
         //Rn Always register addressed (except STC then always available as 0)
         bool found = false;
         int r = ROB->currentROB.size() - 1;
-        while(ROB->currentROB.size() > 0 && !found && r >= 0) {
-            if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
-                found = true;
-                n.Rn = ROB->currentROB[r].result;
-                if(ROB->currentROB[r].ready) n.RSn = -1;
-                else {
-                    n.RSn = ROB->currentROB[r].id;
+        for(int i = 0; i < 4; i++) {
+                if(BWL[i].dest == n.Rd && BWL[i].dest != -1) {
+                    found = true;
+                    n.RSn = BWL[i].ROBId;
                 }
             }
-            r--;
-        }
-        if(!found) {
-            n.RSn = RF[instr.Rn].RS;
-            n.Rn = RF[instr.Rn].value;
+        if(!found) { 
+            while(ROB->currentROB.size() > 0 && !found && r >= 0) {
+                if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
+                    found = true;
+                    n.Rn = ROB->currentROB[r].result;
+                    if(ROB->currentROB[r].ready) n.RSn = -1;
+                    else {
+                        n.RSn = ROB->currentROB[r].id;
+                    }
+                }
+                r--;
+            }
+            if(!found) {
+                n.RSn = RF[instr.Rn].RS;
+                n.Rn = RF[instr.Rn].value;
+            }
         }
         found = false;
         if(n.opcode == opcode::LDC || n.opcode == opcode::JNZ || n.opcode == opcode::J || n.opcode == opcode::B || n.opcode == opcode::BNZ) {
@@ -107,22 +124,30 @@ void ReservationStation::addEntry(Instr i) {
             n.RSi = -1;
         }
         else {
-            bool found = false;
+            found = false;
             int r = ROB->currentROB.size() - 1;
-            while(ROB->currentROB.size() > 0 && !found && r >= 0) {
-                if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
+            for(int i = 0; i < 4; i++) {
+                if(BWL[i].dest == n.Rd && BWL[i].dest != -1) {
                     found = true;
-                    n.Ri = ROB->currentROB[r].result;
-                    if(ROB->currentROB[r].ready) n.RSi = -1;
-                    else {
-                        n.RSi = ROB->currentROB[r].id;
-                    }
+                    n.RSi = BWL[i].ROBId;
                 }
-                r--;
             }
-            if(!found) {
-                n.RSi = RF[instr.Ri].RS; 
-                n.Ri = RF[instr.Ri].value;
+            if(!found) { 
+                while(ROB->currentROB.size() > 0 && !found && r >= 0) {
+                    if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
+                        found = true;
+                        n.Ri = ROB->currentROB[r].result;
+                        if(ROB->currentROB[r].ready) n.RSi = -1;
+                        else {
+                            n.RSi = ROB->currentROB[r].id;
+                        }
+                    }
+                    r--;
+                }
+                if(!found) {
+                    n.RSi = RF[instr.Ri].RS; 
+                    n.Ri = RF[instr.Ri].value;
+                }
             }
         }
         if(n.opcode == opcode::B || n.opcode == opcode::J) {
@@ -137,7 +162,12 @@ void ReservationStation::addEntry(Instr i) {
             n.RSd = -1;
         }
         //Add entry to ROB
-        n.ROBId = ROB->addEntry(n, RSID, i.branchTaken);
+        ROBEntry e = ROB->addEntry(n, RSID, i.branchTaken); 
+        n.ROBId = e.id;
+        if(e.type == InstrType::MEM) {
+            BWL[counter].dest = e.dest;
+            BWL[counter].ROBId = e.id;
+        }
 
         nextEntries.push_back(n);
     }
@@ -153,8 +183,9 @@ void ReservationStation::update() {
     // for(int i = 0; i < nextEntries.size(); i++) ReservationStation::currentEntries[i] = ReservationStation::nextEntries[i];
 }
 
-ReservationStation::ReservationStation(std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {
+ReservationStation::ReservationStation(BundleWriteLog *BWL, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount) {
     ReservationStation::RSs = RSs;
+    ReservationStation::BWL = BWL;
     ReservationStation::RF = RF;
     ReservationStation::ROB = ROB;
     ReservationStation::issuedCurrent = issuedCurrent;
