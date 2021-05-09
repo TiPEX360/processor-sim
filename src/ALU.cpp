@@ -87,8 +87,8 @@ void ALU::tick() {
                 nextOut.result = processing.Rn - processing.Ri;
                 break;
             case opcode::DIV:
-                nextOut.result = (int)(processing.Rn / processing.Ri);
-                // std::   nextOut.result << "Rd " << Rd << " Rn " << Rn << " Ri " << Ri << std::endl;
+                if(processing.Ri == 0) nextOut.result = INT32_MAX;
+                else nextOut.result = (int)(processing.Rn / processing.Ri);
                 break;
             case opcode::LSH:
                 nextOut.result = processing.Rn << processing.Ri;
