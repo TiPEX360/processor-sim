@@ -136,30 +136,35 @@ void ReorderBuffer::tick() {
     }
 
     //COMMIT STEP
-    if(currentROB.size() > 0 && currentROB[0].ready) {
-        ROBEntry committing = currentROB[0];
-        nextROB.erase(nextROB.begin()); //erase not working >:(
+    bool flushed = false;
+    for(int i = 0; i < 4 && !flushed; i++) {
+        if(currentROB.size() > 0 && currentROB[0].ready) {
+            ROBEntry committing = currentROB[0];
+            nextROB.erase(nextROB.begin()); //erase not working >:(
+            currentROB.erase(currentROB.begin());
 
-        if(committing.type == InstrType::REG) {
-            if(committing.dest == 30) {
-                std::cout << "ERROR: TRYING TO CHANGE PC IN REG INSTRUCTION" << std::endl;
-                exit(1);
+            if(committing.type == InstrType::REG) {
+                if(committing.dest == 30) {
+                    std::cout << "ERROR: TRYING TO CHANGE PC IN REG INSTRUCTION" << std::endl;
+                    exit(1);
+                }
+                std::cout << "commiting REG" << std::endl;
+                nextRF[committing.dest].value = committing.result;
+                nextRF[committing.dest].RS = -1;
+
             }
-            std::cout << "commiting REG" << std::endl;
-            nextRF[committing.dest].value = committing.result;
-            nextRF[committing.dest].RS = -1;
-
-        }
-        else if(committing.type == InstrType::MEM) {
-            std::cout << "commiting MEM" << std::endl;
-            nextMEM[committing.dest] = committing.result;
-        }
-        else if(committing.type == InstrType::BRANCH) {
-            //do branch shit FLUSH HERE
-            if(committing.result == -1) flush(committing);
-        }
-        else if(committing.type == InstrType::HALT) {
-            *halt = true;
+            else if(committing.type == InstrType::MEM) {
+                std::cout << "commiting MEM" << std::endl;
+                nextMEM[committing.dest] = committing.result;
+            }
+            else if(committing.type == InstrType::BRANCH) {
+                //do branch shit FLUSH HERE
+                if(committing.result == -1) flush(committing);
+                flushed = true;
+            }
+            else if(committing.type == InstrType::HALT) {
+                *halt = true;
+            }
         }
     }
 
