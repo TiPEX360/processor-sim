@@ -34,10 +34,11 @@ void FetchUnit::tick() {
         for(int i = 0; i < 4; i++) {
             n = INSTR[pc];
 
-            if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
+            // if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
+            if(true) {
                 n.bpc = pc;
-                // if(branchBuffer->predictBranchDynamic(pc, n)) {
-                if(true) {
+                if(branchBuffer->predictBranchDynamic(pc, n)) {
+                // if(true) {
                     int dest = n.Rd;
                     n.Rd = pc + 1; //where branch should go had it not been taken OR hadnt been
 
@@ -61,7 +62,7 @@ void FetchUnit::tick() {
             else {
                 pc++;
             }
-            nextFetched[i].push(n);
+            nextFetched.push_back(n);
         }
         nextPC->value = pc;
 
@@ -79,7 +80,6 @@ FetchUnit::FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, I
     FetchUnit::nextPC = nextPC;
     FetchUnit::branchBuffer = branchBuffer;
     FetchUnit::INSTR = INSTR;
-    for(int i = 0; i < 4; i++) FetchUnit::currentFetched[i] = std::queue<Instr>();
-    for(int i = 0; i < 4; i++) FetchUnit::nextFetched[i] = std::queue<Instr>();
-    for(int i = 0; i < 4; i++) nextFetched[i].push({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
+    for(int i = 0; i < 4; i++) nextFetched.push_back({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
+    for(int i = 0; i < 4; i++) currentFetched.push_back({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
 }

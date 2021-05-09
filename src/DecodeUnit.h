@@ -14,8 +14,8 @@ struct DecodeData {
 class DecodeUnit {
 private:
     std::array<ReservationStation, RS_COUNT> *RSs;
-    std::array<std::queue<Instr>, 4> *currentFetched;
-    std::array<std::queue<Instr>, 4> *nextFetched;
+    std::deque<Instr> *currentFetched;
+    std::deque<Instr> *nextFetched;
     ReorderBuffer *ROB;
 
     bool issueInstr(int counter, Instr n);
@@ -28,5 +28,5 @@ public:
     void update();
 
     DecodeUnit();
-    DecodeUnit(std::array<std::queue<Instr>, 4> *currentFetched, std::array<std::queue<Instr>, 4> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB);
+    DecodeUnit(std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB);
 };

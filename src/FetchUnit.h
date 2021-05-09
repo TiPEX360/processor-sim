@@ -4,6 +4,7 @@
 #include "BPB.hpp"
 #include <queue>
 #include <array>
+#include <deque>
 #include <vector>
 
 class FetchUnit {
@@ -16,8 +17,8 @@ private:
     Instr initInstr(Instr n);
 public:
 
-    std::array<std::queue<Instr>, 4> currentFetched;
-    std::array<std::queue<Instr>, 4> nextFetched;
+    std::deque<Instr> currentFetched;
+    std::deque<Instr> nextFetched;
 
 
     FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, Instr *INSTR);

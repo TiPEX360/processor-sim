@@ -3,7 +3,13 @@
 
 bool DecodeUnit::issueInstr(int counter, Instr n) {
     bool found = false;
-    if(n.opcode == opcode::HALT || n.opcode == opcode::LDC || n.opcode >= opcode::ADD && n.opcode <= opcode::XOR) {
+    if(n.opcode == opcode::HALT) {
+        found = true;
+        RSEntry e;
+        e.opcode = opcode::HALT;
+        ROB->addEntry(e, -1, -1);
+    }
+    else if(n.opcode == opcode::HALT || n.opcode == opcode::LDC || n.opcode >= opcode::ADD && n.opcode <= opcode::XOR) {
         std::vector<int> availableRSs;
         for(int RS = 0; RS < RS_COUNT; RS++) {
             if((*RSs)[RS].type == RSType::ALU && (*RSs)[RS].nextEntries.size() < RS_SIZE && ROB->nextROB.size() < ROB_MAX) {
@@ -54,38 +60,30 @@ bool DecodeUnit::issueInstr(int counter, Instr n) {
 
 void DecodeUnit::tick() {
     bool bundleBroken = false;
-    std::vector<Instr> remainder;
+    std::deque<Instr> remainder;
     for(int i = 0; i < 4; i++) {
-        //  if(bundleBroken && (*currentFetched)[i].front().opcode != opcode::NOP) {
-        if(bundleBroken) {
-            remainder.push_back((*currentFetched)[i].front());
+        if(!bundleBroken) {
+            if(issueInstr(i, currentFetched->front())) {
+                std::cout << "Issued " << (int)currentFetched->front().opcode << std::endl;
+                nextFetched->pop_front();
+                currentFetched->pop_front();
+            }
+            else {
+                bundleBroken = true;
+            }
         }
-        else if(!issueInstr(i, (*currentFetched)[i].front())) {
-            bundleBroken = true;
-        }
-        (*nextFetched)[i].pop();
-    }
-
-    //Reconstruct issue queue :: Logic worth checking
-    std::array<std::queue<Instr>, 4> newQueue;
-    for(int i = 0; i < remainder.size(); i++) {
-        newQueue[i].push(remainder[i]);
-        for(int j = 0; j < (*currentFetched)[i].size(); j++) {
-            newQueue[i].push((*currentFetched)[i].front());
-            (*nextFetched)[i].pop();
-        }
-    }
-    for(int i = remainder.size(); i < 4; i++) {
-        newQueue[i].push((*nextFetched)[i - remainder.size()].front());
-        (*nextFetched)[i - remainder.size()].pop();
-        for(int j = 0; j < (*nextFetched)[i].size(); j++) {
-            newQueue[i].push((*nextFetched)[i].front());
-            (*nextFetched)[i].pop();
+        else if(bundleBroken) {
+            remainder.push_back(currentFetched->front());
         }
     }
 
+    // int size = remainder.size();
+    // for(int i = 0; i < size; i++) {
+    //     nextFetched->push_front(remainder.back());
+    //     remainder.pop_back();
+    // }
 
-    (*nextFetched) = newQueue;
+    // (*nextFetched) = newNextFetched;
 }
 
 
@@ -95,7 +93,7 @@ void DecodeUnit::update() {
 
 
 
-DecodeUnit::DecodeUnit(std::array<std::queue<Instr>, 4> *currentFetched, std::array<std::queue<Instr>, 4> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB) {
+DecodeUnit::DecodeUnit(std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB) {
     // DecodeUnit::RF = RF;
     DecodeUnit::currentFetched = currentFetched;
     DecodeUnit::nextFetched = nextFetched;

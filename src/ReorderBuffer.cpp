@@ -101,12 +101,12 @@ void ReorderBuffer::flush(ROBEntry branchEntry) {
         (*EUs)[EU]->flush();
     }
 
-    for(int i = 0; i < 4; i++) {
-        while((*nextFetched)[i].size() > 0) {
-            (*nextFetched)[i].pop();
-        }
-        (*nextFetched)[i].push({opcode::NOP, 0, 0, 0, true, 0, 0});
+
+    while((*nextFetched).size() > 0) {
+        (*nextFetched).pop_front();
     }
+    (*nextFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
+
 
     for(int i = 0; i < 31; i++) nextRF[i].RS = -1;
     
@@ -163,7 +163,7 @@ void ReorderBuffer::update() {
     currentROB = nextROB;
 }
 
-ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::array<std::queue<Instr>, 4> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
+ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::deque<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
     ReorderBuffer::nextRF = nextRF;
     ReorderBuffer::nextMEM = nextMEM;
