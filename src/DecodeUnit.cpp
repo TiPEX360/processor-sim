@@ -76,6 +76,8 @@ void DecodeUnit::tick() {
         }
     }
     for(int i = remainder.size(); i < 4; i++) {
+        newQueue[i].push((*nextFetched)[i - remainder.size()].front());
+        (*nextFetched)[i - remainder.size()].pop();
         for(int j = 0; j < (*nextFetched)[i].size(); j++) {
             newQueue[i].push((*nextFetched)[i].front());
             (*nextFetched)[i].pop();
@@ -83,7 +85,7 @@ void DecodeUnit::tick() {
     }
 
 
-    for(int i = 0; i < 4; i++) (*nextFetched)[i] = newQueue[i];
+    (*nextFetched) = newQueue;
 }
 
 

@@ -53,19 +53,19 @@ void ReservationStation::addEntry(int counter, Instr i) {
         Instr instr = i;
         n.executing = false;
         n.opcode = instr.opcode;
-        n.bpc = i.bpc;
+        n.bpc = instr.bpc;
         if(n.opcode == opcode::ST) {
             bool found = false;
-            int r = ROB->currentROB.size() - 1;
             //Check if previous instruction in bundle written to Rd
             for(int i = 0; i < 4; i++) {
-                if(BWL[i].dest == n.Rd && BWL[i].dest != -1) {
+                if(BWL[i].dest == instr.Rd && BWL[i].dest != -1) {
                     found = true;
                     n.RSd = BWL[i].ROBId;
                 }
             }
             if(!found) { 
-                while(ROB->currentROB.size() > 0 && !found && r >= 0) {
+                int r = ROB->currentROB.size() - 1;
+                while(!found && r >= 0) {
                     if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rd) {
                         found = true;
                         n.Rd = ROB->currentROB[r].result;
@@ -86,17 +86,17 @@ void ReservationStation::addEntry(int counter, Instr i) {
             n.Rd = instr.Rd;
             n.RSd = -1;
         }
-        //Rn Always register addressed (except STC then always available as 0)
+        //Rn Always register addressed (except STC then always available as 0) //STC?? think i meent LDC.
         bool found = false;
-        int r = ROB->currentROB.size() - 1;
         for(int i = 0; i < 4; i++) {
-                if(BWL[i].dest == n.Rd && BWL[i].dest != -1) {
+                if(BWL[i].dest == instr.Rn && BWL[i].dest != -1) {
                     found = true;
                     n.RSn = BWL[i].ROBId;
                 }
             }
         if(!found) { 
-            while(ROB->currentROB.size() > 0 && !found && r >= 0) {
+            int r = ROB->currentROB.size() - 1;
+            while(!found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Rn) {
                     found = true;
                     n.Rn = ROB->currentROB[r].result;
@@ -125,15 +125,15 @@ void ReservationStation::addEntry(int counter, Instr i) {
         }
         else {
             found = false;
-            int r = ROB->currentROB.size() - 1;
             for(int i = 0; i < 4; i++) {
-                if(BWL[i].dest == n.Rd && BWL[i].dest != -1) {
+                if(BWL[i].dest == instr.Ri && BWL[i].dest != -1) {
                     found = true;
                     n.RSi = BWL[i].ROBId;
                 }
             }
             if(!found) { 
-                while(ROB->currentROB.size() > 0 && !found && r >= 0) {
+                int r = ROB->currentROB.size() - 1;
+                while(!found && r >= 0) {
                     if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                         found = true;
                         n.Ri = ROB->currentROB[r].result;
@@ -162,9 +162,9 @@ void ReservationStation::addEntry(int counter, Instr i) {
             n.RSd = -1;
         }
         //Add entry to ROB
-        ROBEntry e = ROB->addEntry(n, RSID, i.branchTaken); 
+        ROBEntry e = ROB->addEntry(n, RSID, instr.branchTaken); 
         n.ROBId = e.id;
-        if(e.type == InstrType::MEM) {
+        if(e.type == InstrType::REG) {
             BWL[counter].dest = e.dest;
             BWL[counter].ROBId = e.id;
         }
