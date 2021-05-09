@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
     FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
     std::array<ExecutionUnit *, EXEC_COUNT> EUs;
     bool halt = false; //KNOWN TO BE ROOT OF ALL PROBLEMS
-    ReorderBuffer ROB(&branchBuffer, &fetchUnit.nextFetched, &halt, &EUs, nextRF, nextMEM, &RSs);
+    ReorderBuffer ROB(&branchBuffer, &fetchUnit.currentFetched, &fetchUnit.nextFetched, &halt, &EUs, nextRF, nextMEM, &RSs);
     DecodeUnit decodeUnit(&fetchUnit.currentFetched, &fetchUnit.nextFetched, &RSs, &ROB);
 
     EUs[0] = new EU::ALU(&RSs[0], &ROB);

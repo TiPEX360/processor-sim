@@ -16,8 +16,10 @@ ROBEntry ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
         nextRF[e.dest].RS = RSID;
     }
     else if(RSe.opcode >= opcode::ST && RSe.opcode <= opcode::STC) e.type = InstrType::MEM;
-    else if(RSe.opcode == opcode::HALT) e.type = InstrType::HALT;
-    else {
+    else if(RSe.opcode == opcode::HALT) {
+        e.type = InstrType::HALT;
+        e.ready = true;
+    } else {
         e.type = InstrType::BRANCH;
         e.dest = RSe.Rd;
         e.result = branchTaken;
@@ -105,8 +107,12 @@ void ReorderBuffer::flush(ROBEntry branchEntry) {
     while((*nextFetched).size() > 0) {
         (*nextFetched).pop_front();
     }
-    (*nextFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
-
+    for(int i = 0; i < 4; i++) (*nextFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
+    
+    while((*currentFetched).size() > 0) {
+        (*currentFetched).pop_front();
+    }
+    for(int i = 0; i < 4; i++) (*currentFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
 
     for(int i = 0; i < 31; i++) nextRF[i].RS = -1;
     
@@ -163,7 +169,7 @@ void ReorderBuffer::update() {
     currentROB = nextROB;
 }
 
-ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::deque<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
+ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
     ReorderBuffer::nextRF = nextRF;
     ReorderBuffer::nextMEM = nextMEM;
@@ -171,4 +177,5 @@ ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::deque<Instr> *nextFetched, 
     ReorderBuffer::halt = halt;
     ReorderBuffer::nextFetched = nextFetched;
     ReorderBuffer::branchBuffer = branchBuffer;
+    ReorderBuffer::currentFetched = currentFetched;
 }
