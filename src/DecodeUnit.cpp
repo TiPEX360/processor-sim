@@ -6,14 +6,14 @@ bool DecodeUnit::issueInstr(Instr n) {
     if(n.opcode == opcode::HALT || n.opcode == opcode::LDC || n.opcode >= opcode::ADD && n.opcode <= opcode::XOR) {
         std::vector<int> availableRSs;
         for(int RS = 0; RS < RS_COUNT; RS++) {
-            if((*RSs)[RS].type == RSType::ALU && (*RSs)[RS].currentEntries.size() < RS_SIZE && ROB->currentROB.size() < ROB_MAX) {
+            if((*RSs)[RS].type == RSType::ALU && (*RSs)[RS].nextEntries.size() < RS_SIZE && ROB->nextROB.size() < ROB_MAX) {
                 availableRSs.push_back(RS);
             }
         }
         if(availableRSs.size() > 0) {
             int bestRS = availableRSs[0];
             for(int RS = 0; RS < availableRSs.size(); RS++) {
-                if((*RSs)[availableRSs[RS]].currentEntries.size() < (*RSs)[bestRS].currentEntries.size()) bestRS = RS;
+                if((*RSs)[availableRSs[RS]].currentEntries.size() < (*RSs)[bestRS].nextEntries.size()) bestRS = RS;
             }
             found = true;
             n.RSID = bestRS;
@@ -34,7 +34,7 @@ bool DecodeUnit::issueInstr(Instr n) {
     }
     else if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == RSType::BRANCH && (*RSs)[RS].currentEntries.size() < RS_SIZE && ROB->currentROB.size() < ROB_MAX) {
+            if((*RSs)[RS].type == RSType::BRANCH && (*RSs)[RS].nextEntries.size() < RS_SIZE && ROB->nextROB.size() < ROB_MAX) {
                 found = true;
                 n.RSID = RS;
                 (*RSs)[RS].addEntry(n);
