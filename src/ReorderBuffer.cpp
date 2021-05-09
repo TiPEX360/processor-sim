@@ -23,7 +23,7 @@ ROBID ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
         e.result = branchTaken;
     }
 
-    int id = -1; //check this logic
+    int id = -1;
     bool taken = true;
     while(taken) {
         id++;
@@ -60,7 +60,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
         if(e.type == InstrType::REG) {
             //Update RS
             for(int RS = 0; RS < RS_COUNT; RS++) {
-                (*RSs)[RS].updateEntry(RSId, e);//cannot call function WTF
+                (*RSs)[RS].updateEntry(RSId, e);
             }
         
         }
@@ -68,13 +68,9 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
            
         }
         else if(e.type == InstrType::BRANCH) {
-            //do branch shit (BOOK SAYS NOTHING HAPPENS HERE)
-            //decide if branch requires flush :/
             if(currentROB[index].result != e.result) {
-                //branch mispredicted!
-                nextROB[index].result = -1;
+                nextROB[index].result = -1; //branch mispredicted!
             }
-            //update BPB
             branchBuffer->updateBranch(e.bpc, e.result);
         }
         else if(e.type == InstrType::HALT) {
@@ -93,26 +89,27 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
 
 void ReorderBuffer::flush(ROBEntry branchEntry) {
     std::cout << "FLUSHING PIPE" << std::endl;
-    //Clear ROB
+
     nextROB.clear();
-    //Clear all RSs
+
     for(int RS = 0; RS < RS_COUNT; RS++) {
-        (*RSs)[RS].currentEntries.clear(); //probably unnecessary
+        (*RSs)[RS].currentEntries.clear();
         (*RSs)[RS].nextEntries.clear();
     }
-    //Clear EUs
+
     for(int EU = 0; EU < EXEC_COUNT; EU++) {
         (*EUs)[EU]->flush();
     }
-    //Clear issued
-    while(nextFetched->size() > 0) {
-        nextFetched->pop();
+
+    for(int i = 0; i < 4; i++) {
+        while((*nextFetched)[i].size() > 0) {
+            (*nextFetched)[i].pop();
+        }
+        (*nextFetched)[i].push({opcode::NOP, 0, 0, 0, true, 0, 0});
     }
-    Instr nop = {};
-    nextFetched->push({opcode::NOP, 0, 0, 0, true, 0, 0});
-    //Reset scoreboard
+
     for(int i = 0; i < 31; i++) nextRF[i].RS = -1;
-    //set pc
+    
     nextRF[30].value = branchEntry.dest;
 }
 
@@ -128,9 +125,6 @@ void ReorderBuffer::tick() {
                     updateEntry(r, out);
                 } 
             }
-            //Send CDB to waiting RSEntries added in *this* cycle :o
-            
-            
         }
         
     }
@@ -169,7 +163,7 @@ void ReorderBuffer::update() {
     currentROB = nextROB;
 }
 
-ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
+ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::array<std::queue<Instr>, 4> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs) {
     ReorderBuffer::EUs = EUs;
     ReorderBuffer::nextRF = nextRF;
     ReorderBuffer::nextMEM = nextMEM;
@@ -178,5 +172,3 @@ ReorderBuffer::ReorderBuffer(BPB *branchBuffer, std::queue<Instr> *nextFetched, 
     ReorderBuffer::nextFetched = nextFetched;
     ReorderBuffer::branchBuffer = branchBuffer;
 }
-
-// ReorderBuffer::ReorderBuffer()  {};

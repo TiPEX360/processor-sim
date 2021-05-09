@@ -21,7 +21,7 @@ private:
     int32_t *nextMEM;
     std::array<ReservationStation, RS_COUNT> *RSs;
     std::array<ExecutionUnit *, EXEC_COUNT> *EUs;
-    std::queue<Instr> *nextFetched;
+    std::array<std::queue<Instr>, 4> *nextFetched;
     BPB *branchBuffer;
     bool *halt;
 public:
@@ -35,5 +35,5 @@ public:
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(BPB *branchBuffer, std::queue<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
+    ReorderBuffer(BPB *branchBuffer, std::array<std::queue<Instr>, 4> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
 };

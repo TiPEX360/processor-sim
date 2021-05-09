@@ -24,7 +24,7 @@ bool DecodeUnit::issueInstr(Instr n) {
     }
     else if(n.opcode >= opcode::LD && n.opcode <= opcode::STC) {
         for(int RS = 0; RS < RS_COUNT && !found; RS++) {
-            if((*RSs)[RS].type == RSType::LDST && (*RSs)[RS].currentEntries.size() < RS_SIZE && ROB->currentROB.size() < ROB_MAX) {
+            if((*RSs)[RS].type == RSType::LDST && (*RSs)[RS].nextEntries.size() < RS_SIZE && ROB->nextROB.size() < ROB_MAX) {
                 found = true;
                 n.RSID = RS;
                 (*RSs)[RS].addEntry(n);
@@ -53,14 +53,40 @@ bool DecodeUnit::issueInstr(Instr n) {
 }
 
 void DecodeUnit::tick() {
-    //Try assign current instruction to a reservation station
-    Instr n[4];
+    // //Try assign current instruction to a reservation station
+    // std::vector<Instr> bundle;
+    // for(int i = 0; i < 4; i++) bundle.push_back((*currentFetched)[i].front());
+    bool bundleBroken = false;
+    std::vector<Instr> remainder;
     for(int i = 0; i < 4; i++) {
-        n[i] = (*currentFetched)[4].front();
-        if(issueInstr(n[i])) {
+        //  if(bundleBroken && (*currentFetched)[i].front().opcode != opcode::NOP) {
+        if(bundleBroken) {
+            remainder.push_back((*currentFetched)[i].front());
+        }
+        else if(!issueInstr((*currentFetched)[i].front())) {
+            bundleBroken = true;
+        }
+        (*nextFetched)[i].pop();
+    }
+
+    //Reconstruct issue queue :: Logic worth checking
+    std::array<std::queue<Instr>, 4> newQueue;
+    for(int i = 0; i < remainder.size(); i++) {
+        newQueue[i].push(remainder[i]);
+        for(int j = 0; j < (*currentFetched)[i].size(); j++) {
+            newQueue[i].push((*currentFetched)[i].front());
             (*nextFetched)[i].pop();
         }
     }
+    for(int i = remainder.size(); i < 4; i++) {
+        for(int j = 0; j < (*nextFetched)[i].size(); j++) {
+            newQueue[i].push((*nextFetched)[i].front());
+            (*nextFetched)[i].pop();
+        }
+    }
+
+
+    for(int i = 0; i < 4; i++) (*nextFetched)[i] = newQueue[i];
 }
 
 

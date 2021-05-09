@@ -96,13 +96,6 @@ void BranchUnit::tick() {
             default:
                 break;
         }
-
-        //Take branch
-        // if(nextOut.result == 1) {
-        //     nextPC->value = nextOut.dest;//FFS......
-        // }
-        // std::cout << "BU Executed: " << (int)processing.opcode << std::endl;
-        
         progress = 0;
     }
     else {

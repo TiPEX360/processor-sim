@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i = 0; i < 1024; i++) {
-        if (currentMEM[i] != 0) std::cout << currentMEM[i] << std::endl;
+        if(i < 10 ||currentMEM[i] != 0) std::cout << i << ": " << currentMEM[i] << std::endl;
     }
 
     // for(int i = 0; i < 512; i++) {

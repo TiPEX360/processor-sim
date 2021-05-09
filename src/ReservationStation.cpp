@@ -27,30 +27,6 @@ int ReservationStation::removeEntry(ROBEntry e) {
 }
 
 void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively forwarding. Once this ROBEntry is 'current' (next cycle), RS will need to check for operands again!!! THIS IS IT! WE ARE NOT RECHECKING OpERANDS EVERY CYCLE!!!
-    //TODO: if executing == true, ignore it!!!
-    //For each RSEntry check all operands if waiting for result from RS this robid is linked to
-    //TOGO: only update nextEntries IFFFF actually changed anything... or take nextEntries as currentEntries straight away...
-    //ORRRR just do the second part of loop from the get go... idk how safe these last two options are though ;)
-    // for(int i = 0; i < currentEntries.size(); i++) {
-    //     RSEntry RSe = currentEntries[i];
-    //     if(!RSe.executing) {
-    //         if(RSe.RSd == e.id) {
-    //             RSe.Rd = e.result;
-    //             RSe.RSd = -1;
-    //         }
-    //         if(RSe.RSn == e.id) {
-    //             RSe.Rn = e.result;
-    //             RSe.RSn = -1;
-    //         }
-    //         if(RSe.RSi == e.id) {
-    //             RSe.Ri = e.result;
-    //             RSe.RSi = -1;
-    //         }
-    //         nextEntries[i] = RSe;
-    //     }
-    // }
-    //Update RSs added in this cycle, only available in next cycle :o
-    //Consider putting this in decode stage
     for(int i = 0; i < nextEntries.size(); i++) {
         RSEntry RSe = nextEntries[i];
         if(!RSe.executing) {
@@ -72,14 +48,12 @@ void ReservationStation::updateEntry(int RS, ROBEntry e) { //TODO: effectively f
 }
 
 void ReservationStation::addEntry(Instr i) {
-    if(currentEntries.size() < RS_SIZE) { 
+    if(nextEntries.size() < RS_SIZE) { 
         RSEntry n;
         Instr instr = i;
         n.executing = false;
         n.opcode = instr.opcode;
         n.bpc = i.bpc;
-        //Rd REGISTER VALUE FOR BELOW ELSE IMMEDIATE
-        // if((n.opcode == opcode::ST) || (n.opcode >= opcode::BLT && n.opcode <= opcode::B)) {
         if(n.opcode == opcode::ST) {
             bool found = false;
             int r = ROB->currentROB.size() - 1;
@@ -90,13 +64,6 @@ void ReservationStation::addEntry(Instr i) {
                     if(ROB->currentROB[r].ready) n.RSd = -1;
                     else {
                         n.RSd = ROB->currentROB[r].id;
-                        // for(int RS = 0; RS < RS_COUNT; RS++) {
-                        //     for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                        //         if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                        //             n.RSd = ((*RSs)[RS].RSID);
-                        //         }
-                        //     }
-                        // }
                     }
                 }
                 r--;
@@ -120,13 +87,6 @@ void ReservationStation::addEntry(Instr i) {
                 if(ROB->currentROB[r].ready) n.RSn = -1;
                 else {
                     n.RSn = ROB->currentROB[r].id;
-                    // for(int RS = 0; RS < RS_COUNT; RS++) {
-                    //     for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                    //         if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                    //             n.RSn = ((*RSs)[RS].RSID);
-                    //         }
-                    //     }
-                    // }
                 }
             }
             r--;
@@ -152,19 +112,10 @@ void ReservationStation::addEntry(Instr i) {
             while(ROB->currentROB.size() > 0 && !found && r >= 0) {
                 if(ROB->currentROB[r].type == InstrType::REG && ROB->currentROB[r].dest == instr.Ri) {
                     found = true;
-                            ///IDEA!!! if !ROB[r].ready then Ri is NOT result but ROBID. That way, can check value coming from correct ROBEntry
-                    //ORRRRR RSi actually stored ROBID. <-- i like this option more :)
                     n.Ri = ROB->currentROB[r].result;
                     if(ROB->currentROB[r].ready) n.RSi = -1;
                     else {
                         n.RSi = ROB->currentROB[r].id;
-                        // for(int RS = 0; RS < RS_COUNT; RS++) {
-                        //     for(int e = 0; e < (*RSs)[RS].currentEntries.size(); e++) {
-                        //         if((*RSs)[RS].currentEntries[e].ROBId == ROB->currentROB[r].id) {
-                        //             n.RSi = ((*RSs)[RS].RSID);
-                        //         }
-                        //     }
-                        // }
                     }
                 }
                 r--;

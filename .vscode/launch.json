@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/proc2",
-            "args": ["./src/bubble.as"],
+            "args": ["./src/gcd.as"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
