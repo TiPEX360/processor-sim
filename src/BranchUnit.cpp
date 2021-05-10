@@ -10,31 +10,31 @@ void BranchUnit::tick() {
         processing = RS->getReadyEntry();
 
         switch(processing.opcode) {
-            case opcode::NOP:
+            case Opcode::NOP:
                 duration = 1;
                 break;
-            case opcode::BLT:
+            case Opcode::BLT:
                 duration = 1;
                 break;
-            case opcode::BZ:
+            case Opcode::BZ:
                 duration = 1;
                 break;
-            case opcode::BNZ:
+            case Opcode::BNZ:
                 duration = 1;
                 break;
-            case opcode::B:
+            case Opcode::B:
                 duration = 1;
                 break;
-            case opcode::JLT:
+            case Opcode::JLT:
                 duration = 1;
                 break;
-            case opcode::JZ:
+            case Opcode::JZ:
                 duration = 1;
                 break;
-            case opcode::JNZ:
+            case Opcode::JNZ:
                 duration = 1;
                 break;
-            case opcode::J:
+            case Opcode::J:
                 duration = 1;
                 break;
             default:
@@ -48,9 +48,9 @@ void BranchUnit::tick() {
 
 
     if(progress == duration) {
-        if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
+        if(processing.opcode != Opcode::NOP) nextOut.id = processing.ROBId;
         switch(processing.opcode) {
-            case opcode::NOP:
+            case Opcode::NOP:
                 nextOut.dest = -1;
                 nextOut.type = InstrType::NOP;
                 nextOut.ready = false;
@@ -58,49 +58,49 @@ void BranchUnit::tick() {
                 nextOut.result = -1;
                 nextOut.bpc = 0;
                 break;
-            case opcode::BLT:
+            case Opcode::BLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::BZ:
+            case Opcode::BZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri == 0 ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::BNZ:
+            case Opcode::BNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::B:
+            case Opcode::B:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::JLT:
+            case Opcode::JLT:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::JZ:
+            case Opcode::JZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri == 0 ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::JNZ:
+            case Opcode::JNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Ri != 0 ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
-            case opcode::J:
+            case Opcode::J:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = 1;

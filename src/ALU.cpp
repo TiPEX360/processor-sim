@@ -11,40 +11,40 @@ void ALU::tick() {
     if(progress == 0) {
         processing = RS->getReadyEntry();
         switch(processing.opcode) {
-            case opcode::NOP:
+            case Opcode::NOP:
                 duration = 1;
                 break;
-            case opcode::ADD:
+            case Opcode::ADD:
                 duration = 1;
                 break;
-            case opcode::MUL:
+            case Opcode::MUL:
                 duration = 2;
                 break;
-            case opcode::SUB:
+            case Opcode::SUB:
                 duration = 1;
                 break;
-            case opcode::DIV:
+            case Opcode::DIV:
                 duration = 4;
                 break;
-            case opcode::LSH:
+            case Opcode::LSH:
                 duration = 1;
                 break;
-            case opcode::RSH:
+            case Opcode::RSH:
                 duration = 1;
                 break;
-            case opcode::AND:
+            case Opcode::AND:
                 duration = 1;
                 break;
-            case opcode::OR:
+            case Opcode::OR:
                 duration = 1;
                 break;
-            case opcode::XOR:
+            case Opcode::XOR:
                 duration = 1;
                 break;
-            case opcode::LDC:
+            case Opcode::LDC:
                 duration = 1;
                 break;
-            case opcode::HALT:
+            case Opcode::HALT:
                 duration = 1;
                 break;
             default:
@@ -57,13 +57,13 @@ void ALU::tick() {
 
     //Execute instruction if on final stage of execution
     if(progress == duration) {
-        if(processing.opcode != opcode::NOP) {
+        if(processing.opcode != Opcode::NOP) {
             nextOut.dest = processing.Rd;
             nextOut.type = InstrType::REG;
             nextOut.id = processing.ROBId;
         }
         switch(processing.opcode) {
-            case opcode::NOP:
+            case Opcode::NOP:
                 nextOut.dest = -1;
                 nextOut.type = InstrType::NOP;
                 nextOut.ready = false;
@@ -71,38 +71,38 @@ void ALU::tick() {
                 nextOut.result = -1;
                 nextOut.bpc = 0;
                 break;
-            case opcode::ADD:
+            case Opcode::ADD:
                 nextOut.result = processing.Rn + processing.Ri;
                 break;
-            case opcode::MUL:
+            case Opcode::MUL:
                 nextOut.result = processing.Rn * processing.Ri;
                 break;
-            case opcode::SUB:
+            case Opcode::SUB:
                 nextOut.result = processing.Rn - processing.Ri;
                 break;
-            case opcode::DIV:
+            case Opcode::DIV:
                 if(processing.Ri == 0) nextOut.result = INT32_MAX;
                 else nextOut.result = (int)(processing.Rn / processing.Ri);
                 break;
-            case opcode::LSH:
+            case Opcode::LSH:
                 nextOut.result = processing.Rn << processing.Ri;
                 break;
-            case opcode::RSH:
+            case Opcode::RSH:
                 nextOut.result = processing.Rn >> processing.Ri;
                 break;
-            case opcode::AND:
+            case Opcode::AND:
                 nextOut.result = processing.Rn & processing.Ri;
                 break;
-            case opcode::OR:
+            case Opcode::OR:
                 nextOut.result = processing.Rn | processing.Ri;
                 break;
-            case opcode::XOR:
+            case Opcode::XOR:
                 nextOut.result = processing.Rn ^ processing.Ri;
                 break;
-            case opcode::LDC:
+            case Opcode::LDC:
                 nextOut.result = processing.Ri;
                 break;
-            case opcode::HALT:
+            case Opcode::HALT:
                 nextOut.dest = -1;
                 nextOut.type = InstrType::HALT;
                 nextOut.ready = false;

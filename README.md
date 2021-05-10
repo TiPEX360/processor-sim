@@ -46,6 +46,10 @@ halt | | Halt execution of the processor.
 Rn is always register addressed.
 Ri may be register addressed or be an immediate.
 
+## Prerequisites
+
+- clang++ or g++ to compile from source.
+
 ## Usage
 
 1. Write, clone, download, steal, or otherwise acquire an assembly program compatible with the ISA specified above.
@@ -55,5 +59,5 @@ make
 ```
 3. Execute the assembly program using the ```proc``` program:
 ```
-./proc {assembly source} {scalar width} {branch prediction type (dynamic, static, fixedskip, fixedtake)} {No. EUs}
+./bin/proc {assembly source} {scalar width} {branch prediction type (dynamic, static, fixedskip, fixedtake)} {No. EUs}
 ```

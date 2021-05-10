@@ -46,6 +46,10 @@ halt | | Halt execution of the processor.
 Rn is always register addressed.
 Ri may be register addressed or be an immediate.
 
+## Prerequisites
+
+- clang++ or g++ to compile from source.
+
 ## Usage
 
 1. Write, clone, download, steal, or otherwise acquire an assembly program compatible with the ISA specified above.

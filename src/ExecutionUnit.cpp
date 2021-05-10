@@ -6,7 +6,7 @@ void ExecutionUnit::update() {
 
 void ExecutionUnit::flush() {
     RSEntry nullEntry;
-    nullEntry.opcode = opcode::NOP;
+    nullEntry.opcode = Opcode::NOP;
     nullEntry.executing = true;
     processing = nullEntry;
     nextOut = {-1, InstrType::NOP, -1, -1, false, 0};

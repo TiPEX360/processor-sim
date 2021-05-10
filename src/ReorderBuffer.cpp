@@ -11,13 +11,13 @@ ROBEntry ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
     e.dest = -1;
     e.result = -1;
     e.bpc = RSe.bpc;
-    if((RSe.opcode >= opcode::ADD && RSe.opcode <= opcode::XOR) || RSe.opcode == opcode::LDC || RSe.opcode == opcode::LD) {
+    if((RSe.opcode >= Opcode::ADD && RSe.opcode <= Opcode::XOR) || RSe.opcode == Opcode::LDC || RSe.opcode == Opcode::LD) {
         e.type =  InstrType::REG;
         e.dest = RSe.Rd;
         nextRF[e.dest].RS = RSID;
     }
-    else if(RSe.opcode >= opcode::ST && RSe.opcode <= opcode::STC) e.type = InstrType::MEM;
-    else if(RSe.opcode == opcode::HALT) {
+    else if(RSe.opcode >= Opcode::ST && RSe.opcode <= Opcode::STC) e.type = InstrType::MEM;
+    else if(RSe.opcode == Opcode::HALT) {
         e.type = InstrType::HALT;
         e.ready = true;
     } else {
@@ -109,12 +109,12 @@ void ReorderBuffer::flush(ROBEntry branchEntry) {
     while((*nextFetched).size() > 0) {
         (*nextFetched).pop_front();
     }
-    for(int i = 0; i < SCALE_WIDTH; i++) (*nextFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
+    for(int i = 0; i < SCALE_WIDTH; i++) (*nextFetched).push_back({Opcode::NOP, 0, 0, 0, true, 0, 0});
     
     while((*currentFetched).size() > 0) {
         (*currentFetched).pop_front();
     }
-    for(int i = 0; i < SCALE_WIDTH; i++) (*currentFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
+    for(int i = 0; i < SCALE_WIDTH; i++) (*currentFetched).push_back({Opcode::NOP, 0, 0, 0, true, 0, 0});
 
     for(int i = 0; i < 31; i++) nextRF[i].RS = -1;
     

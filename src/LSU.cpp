@@ -11,16 +11,16 @@ void LSU::tick() {
         processing = RS->getReadyEntry();
 
         switch(processing.opcode) {
-            case opcode::NOP:
+            case Opcode::NOP:
                 duration = 1;
                 break;
-            case opcode::LD:
+            case Opcode::LD:
                 duration = 3;
                 break;
-            case opcode::ST:
+            case Opcode::ST:
                 duration = 2;
                 break;
-            case opcode::STC:
+            case Opcode::STC:
                 duration = 2;
                 break;
             default:
@@ -33,9 +33,9 @@ void LSU::tick() {
 
 
     if(progress == duration) {
-        if(processing.opcode != opcode::NOP) nextOut.id = processing.ROBId;
+        if(processing.opcode != Opcode::NOP) nextOut.id = processing.ROBId;
         switch(processing.opcode) {
-            case opcode::NOP:
+            case Opcode::NOP:
                 nextOut.dest = -1;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.ready = false;
@@ -43,19 +43,19 @@ void LSU::tick() {
                 nextOut.result = -1;
                 nextOut.bpc = 0;
                 break;
-            case opcode::LD:
+            case Opcode::LD:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::REG;
                 nextOut.result = currentMEM[processing.Rn + processing.Ri];
                 nextOut.bpc = 0;
                 break;
-            case opcode::ST:
+            case Opcode::ST:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Rn + processing.Ri;
                 nextOut.type = InstrType::MEM;
                 nextOut.bpc = 0;
                 break;
-            case opcode::STC:
+            case Opcode::STC:
                 nextOut.result = processing.Rd;
                 nextOut.dest = processing.Ri;
                 nextOut.type = InstrType::MEM;
@@ -64,7 +64,7 @@ void LSU::tick() {
             default:
                 break;
         }
-        
+
         progress = 0;
     }
     else {

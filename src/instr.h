@@ -2,7 +2,7 @@
 #include <array>
 #include <stdint.h>
 
-enum class opcode {
+enum class Opcode {
     NOP,
     ADD,  MUL, SUB, DIV,
     LSH, RSH, AND, OR, XOR,
@@ -30,7 +30,7 @@ typedef int ROBID;
 enum class InstrType { REG, MEM, BRANCH, NOP, HALT};
 
 struct RSEntry {
-    opcode opcode;
+    Opcode opcode;
     RSID RSd;
     RSID RSn;
     RSID RSi;
@@ -72,7 +72,7 @@ struct Register {
 };
 
 struct Instr {
-    opcode opcode;
+    Opcode opcode;
     unsigned char Rd;
     unsigned char Rn;
     signed int Ri : 10; 
@@ -105,7 +105,7 @@ public:
         Rn = 0;
         Ri = 0;
         npc = 0;
-        cir = {opcode::NOP, 0, 0, 0, false};
+        cir = {Opcode::NOP, 0, 0, 0, false};
         ALUOut = 0;
         MEMLoadData = 0;
         cond = false;

@@ -11,7 +11,7 @@ RSEntry ReservationStation::getReadyEntry() {
         }
     }
     RSEntry nullEntry;
-    nullEntry.opcode = opcode::NOP;
+    nullEntry.opcode = Opcode::NOP;
     nullEntry.executing = true;
     return nullEntry;
 }
@@ -54,7 +54,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
         n.executing = false;
         n.opcode = instr.opcode;
         n.bpc = instr.bpc;
-        if(n.opcode == opcode::ST) {
+        if(n.opcode == Opcode::ST) {
             bool found = false;
             //Check if previous instruction in bundle written to Rd
             for(int i = 0; i < SCALE_WIDTH; i++) {
@@ -113,7 +113,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
             }
         }
         found = false;
-        if(n.opcode == opcode::LDC || n.opcode == opcode::JNZ || n.opcode == opcode::J || n.opcode == opcode::B || n.opcode == opcode::BNZ|| n.opcode == opcode::BZ|| n.opcode == opcode::JZ) {
+        if(n.opcode == Opcode::LDC || n.opcode == Opcode::JNZ || n.opcode == Opcode::J || n.opcode == Opcode::B || n.opcode == Opcode::BNZ|| n.opcode == Opcode::BZ|| n.opcode == Opcode::JZ) {
             n.RSn = -1;
             n.Rn = 0;
         }
@@ -150,13 +150,13 @@ void ReservationStation::addEntry(int counter, Instr i) {
                 }
             }
         }
-        if(n.opcode == opcode::B || n.opcode == opcode::J) {
+        if(n.opcode == Opcode::B || n.opcode == Opcode::J) {
             n.Ri = 0;
             n.RSi = -1;
         }
 
         //Exception for HALT
-        if(n.opcode == opcode::HALT) {
+        if(n.opcode == Opcode::HALT) {
             n.RSn = -1;
             n.RSi = -1;
             n.RSd = -1;

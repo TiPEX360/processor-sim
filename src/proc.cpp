@@ -69,29 +69,29 @@ void loadProgram(const char *path, Instr *INSTR) {
 
         if(tokens.size() > 0) {
             //Assign opcode
-            if(tokens[0].compare("nop") == 0) instr.opcode = opcode::NOP;
-            else if(tokens[0].compare("add") == 0) instr.opcode = opcode::ADD;
-            else if(tokens[0].compare("mul") == 0) instr.opcode = opcode::MUL;
-            else if(tokens[0].compare("sub") == 0) instr.opcode = opcode::SUB;
-            else if(tokens[0].compare("div") == 0) instr.opcode = opcode::DIV;
-            else if(tokens[0].compare("lsh") == 0) instr.opcode = opcode::LSH;
-            else if(tokens[0].compare("rsh") == 0) instr.opcode = opcode::RSH;
-            else if(tokens[0].compare("and") == 0) instr.opcode = opcode::AND;
-            else if(tokens[0].compare("or") == 0) instr.opcode = opcode::OR;
-            else if(tokens[0].compare("xor") == 0) instr.opcode = opcode::XOR;
-            else if(tokens[0].compare("ld") == 0) instr.opcode = opcode::LD;
-            else if(tokens[0].compare("ldc") == 0) instr.opcode = opcode::LDC;
-            else if(tokens[0].compare("st") == 0) instr.opcode = opcode::ST;
-            else if(tokens[0].compare("stc") == 0) instr.opcode = opcode::STC;
-            else if(tokens[0].compare("blt") == 0) instr.opcode = opcode::BLT;
-            else if(tokens[0].compare("bz") == 0) instr.opcode = opcode::BZ;
-            else if(tokens[0].compare("bnz") == 0) instr.opcode = opcode::BNZ;
-            else if(tokens[0].compare("b") == 0) instr.opcode = opcode::B;
-            else if(tokens[0].compare("j") == 0) instr.opcode = opcode::J;  
-            else if(tokens[0].compare("jlt") == 0) instr.opcode = opcode::JLT;
-            else if(tokens[0].compare("jz") == 0) instr.opcode = opcode::JZ;
-            else if(tokens[0].compare("jnz") == 0) instr.opcode = opcode::JNZ;
-            else if(tokens[0].compare("halt") == 0) instr.opcode = opcode::HALT;
+            if(tokens[0].compare("nop") == 0) instr.opcode = Opcode::NOP;
+            else if(tokens[0].compare("add") == 0) instr.opcode = Opcode::ADD;
+            else if(tokens[0].compare("mul") == 0) instr.opcode = Opcode::MUL;
+            else if(tokens[0].compare("sub") == 0) instr.opcode = Opcode::SUB;
+            else if(tokens[0].compare("div") == 0) instr.opcode = Opcode::DIV;
+            else if(tokens[0].compare("lsh") == 0) instr.opcode = Opcode::LSH;
+            else if(tokens[0].compare("rsh") == 0) instr.opcode = Opcode::RSH;
+            else if(tokens[0].compare("and") == 0) instr.opcode = Opcode::AND;
+            else if(tokens[0].compare("or") == 0) instr.opcode = Opcode::OR;
+            else if(tokens[0].compare("xor") == 0) instr.opcode = Opcode::XOR;
+            else if(tokens[0].compare("ld") == 0) instr.opcode = Opcode::LD;
+            else if(tokens[0].compare("ldc") == 0) instr.opcode = Opcode::LDC;
+            else if(tokens[0].compare("st") == 0) instr.opcode = Opcode::ST;
+            else if(tokens[0].compare("stc") == 0) instr.opcode = Opcode::STC;
+            else if(tokens[0].compare("blt") == 0) instr.opcode = Opcode::BLT;
+            else if(tokens[0].compare("bz") == 0) instr.opcode = Opcode::BZ;
+            else if(tokens[0].compare("bnz") == 0) instr.opcode = Opcode::BNZ;
+            else if(tokens[0].compare("b") == 0) instr.opcode = Opcode::B;
+            else if(tokens[0].compare("j") == 0) instr.opcode = Opcode::J;  
+            else if(tokens[0].compare("jlt") == 0) instr.opcode = Opcode::JLT;
+            else if(tokens[0].compare("jz") == 0) instr.opcode = Opcode::JZ;
+            else if(tokens[0].compare("jnz") == 0) instr.opcode = Opcode::JNZ;
+            else if(tokens[0].compare("halt") == 0) instr.opcode = Opcode::HALT;
             else continue;
 
             //Assign operands
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
         nextMEM[i] = 0;
     }
     for(int i = 0; i < 512; i++) {
-        INSTR[i] = (Instr){opcode::NOP, 0, 0, 0, true, 0, 0};
+        INSTR[i] = (Instr){Opcode::NOP, 0, 0, 0, true, 0, 0};
     }
 
     //Special purpose register pointers
