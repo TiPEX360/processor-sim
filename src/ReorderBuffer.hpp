@@ -19,8 +19,8 @@ class ReorderBuffer {
 private:
     Register *nextRF;
     int32_t *nextMEM;
-    std::array<ReservationStation, RS_COUNT> *RSs;
-    std::array<ExecutionUnit *, EXEC_COUNT> *EUs;
+    std::vector<ReservationStation> *RSs;
+    std::vector<ExecutionUnit *> *EUs;
     std::deque<Instr> *nextFetched;
     std::deque<Instr> *currentFetched;
     
@@ -37,5 +37,5 @@ public:
     void tick();
     void update();
     ReorderBuffer() {};
-    ReorderBuffer(BPB *branchBuffer, std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, bool *halt, std::array<ExecutionUnit *, EXEC_COUNT> *EUs, Register *nextRF, int32_t *nextMEM, std::array<ReservationStation, RS_COUNT> *RSs);
+    ReorderBuffer(BPB *branchBuffer, std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, bool *halt, std::vector<ExecutionUnit *> *EUs, Register *nextRF, int32_t *nextMEM, std::vector<ReservationStation> *RSs);
 };

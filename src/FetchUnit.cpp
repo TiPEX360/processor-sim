@@ -36,7 +36,7 @@ void FetchUnit::tick() {
 
             if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
                 n.bpc = pc;
-                if(branchBuffer->predictBranchDynamic(pc, n)) {
+                if(branchBuffer->predictBranchDynamic(pc, n, PREDICTIONTYPE)) {
                 // if(false) {
                     int dest = n.Rd;
                     n.Rd = pc + 1; //where branch should go had it not been taken OR hadnt been

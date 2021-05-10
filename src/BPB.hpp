@@ -14,7 +14,7 @@ private:
     std::array<BPBEntry, 16> nextBuffer;
 
 public:
-    bool predictBranchDynamic(uint32_t pc, Instr i);
+    bool predictBranchDynamic(uint32_t pc, Instr i, BPType type);
     void updateBranch(uint32_t pc, bool taken);
     void update();
     BPB();

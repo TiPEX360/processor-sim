@@ -93,7 +93,7 @@ void DecodeUnit::update() {
 
 
 
-DecodeUnit::DecodeUnit(std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB) {
+DecodeUnit::DecodeUnit(std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, std::vector<ReservationStation> *RSs, ReorderBuffer *ROB) {
     // DecodeUnit::RF = RF;
     DecodeUnit::currentFetched = currentFetched;
     DecodeUnit::nextFetched = nextFetched;

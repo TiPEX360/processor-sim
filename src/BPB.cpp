@@ -8,21 +8,36 @@ BPB::BPB() {
 }
 
 //Called during fetch
-bool BPB::predictBranchDynamic(uint32_t pc, Instr i) {
-    int index = (pc % 15);
-        //Predict
-    char state = currentBuffer[index].state;
-    if(state == 0) {
-        return false;
-    }
-    if(state == 1) {
-        return false;
-    }
-    if(state == 2) {
-        return true;
-    }
-    else {
-        return true;
+
+bool BPB::predictBranchDynamic(uint32_t pc, Instr i, BPType type) {
+    switch(type) {
+        case BPType::STATIC:
+            if(i.Rd > pc) return false;
+            return true;
+            break;
+        case BPType::FIXEDTAKE:
+            return true;
+            break;
+        case BPType::FIXEDSKIP:
+            return false;
+            break;
+        default:
+            int index = (pc % 15);
+                //Predict
+            char state = currentBuffer[index].state;
+            if(state == 0) {
+                return false;
+            }
+            if(state == 1) {
+                return false;
+            }
+            if(state == 2) {
+                return true;
+            }
+            else {
+                return true;
+            }
+            break;
     }
 }
 

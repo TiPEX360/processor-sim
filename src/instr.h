@@ -14,9 +14,10 @@ enum class opcode {
 
 extern int SCALE_WIDTH;
 
-const int RS_COUNT = 4;
 
-const int EXEC_COUNT = 4;
+extern int RS_COUNT;
+
+extern int EXEC_COUNT;
 
 typedef int RSID;
 
@@ -55,6 +56,13 @@ enum class addrMode {
     IMMEDIATE,
 };
 
+enum class BPType {
+    STATIC,
+    DYNAMIC,
+    FIXEDTAKE,
+    FIXEDSKIP
+};
+extern BPType PREDICTIONTYPE;
 
 
 struct Register {

@@ -13,7 +13,7 @@ struct DecodeData {
 
 class DecodeUnit {
 private:
-    std::array<ReservationStation, RS_COUNT> *RSs;
+    std::vector<ReservationStation> *RSs;
     std::deque<Instr> *currentFetched;
     std::deque<Instr> *nextFetched;
     ReorderBuffer *ROB;
@@ -28,5 +28,5 @@ public:
     void update();
 
     DecodeUnit();
-    DecodeUnit(std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB);
+    DecodeUnit(std::deque<Instr> *currentFetched, std::deque<Instr> *nextFetched, std::vector<ReservationStation> *RSs, ReorderBuffer *ROB);
 };

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/proc",
-            "args": ["./src/peak.as"],
+            "args": ["./src/bubble.as"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

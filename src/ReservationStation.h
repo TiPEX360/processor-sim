@@ -16,7 +16,7 @@ private:
     Register *RF;
     std::vector<Instr> *issuedCurrent;
     std::vector<Instr> *issuedNext;
-    std::array<ReservationStation, RS_COUNT> *RSs;
+    std::vector<ReservationStation> *RSs;
     ReorderBuffer *ROB;
 public:
     BundleWriteLog *BWL;
@@ -31,5 +31,5 @@ public:
     int removeEntry(ROBEntry e);
     RSEntry getReadyEntry();
     ReservationStation() {};
-    ReservationStation(BundleWriteLog *BWL, std::array<ReservationStation, RS_COUNT> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
+    ReservationStation(BundleWriteLog *BWL, std::vector<ReservationStation> *RSs, ReorderBuffer *ROB, Register *RF, std::vector<Instr> *issuedCurrent, std::vector<Instr> *issuedNext, RSType type, int RSID, int RSCount); 
 };

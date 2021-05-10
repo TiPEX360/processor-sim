@@ -130,14 +130,57 @@ void loadProgram(const char *path, Instr *INSTR) {
 }
 
 int SCALE_WIDTH;
+int RS_COUNT;
+int EXEC_COUNT;
+BPType PREDICTIONTYPE;
 int main(int argc, char *argv[]) {
-    
     if(argc < 2) {
-        std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
+        std::cout << "Error: Missing arguments. Arg1: assembly source path. Arg2: Scale width (int). Arg3: Branch prediction method ({static, dynamic, fixedtake, fixedskip}). Arg4: ALU Count (int)." << std::endl;
         return 1;   
     }
-    if(argc > 2) {
+    else if(argc == 2) {    
+        SCALE_WIDTH = 4;
+        PREDICTIONTYPE = BPType::DYNAMIC;
+        RS_COUNT = 4;
+        EXEC_COUNT = 4;
+    }
+    else if(argc == 3) {
         SCALE_WIDTH = atoi(argv[2]);
+        PREDICTIONTYPE = BPType::DYNAMIC;
+        RS_COUNT = 4;
+        EXEC_COUNT = 4;
+    }
+    else if(argc == 4) {
+        SCALE_WIDTH = atoi(argv[2]);
+        RS_COUNT = 4;
+        EXEC_COUNT = 4;
+        std::string in = argv[3];
+        if(in.compare("static") == 0) PREDICTIONTYPE = BPType::STATIC;
+        else if(in.compare("dynamic") == 0) {
+            PREDICTIONTYPE = BPType::DYNAMIC;
+        }
+        else if(in.compare("fixedtake") == 0) PREDICTIONTYPE = BPType::FIXEDTAKE;
+        else if(in.compare("fixedskip") == 0) PREDICTIONTYPE = BPType::FIXEDSKIP;
+        else {
+            std::cout << "ERROR: Invalid branch prediction method. Valid arguments: {static, dynamic, fixedtake, fixedskip}" << std::endl;
+            return 1;
+        }
+    }
+    else if(argc == 5) {
+        SCALE_WIDTH = atoi(argv[2]);
+        RS_COUNT = atoi(argv[4]);
+        EXEC_COUNT = atoi(argv[4]);
+        std::string in = argv[3];
+        if(in.compare("static") == 0) PREDICTIONTYPE = BPType::STATIC;
+        else if(in.compare("dynamic") == 0) {
+            PREDICTIONTYPE = BPType::DYNAMIC;
+        }
+        else if(in.compare("fixedtake") == 0) PREDICTIONTYPE = BPType::FIXEDTAKE;
+        else if(in.compare("fixedskip") == 0) PREDICTIONTYPE = BPType::FIXEDSKIP;
+        else {
+            std::cout << "ERROR: Invalid branch prediction method. Valid arguments: {static, dynamic, fixedtake, fixedskip}" << std::endl;
+            return 1;
+        }
     }
     else SCALE_WIDTH = 4;
 
@@ -168,24 +211,35 @@ int main(int argc, char *argv[]) {
     Instr *cir = new Instr; //RF[31]
 
     //Units
-    std::array<ReservationStation, RS_COUNT> RSs;
+    std::vector<ReservationStation> RSs;
+    RSs.reserve(RS_COUNT);
 
     BPB branchBuffer = BPB();
     FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
-    std::array<ExecutionUnit *, EXEC_COUNT> EUs;
+    std::vector<ExecutionUnit *> EUs;
+    EUs.reserve(EXEC_COUNT);
     bool halt = false; //KNOWN TO BE ROOT OF ALL PROBLEMS
     ReorderBuffer ROB(&branchBuffer, &fetchUnit.currentFetched, &fetchUnit.nextFetched, &halt, &EUs, nextRF, nextMEM, &RSs);
     DecodeUnit decodeUnit(&fetchUnit.currentFetched, &fetchUnit.nextFetched, &RSs, &ROB);
 
-    EUs[0] = new EU::ALU(&RSs[0], &ROB);
-    EUs[1] = new EU::ALU(&RSs[1], &ROB);
-    EUs[2] = new EU::LSU(currentMEM, &RSs[2], &ROB);
-    EUs[3] = new EU::BranchUnit(nextPC, &RSs[3], &ROB);
+    for(int i = 0; i < EXEC_COUNT - 2; i++) {
+        EUs.push_back(new EU::ALU(&RSs[i], &ROB));
+        RSs.push_back(ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, i, RS_COUNT));
+    }
+    std::cout << "here" << std::endl;
+    EUs.push_back(new EU::LSU(currentMEM, &RSs[EXEC_COUNT - 2], &ROB));
+    EUs.push_back(new EU::BranchUnit(nextPC, &RSs[EXEC_COUNT - 1], &ROB));
+    RSs.push_back(ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, EXEC_COUNT - 2, RS_COUNT));
+    RSs.push_back(ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, EXEC_COUNT - 1, RS_COUNT));
+    // EUs[0] = new EU::ALU(&RSs[0], &ROB);
+    // EUs[1] = new EU::ALU(&RSs[1], &ROB);
+    // EUs[2] = new EU::LSU(currentMEM, &RSs[2], &ROB);
+    // EUs[3] = new EU::BranchUnit(nextPC, &RSs[3], &ROB);
 
-    RSs[0] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 0, RS_COUNT);
-    RSs[1] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 1, RS_COUNT);
-    RSs[2] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
-    RSs[3] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
+    // RSs[0] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 0, RS_COUNT);
+    // RSs[1] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 1, RS_COUNT);
+    // RSs[2] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
+    // RSs[3] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
 
 
     loadProgram(argv[1], INSTR);
