@@ -135,7 +135,7 @@ int EXEC_COUNT;
 BPType PREDICTIONTYPE;
 int main(int argc, char *argv[]) {
     if(argc < 2) {
-        std::cout << "Error: Missing arguments. Arg1: assembly source path. Arg2: Scale width (int). Arg3: Branch prediction method ({static, dynamic, fixedtake, fixedskip}). Arg4: ALU Count (int)." << std::endl;
+        std::cout << "Error: Missing arguments. Arg1: assembly source path. Arg2: Scale width (int). Arg3: Branch prediction method ({static, dynamic, fixedtake, fixedskip}). Arg4: EU Count (int > 2)." << std::endl;
         return 1;   
     }
     else if(argc == 2) {    
@@ -168,6 +168,10 @@ int main(int argc, char *argv[]) {
     }
     else if(argc == 5) {
         SCALE_WIDTH = atoi(argv[2]);
+        if(atoi(argv[4]) < 3) {
+            std::cout << "ERROR: Invalid number of excution units. Valid arguments: (int > 2)" << std::endl;
+            return 1;
+        }
         RS_COUNT = atoi(argv[4]);
         EXEC_COUNT = atoi(argv[4]);
         std::string in = argv[3];
@@ -277,12 +281,17 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i = 0; i < 1024; i++) {
-        if(i < 10 ||currentMEM[i] != 0) std::cout << "MEM " << i << ": " << currentMEM[i] << std::endl;
+        if(currentMEM[i] != 0) std::cout << "MEM " << i << ": " << currentMEM[i] << std::endl;
     }
 
     // for(int i = 0; i < 512; i++) {
     //     if (INSTR[i].opcode != opcode::NOP) std::cout << (int)INSTR[i].opcode << std::endl;
     // }
+    std::cout << "----------------------------------" << std::endl;
     std::cout << "Cycles: " << cycles << std::endl;
+    std::cout << "EU Count: " << EXEC_COUNT << std::endl;
+    std::cout << "RS Count: " << RS_COUNT << std::endl;
+    std::cout << "Scale width: " << SCALE_WIDTH << std::endl;
+    
     return 0;
 }
