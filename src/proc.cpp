@@ -116,6 +116,8 @@ void loadProgram(const char *path, Instr *INSTR) {
     in.close();
 }
 
+extern int instrCount;
+
 int SCALE_WIDTH;
 int RS_COUNT;
 int EXEC_COUNT;
@@ -277,6 +279,8 @@ int main(int argc, char *argv[]) {
     std::cout << "EU Count: " << EXEC_COUNT << std::endl;
     std::cout << "RS Count: " << RS_COUNT << std::endl;
     std::cout << "Scale width: " << SCALE_WIDTH << std::endl;
+    std::cout << "Instructions finished " << instrCount << std::endl;
+    std::cout << "IPC: " <<  (float)instrCount  / (float) cycles << std::endl;
     
     return 0;
 }

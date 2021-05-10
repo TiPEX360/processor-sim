@@ -1,47 +1,59 @@
 # Processor Simulator
 ## Introduction
 
-A simulator for a simple, scalar, non-pipelined processor.
+A simulator for a superscalar, out of order, pipelined processor.
+
+## Features
+
+- Superscalar
+- Out of order
+- Branch prediction
+- Tomasulo's algorithm
+- Speculative execution
+- Pipelined
+- Non-blocking issue
 
 ## ISA
 
 The processor supports the following instructions:
 
  Opcode |Operands  |  Description
----|---|---
- add | dest r1 r2 |Add the contents of ```r1``` and ```r2```, and store the result in ```dest```.
- addc| dest r1 #1| Add the contents of ``` r1 ``` and an immediate ```#1```, and store the result in ```dest```. 
- mul | dest r1 r2 | Multiply the contents of ``` r1 ``` and ```r2```, and store the result in ```dest```. 
- sub | dest r1 r2 | Subtract the contents of ``` r1 ``` and ```r2```, and store the result in ```dest```. 
- div | dest r1 r2 | Perform integer division of ```r1``` by ```r2```, and store the result in ```dest```.
- lsh | dest r1 r2 | Perform left shift of ```r1``` by ```r2```, and store the result in ```dest```.
- rsh | dest r1 r2 | Perform right shift of ```r1``` by ```r2```, and store the result in ```dest```.
- and | dest r1 r2 | Perform bitwise and  of ```r1``` and ```r2```. Store the result in ```dest```.
- or | dest r1 r2 | Perform bitwise or  of ```r1``` and ```r2```. Store the result in ```dest```.
- xor | dest r1 r2 | Perform bitwise xor  of ```r1``` and ```r2```. Store the result in ```dest```.
- ldm | dest src1 src2 | Load from memory address ```src1 + src2 ``` , and store in ```dest```.
- ldmc | dest src #offset | Load from memory address stored in register ```src``` offset by immediate ```#offset```. Store in ```dest```.
- ldc | dest #1 | Store the ```#1``` immediate in ```dest``` register.
-stm | src dest1 dest2 | Store the contents of ```src``` in the memory address ```dest1 + dest2```.
-stmc | src dest1 #offset | Like stm but ```#dest2``` is an immediate.
-sto | #dest #src1 #offset | Like stm but all operands are immediates.
-blt | dest cmp1 cmp2 | Branch to ```dest``` if ```cmp1 < cmp2```.
-bnz | dest cmp1  | Branch to ```dest``` if ```cmp1 != 0```.
-br | dest | Branch to ```dest```.
-jlt | #inc cmp1 cmp2 | Increments program counter by ```#inc``` if ```cmp1 < cmp2```.
-jnz | #inc cmp1 | Increments program counter by ```#inc``` if ```cmp1 != 0```.
-j | #inc | Increments program counter by ```#inc```.
-cmp | dest a1 a2 | Compares ```a1``` to ```a2``` and stores the result in ```dest```. ```0 => (a1 == a2)```. ```-1 => (a1 < a2)```. ```1 => (a1 > a2)```.
+------|---------------|--------------------------------------------------------------------------------------
+ nop | | 
+ add | Rd Rn Ri |Add the contents of ```Rn``` and ```Ri```, and store the result in ```Rd```.
+ mul | Rd Rn Ri | Multiply the contents of ``` Rn ``` and ```Ri```, and store the result in ```Rd```. 
+ sub | Rd Rn Ri | Subtract the contents of ``` Rn ``` and ```Ri```, and store the result in ```Rd```. 
+ div | Rd Rn Ri | Perform integer division of ```Rn``` by ```Ri```, and store the result in ```Rd```.
+ lsh | Rd Rn Ri | Perform left shift of ```Rn``` by ```Ri```, and store the result in ```Rd```.
+ rsh | Rd Rn Ri | Perform right shift of ```Rn``` by ```Ri```, and store the result in ```Rd```.
+ and | Rd Rn Ri | Perform bitwise and  of ```Rn``` and ```Ri```. Store the result in ```Rd```.
+ or | Rd Rn Ri | Perform bitwise or  of ```Rn``` and ```Ri```. Store the result in ```Rd```.
+ xor | Rd Rn Ri | Perform bitwise xor  of ```Rn``` and ```Ri```. Store the result in ```Rd```.
+ ld | Rd Rn Ri | Load from memory address ```Rn + Ri ``` , and store in ```Rd```.
+ ldc | Rd Ri | Load ```Ri``` into register ```Rd```.
+ st | Rd Rn Ri | Store ```Rd``` in ```r1 + r2```.
+blt | Rd Rn Ri | Branch to ```Rd``` if ```Rn < Ri```.
+bz | Rd Ri | ```Rd``` if ```Ri == 0```.
+bnz | Rd Ri | ```Rd``` if ```Ri != 0```.
+b |   | Branch to ```Rd```.
+jlt | dest | Increments program counter by ```Rd``` if ```Rn < Ri```.
+jz | Rd Rn Ri | Increments program counter by ```Rd``` if ```Ri == 0```.
+jnz | Rd Ri | Increments program counter by ```Rd``` if ```Ri != 0```.
+j | Rd | Increments program counter by ```Rd```.
 halt | | Halt execution of the processor.
+
+
+Rn is always register addressed.
+Ri may be register addressed or be an immediate.
 
 ## Usage
 
 1. Write, clone, download, steal, or otherwise acquire an assembly program compatible with the ISA specified above.
-2. Create a binary file using the ```assembler``` program provided:
+2. Compile the simulator from source using
 ```
- ./assembler {input} {output}
+make
 ```
-3. Execute the binary file using the ```proc``` program:
+3. Execute the assembly program using the ```proc``` program:
 ```
-./proc {binary}
+./proc {assembly source} {scalar width} {branch prediction type (dynamic, static, fixedskip, fixedtake)} {No. EUs}
 ```

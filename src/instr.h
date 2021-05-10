@@ -19,6 +19,8 @@ extern int RS_COUNT;
 
 extern int EXEC_COUNT;
 
+extern int instrCount;
+
 typedef int RSID;
 
 enum class RSType {ALU, LDST, BRANCH};

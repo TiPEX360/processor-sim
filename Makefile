@@ -1,6 +1,2 @@
 proc: ./src/proc.cpp
-	g++ -o ./bin/proc ./src/proc.cpp
-
-assembler: ./src/assembler.cpp
-	g++ -o ./bin/assembler ./src/assembler.cpp
-	 
+	clang++ ./src/proc.cpp ./src/DecodeUnit.cpp ./src/ExecutionUnit.cpp ./src/BranchUnit.cpp ./src/ALU.cpp ./src/LSU.cpp ./src/ReservationStation.cpp ./src/ReorderBuffer.cpp ./src/BPB.cpp ./src/FetchUnit.cpp -o ./bin/proc

@@ -3,6 +3,7 @@
 #include "ExecutionUnit.h"
 #include <iostream>
 
+int instrCount = 0;
 
 ROBEntry ReorderBuffer::addEntry(RSEntry RSe, RSID RSID, int branchTaken) {
     ROBEntry e;
@@ -80,6 +81,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
         }
         nextROB[index].ready = true; 
         (*RSs)[RSId].removeEntry(e); //Free RS which produced result
+        instrCount++;
 
     }
     else {
