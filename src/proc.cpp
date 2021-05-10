@@ -47,7 +47,6 @@ void loadProgram(const char *path, Instr *INSTR) {
         instr.branchTaken = 0;
         instr.RSID = 0;
 
-        //Remove comments !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         bool comment = false;
         int i = 0;
         while(i < line.length() && !comment) {
@@ -59,10 +58,7 @@ void loadProgram(const char *path, Instr *INSTR) {
         }   
         std::vector<std::string> tokens = split(line, ' ');
 
-        // if(tokens.size() > 0) {
-            // if(tokens[0].compare("jnz") == 0) std::cout << tokens.size() << tokens[0] << tokens[1] << tokens[2] << std::endl;
-        // }
-        //Remove empty tokens
+
 
         //Replace tokens
         for(int i = 0; i < tokens.size(); i++) {
@@ -111,13 +107,6 @@ void loadProgram(const char *path, Instr *INSTR) {
                     instr.Ri = atoi(tokens[3].substr(1, tokens[3].size() - 1).c_str());
                 }
             }
-
-            // if(instr.opcode == JNZ) {
-            //     std::cout << (int)instr.Rd << " " << (int)instr.Rn << " " << (int)instr.Ri << std::endl;
-            // }
-            
-            // std::cout << tokens[0] << " " << (int)instr.immediate << " " << (int)instr.Rd << " " << (int)instr.Rn << " " << (int)instr.Ri << std::endl;
-            
 
             INSTR[instrIndex] = instr;
             instrIndex++;
@@ -271,7 +260,7 @@ int main(int argc, char *argv[]) {
         for(int i = 0; i < RS_COUNT; i++) RSs[i].update();
         ROB.update();
         for(int i = 0; i < EXEC_COUNT; i++) {
-            EUs[i]->update(); //UNNECESSARY
+            EUs[i]->update(); 
         }
         // std::cout << fetchUnit.current.back().opcode;
         
@@ -282,9 +271,7 @@ int main(int argc, char *argv[]) {
         if(currentMEM[i] != 0) std::cout << "MEM " << i << ": " << currentMEM[i] << std::endl;
     }
 
-    // for(int i = 0; i < 512; i++) {
-    //     if (INSTR[i].opcode != opcode::NOP) std::cout << (int)INSTR[i].opcode << std::endl;
-    // }
+
     std::cout << "----------------------------------" << std::endl;
     std::cout << "Cycles: " << cycles << std::endl;
     std::cout << "EU Count: " << EXEC_COUNT << std::endl;
