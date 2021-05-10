@@ -21,6 +21,9 @@ void BranchUnit::tick() {
             case opcode::BLT:
                 duration = 1;
                 break;
+            case opcode::BZ:
+                duration = 1;
+                break;
             case opcode::BNZ:
                 duration = 1;
                 break;
@@ -30,6 +33,9 @@ void BranchUnit::tick() {
             case opcode::JLT:
                 duration = 1;
                 break;
+            case opcode::JZ:
+                duration = 1;
+                break;
             case opcode::JNZ:
                 duration = 1;
                 break;
@@ -37,7 +43,7 @@ void BranchUnit::tick() {
                 duration = 1;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in BU. Opcode: " << (int)processing.opcode << std::endl;
+                // std::cout << "ERROR: Invalid instruction in BU. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;
@@ -63,6 +69,12 @@ void BranchUnit::tick() {
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
+            case opcode::BZ:
+                nextOut.dest = processing.Rd;
+                nextOut.type = InstrType::BRANCH;
+                nextOut.result = processing.Ri == 0 ? 1 : 0;
+                nextOut.bpc = processing.bpc;
+                break;
             case opcode::BNZ:
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
@@ -79,6 +91,12 @@ void BranchUnit::tick() {
                 nextOut.dest = processing.Rd;
                 nextOut.type = InstrType::BRANCH;
                 nextOut.result = processing.Rn < processing.Ri ? 1 : 0;
+                nextOut.bpc = processing.bpc;
+                break;
+            case opcode::JZ:
+                nextOut.dest = processing.Rd;
+                nextOut.type = InstrType::BRANCH;
+                nextOut.result = processing.Ri == 0 ? 1 : 0;
                 nextOut.bpc = processing.bpc;
                 break;
             case opcode::JNZ:

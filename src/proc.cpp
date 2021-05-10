@@ -13,6 +13,7 @@
 #include "ReservationStation.h"
 #include "ReorderBuffer.hpp"
 #include "BPB.hpp"
+#include <time.h>
 
 
 
@@ -32,6 +33,7 @@ std::vector<std::string> split(const std::string &line, char delimiter) {
     }
 	return tokens;
 }
+
 
 void loadProgram(const char *path, Instr *INSTR) {
     std::ifstream in(path, std::ifstream::in);
@@ -88,12 +90,13 @@ void loadProgram(const char *path, Instr *INSTR) {
             else if(tokens[0].compare("st") == 0) instr.opcode = opcode::ST;
             else if(tokens[0].compare("stc") == 0) instr.opcode = opcode::STC;
             else if(tokens[0].compare("blt") == 0) instr.opcode = opcode::BLT;
+            else if(tokens[0].compare("bz") == 0) instr.opcode = opcode::BZ;
             else if(tokens[0].compare("bnz") == 0) instr.opcode = opcode::BNZ;
             else if(tokens[0].compare("b") == 0) instr.opcode = opcode::B;
             else if(tokens[0].compare("j") == 0) instr.opcode = opcode::J;  
             else if(tokens[0].compare("jlt") == 0) instr.opcode = opcode::JLT;
+            else if(tokens[0].compare("jz") == 0) instr.opcode = opcode::JZ;
             else if(tokens[0].compare("jnz") == 0) instr.opcode = opcode::JNZ;
-            else if(tokens[0].compare("cmp") == 0) instr.opcode = opcode::CMP;
             else if(tokens[0].compare("halt") == 0) instr.opcode = opcode::HALT;
             else continue;
 
@@ -126,10 +129,20 @@ void loadProgram(const char *path, Instr *INSTR) {
     in.close();
 }
 
+int SCALE_WIDTH;
 int main(int argc, char *argv[]) {
     
+    if(argc < 2) {
+        std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
+        return 1;   
+    }
+    if(argc > 2) {
+        SCALE_WIDTH = atoi(argv[2]);
+    }
+    else SCALE_WIDTH = 4;
+
     //Buffers
-    BundleWriteLog BWL[4];
+    BundleWriteLog BWL[SCALE_WIDTH];
     Register currentRF[31];
     Register nextRF[31];
     int32_t currentMEM[1024];
@@ -174,20 +187,20 @@ int main(int argc, char *argv[]) {
     RSs[2] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
     RSs[3] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
 
-    if(argc < 2) {
-        std::cout << "Error: Missing arguments. Arg1: assembly source" << std::endl;
-        return 1;   
-    }
+
     loadProgram(argv[1], INSTR);
 
     int cycles = 0;
+    int time = clock();
+    int deltaTime = clock() - time;
     while(!halt) {
-        std::cout << "--------------------- Cycle:  " << cycles << " PC: " << currentPC->value << "----------------------" << std::endl;
+        deltaTime = clock() - deltaTime;
+        // if(deltaTime % 10 == 0) std::cout << "-";
         cycles = cycles + 1;
 
         //Tick
         fetchUnit.tick();
-        for(int i = 0; i < 4; i++) BWL[i] = {-1, -1};
+        for(int i = 0; i < SCALE_WIDTH; i++) BWL[i] = {-1, -1};
         decodeUnit.tick();
         for(int i = 0; i < EXEC_COUNT; i++) {
             EUs[i]->tick();
@@ -203,7 +216,6 @@ int main(int argc, char *argv[]) {
         ROB.update();
         for(int i = 0; i < EXEC_COUNT; i++) {
             EUs[i]->update(); //UNNECESSARY
-            std::cout << "CDB " << i << ": " << EUs[i]->currentOut.id << std::endl;
         }
         // std::cout << fetchUnit.current.back().opcode;
         
@@ -211,7 +223,7 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i = 0; i < 1024; i++) {
-        if(i < 10 ||currentMEM[i] != 0) std::cout << i << ": " << currentMEM[i] << std::endl;
+        if(i < 10 ||currentMEM[i] != 0) std::cout << "MEM " << i << ": " << currentMEM[i] << std::endl;
     }
 
     // for(int i = 0; i < 512; i++) {

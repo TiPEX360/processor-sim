@@ -58,7 +58,7 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
     if(nextROB[index].id == e.id) {
         nextROB[index] = e;
         int RSId = findRSIDByROBEntry(e);
-        if(RSId == -1) std::cout << "ERROR: No RS looking for this ROBEntry!" << std::endl;
+        // if(RSId == -1) std::cout << "ERROR: No RS looking for this ROBEntry!" << std::endl;
         if(e.type == InstrType::REG) {
             //Update RS
             for(int RS = 0; RS < RS_COUNT; RS++) {
@@ -83,14 +83,14 @@ int ReorderBuffer::updateEntry(int index, ROBEntry e) {
 
     }
     else {
-        std::cout << "ERROR: Tried to update invalid ROBEntry. ROBId: " << nextROB[index].id << " New Entry Id: " << e.id << std::endl;
+        // std::cout << "ERROR: Tried to update invalid ROBEntry. ROBId: " << nextROB[index].id << " New Entry Id: " << e.id << std::endl;
         return 1;
     }
     return 0;
 }
 
 void ReorderBuffer::flush(ROBEntry branchEntry) {
-    std::cout << "FLUSHING PIPE" << std::endl;
+    // std::cout << "FLUSHING PIPE" << std::endl;
 
     nextROB.clear();
 
@@ -107,12 +107,12 @@ void ReorderBuffer::flush(ROBEntry branchEntry) {
     while((*nextFetched).size() > 0) {
         (*nextFetched).pop_front();
     }
-    for(int i = 0; i < 4; i++) (*nextFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
+    for(int i = 0; i < SCALE_WIDTH; i++) (*nextFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
     
     while((*currentFetched).size() > 0) {
         (*currentFetched).pop_front();
     }
-    for(int i = 0; i < 4; i++) (*currentFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
+    for(int i = 0; i < SCALE_WIDTH; i++) (*currentFetched).push_back({opcode::NOP, 0, 0, 0, true, 0, 0});
 
     for(int i = 0; i < 31; i++) nextRF[i].RS = -1;
     
@@ -127,7 +127,7 @@ void ReorderBuffer::tick() {
             //Send CDB to waiting RSEntries not being executed
             for(int r = 0; r < currentROB.size(); r++) {
                 if(currentROB[r].id == out.id && !currentROB[r].ready) {
-                    std::cout << "Updating ROBEntry" << std::endl;
+                    // std::cout << "Updating ROBEntry" << std::endl;
                     updateEntry(r, out);
                 } 
             }
@@ -137,7 +137,7 @@ void ReorderBuffer::tick() {
 
     //COMMIT STEP
     bool flushed = false;
-    for(int i = 0; i < 4 && !flushed; i++) {
+    for(int i = 0; i < SCALE_WIDTH && !flushed; i++) {
         if(currentROB.size() > 0 && currentROB[0].ready) {
             ROBEntry committing = currentROB[0];
             nextROB.erase(nextROB.begin()); //erase not working >:(
@@ -145,16 +145,16 @@ void ReorderBuffer::tick() {
 
             if(committing.type == InstrType::REG) {
                 if(committing.dest == 30) {
-                    std::cout << "ERROR: TRYING TO CHANGE PC IN REG INSTRUCTION" << std::endl;
+                    // std::cout << "ERROR: TRYING TO CHANGE PC IN REG INSTRUCTION" << std::endl;
                     exit(1);
                 }
-                std::cout << "commiting REG" << std::endl;
+                // std::cout << "commiting REG" << std::endl;
                 nextRF[committing.dest].value = committing.result;
                 nextRF[committing.dest].RS = -1;
 
             }
             else if(committing.type == InstrType::MEM) {
-                std::cout << "commiting MEM" << std::endl;
+                // std::cout << "commiting MEM" << std::endl;
                 nextMEM[committing.dest] = committing.result;
             }
             else if(committing.type == InstrType::BRANCH) {

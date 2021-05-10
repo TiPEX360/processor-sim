@@ -25,7 +25,7 @@ bool DecodeUnit::issueInstr(int counter, Instr n) {
             n.RSID = bestRS;
             (*RSs)[bestRS].addEntry(counter, n);
             // nextFetched->pop();
-            std::cout << (*RSs)[bestRS].nextEntries.size();
+            // std::cout << (*RSs)[bestRS].nextEntries.size();
         }
     }
     else if(n.opcode >= opcode::LD && n.opcode <= opcode::STC) {
@@ -51,7 +51,7 @@ bool DecodeUnit::issueInstr(int counter, Instr n) {
     else {
         //NOP || HALT
         found = true;
-        if(n.opcode == opcode::HALT) std::cout << "HALT" << std::endl;
+        // if(n.opcode == opcode::HALT) std::cout << "HALT" << std::endl;
         // nextFetched->pop();
     }
     
@@ -61,10 +61,10 @@ bool DecodeUnit::issueInstr(int counter, Instr n) {
 void DecodeUnit::tick() {
     bool bundleBroken = false;
     std::deque<Instr> remainder;
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < SCALE_WIDTH; i++) {
         if(!bundleBroken) {
             if(issueInstr(i, currentFetched->front())) {
-                std::cout << "Issued " << (int)currentFetched->front().opcode << std::endl;
+                // std::cout << "Issued " << (int)currentFetched->front().opcode << std::endl;
                 nextFetched->pop_front();
                 currentFetched->pop_front();
             }

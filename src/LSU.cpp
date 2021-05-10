@@ -29,7 +29,7 @@ void LSU::tick() {
                 duration = 2;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << (int)processing.opcode << std::endl;
+                // std::cout << "ERROR: Invalid instruction in LDST Unit. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;

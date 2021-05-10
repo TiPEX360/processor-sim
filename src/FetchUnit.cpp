@@ -31,7 +31,7 @@ void FetchUnit::tick() {
     if(currentPC->value < 512) {
         Instr n;
         int pc = currentPC->value;
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < SCALE_WIDTH; i++) {
             n = INSTR[pc];
 
             if(n.opcode >= opcode::BLT && n.opcode <= opcode::JNZ) {
@@ -79,6 +79,6 @@ FetchUnit::FetchUnit(BPB *branchBuffer, Register *currentPC, Register *nextPC, I
     FetchUnit::nextPC = nextPC;
     FetchUnit::branchBuffer = branchBuffer;
     FetchUnit::INSTR = INSTR;
-    for(int i = 0; i < 4; i++) nextFetched.push_back({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
-    for(int i = 0; i < 4; i++) currentFetched.push_back({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
+    for(int i = 0; i < SCALE_WIDTH; i++) nextFetched.push_back({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
+    for(int i = 0; i < SCALE_WIDTH; i++) currentFetched.push_back({opcode::NOP, 0, 0, 0, true, 0, 0, 0});
 }

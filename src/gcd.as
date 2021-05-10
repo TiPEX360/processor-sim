@@ -1,5 +1,5 @@
-stc #52 #0
-stc #18 #1
+stc #255 #0
+stc #127 #1
 
 ldc r5 #0 //memory start
 

@@ -7,11 +7,12 @@ enum class opcode {
     ADD,  MUL, SUB, DIV,
     LSH, RSH, AND, OR, XOR,
     LD, LDC, ST, STC,
-    BLT, BNZ, B, 
-    J, JLT, JNZ,
-    CMP, 
+    BLT, BZ, BNZ, B, 
+    J, JZ, JLT, JNZ,
     HALT
 };
+
+extern int SCALE_WIDTH;
 
 const int RS_COUNT = 4;
 

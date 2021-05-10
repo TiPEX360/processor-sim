@@ -15,7 +15,7 @@ int WriteBackUnit::wb() {
         RF[memwb->Rd] = memwb->MEMLoadData;
         // std::cout << "RF[" << memwb->Rd << "]<-"<< memwb->MEMLoadData << std::endl;
     }
-    std::cout << "WB// Op: " << opcode << std::endl;
+    // std::cout << "WB// Op: " << opcode << std::endl;
     memwb->active = false;
 
     return 0;

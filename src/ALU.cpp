@@ -53,7 +53,7 @@ void ALU::tick() {
                 duration = 1;
                 break;
             default:
-                std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << (int)processing.opcode << std::endl;
+                // std::cout << "ERROR: Invalid instruction in ALU. Opcode: " << (int)processing.opcode << std::endl;
                 break;
         }
         progress++;

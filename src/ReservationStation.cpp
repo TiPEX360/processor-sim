@@ -57,7 +57,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
         if(n.opcode == opcode::ST) {
             bool found = false;
             //Check if previous instruction in bundle written to Rd
-            for(int i = 0; i < 4; i++) {
+            for(int i = 0; i < SCALE_WIDTH; i++) {
                 if(BWL[i].dest == instr.Rd && BWL[i].dest != -1) {
                     found = true;
                     n.RSd = BWL[i].ROBId;
@@ -88,7 +88,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
         }
         //Rn Always register addressed (except STC then always available as 0) //STC?? think i meent LDC.
         bool found = false;
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < SCALE_WIDTH; i++) {
                 if(BWL[i].dest == instr.Rn && BWL[i].dest != -1) {
                     found = true;
                     n.RSn = BWL[i].ROBId;
@@ -113,7 +113,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
             }
         }
         found = false;
-        if(n.opcode == opcode::LDC || n.opcode == opcode::JNZ || n.opcode == opcode::J || n.opcode == opcode::B || n.opcode == opcode::BNZ) {
+        if(n.opcode == opcode::LDC || n.opcode == opcode::JNZ || n.opcode == opcode::J || n.opcode == opcode::B || n.opcode == opcode::BNZ|| n.opcode == opcode::BZ|| n.opcode == opcode::JZ) {
             n.RSn = -1;
             n.Rn = 0;
         }
@@ -125,7 +125,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
         }
         else {
             found = false;
-            for(int i = 0; i < 4; i++) {
+            for(int i = 0; i < SCALE_WIDTH; i++) {
                 if(BWL[i].dest == instr.Ri && BWL[i].dest != -1) {
                     found = true;
                     n.RSi = BWL[i].ROBId;
@@ -172,7 +172,7 @@ void ReservationStation::addEntry(int counter, Instr i) {
         nextEntries.push_back(n);
     }
     else {
-        std::cout << "ERROR: Tried to issue instruction to RS which is full." << std::endl;
+        // std::cout << "ERROR: Tried to issue instruction to RS which is full." << std::endl;
     }
 }
 
