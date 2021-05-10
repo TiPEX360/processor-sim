@@ -48,7 +48,6 @@ struct ROBEntry {
     int dest;
     bool ready;
     uint32_t bpc;
-    //bool inUse;
 };
 
 enum class addrMode {
@@ -85,14 +84,6 @@ struct BundleWriteLog {
     int dest;
     ROBID ROBId;
 };
-// struct FetchedInstr : Instr {
-//     int npc;
-// };
-
-
-// struct IssuedInstr : FetchedInstr {
-//     int RSID;
-// };
 
 class PipelineRegister {
 public:

@@ -8,8 +8,6 @@
 #include "ALU.hpp"
 #include "LSU.hpp"
 #include "BranchUnit.hpp"
-#include "MemoryUnit.h"
-#include "WriteBackUnit.h"
 #include "ReservationStation.h"
 #include "ReorderBuffer.hpp"
 #include "BPB.hpp"

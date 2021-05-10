@@ -9,12 +9,7 @@ void ALU::tick() {
     if(progress > 0) progress++;
     //No instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
-        // bool found = false;
-        // for(int entry = 0; entry < RS_SIZE && !found; entry++) {
-        //     if(RS->currentEntries[entry].ready) {
-        //         found = true;
         processing = RS->getReadyEntry();
-        // std::cout << "ALU " << ALU::RS->RSID << " Begin: " << (int)processing.opcode << std::endl;
         switch(processing.opcode) {
             case opcode::NOP:
                 duration = 1;
@@ -57,8 +52,7 @@ void ALU::tick() {
                 break;
         }
         progress++;
-        //     }
-        // }
+
     }
 
     //Execute instruction if on final stage of execution
@@ -118,7 +112,7 @@ void ALU::tick() {
             default:
                 break;
         }
-        // std::cout << "ALU Executed: " << (int)processing.opcode << std::endl;
+
         progress = 0;
     }
     else {

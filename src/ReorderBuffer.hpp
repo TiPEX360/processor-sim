@@ -3,10 +3,7 @@
 #include <queue>
 #include "instr.h"
 #include "BPB.hpp"
-// #include "ReservationStation.h"
-// #include "ExecutionUnit.h"
 
-// class ReservationStation;
 class ExecutionUnit;
 class ReservationStation;
 

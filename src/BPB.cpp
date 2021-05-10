@@ -8,7 +8,6 @@ BPB::BPB() {
 }
 
 //Called during fetch
-
 bool BPB::predictBranchDynamic(uint32_t pc, Instr i, BPType type) {
     switch(type) {
         case BPType::STATIC:
@@ -23,7 +22,6 @@ bool BPB::predictBranchDynamic(uint32_t pc, Instr i, BPType type) {
             break;
         default:
             int index = (pc % 15);
-                //Predict
             char state = currentBuffer[index].state;
             if(state == 0) {
                 return false;
@@ -43,7 +41,6 @@ bool BPB::predictBranchDynamic(uint32_t pc, Instr i, BPType type) {
 
 //Called during wb
 void BPB::updateBranch(uint32_t pc, bool taken) {
-    //multiple branches go through before state updated???
     int index = (pc % 15);
 
     char state = currentBuffer[index].state;
@@ -59,9 +56,9 @@ void BPB::updateBranch(uint32_t pc, bool taken) {
     else {
         if(!taken) currentBuffer[index].state = 2;
     }
-    // for(int i = 0; i < 16; i++) currentBuffer[i].state = nextBuffer[i].state;
+
 }
 
 void BPB::update() {
-    // for(int i = 0; i < 16; i++) currentBuffer[i].state = nextBuffer[i].state;
+
 }

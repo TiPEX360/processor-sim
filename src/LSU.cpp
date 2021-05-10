@@ -8,12 +8,7 @@ void LSU::tick() {
 
     //If no instruction is being executed. search RS for oldest RSEntry which is ready
     if(progress == 0) {
-        // bool found = false;
-        // for(int entry = 0; entry < RS_SIZE && !found; entry++) {
-        //     if(RS->currentEntries[entry].ready) {
-        //         found = true;
         processing = RS->getReadyEntry();
-        // std::cout << "LSU Begin: " << (int)processing.opcode << std::endl;
 
         switch(processing.opcode) {
             case opcode::NOP:
@@ -69,7 +64,6 @@ void LSU::tick() {
             default:
                 break;
         }
-        // std::cout << "LSU Executed: " << (int)processing.opcode << std::endl;
         
         progress = 0;
     }

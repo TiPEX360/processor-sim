@@ -106,12 +106,11 @@ ldc r4 #99 //size - 1
 ldc r1 #0 //j
 
 //add r11 pc #0 //inner loop start
-//nop
+
 ld r2 r1 #0 //a
 ld r3 r1 #1 //b
 
-//nop
-//nop
+
 jlt #2 r2 r3 //a < b? //check #15->#18 jumped to
 st r2 r1 #1 //swap
 st r3 r1 #0

@@ -4,7 +4,6 @@
 
 struct BPBEntry {
     char state; 
-    // bool initialised = false;
 };
 
 
