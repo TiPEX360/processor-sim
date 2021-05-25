@@ -1,4 +1,4 @@
-# Processor Simulator
+# Superscalar Processor Simulator
 ## Introduction
 
 A simulator for a superscalar, out of order, pipelined processor.
