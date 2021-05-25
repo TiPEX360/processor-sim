@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
     FetchUnit fetchUnit(&branchBuffer, currentPC, nextPC, INSTR);
     std::vector<ExecutionUnit *> EUs;
     EUs.reserve(EXEC_COUNT);
-    bool halt = false; //KNOWN TO BE ROOT OF ALL PROBLEMS
+    bool halt = false;
     ReorderBuffer ROB(&branchBuffer, &fetchUnit.currentFetched, &fetchUnit.nextFetched, &halt, &EUs, nextRF, nextMEM, &RSs);
     DecodeUnit decodeUnit(&fetchUnit.currentFetched, &fetchUnit.nextFetched, &RSs, &ROB);
 
@@ -219,20 +219,10 @@ int main(int argc, char *argv[]) {
         EUs.push_back(new EU::ALU(&RSs[i], &ROB));
         RSs.push_back(ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, i, RS_COUNT));
     }
-    std::cout << "here" << std::endl;
     EUs.push_back(new EU::LSU(currentMEM, &RSs[EXEC_COUNT - 2], &ROB));
     EUs.push_back(new EU::BranchUnit(nextPC, &RSs[EXEC_COUNT - 1], &ROB));
     RSs.push_back(ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, EXEC_COUNT - 2, RS_COUNT));
     RSs.push_back(ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, EXEC_COUNT - 1, RS_COUNT));
-    // EUs[0] = new EU::ALU(&RSs[0], &ROB);
-    // EUs[1] = new EU::ALU(&RSs[1], &ROB);
-    // EUs[2] = new EU::LSU(currentMEM, &RSs[2], &ROB);
-    // EUs[3] = new EU::BranchUnit(nextPC, &RSs[3], &ROB);
-
-    // RSs[0] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 0, RS_COUNT);
-    // RSs[1] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::ALU, 1, RS_COUNT);
-    // RSs[2] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::LDST, 2, RS_COUNT);
-    // RSs[3] = ReservationStation(BWL, &RSs, &ROB, currentRF, &decodeUnit.currentIssued, &decodeUnit.nextIssued, RSType::BRANCH, 3, RS_COUNT);
 
 
     loadProgram(argv[1], INSTR);
@@ -264,7 +254,6 @@ int main(int argc, char *argv[]) {
         for(int i = 0; i < EXEC_COUNT; i++) {
             EUs[i]->update(); 
         }
-        // std::cout << fetchUnit.current.back().opcode;
         
 
     }
